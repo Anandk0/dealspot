@@ -1,9 +1,10 @@
 "use client";
 import { ChevronRight, ListOrdered, Heart, Settings, HelpCircle, Info, LogOut, Edit } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import AppLayout from "@/components/AppLayout";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
+import { useAuth } from "@/lib/auth-context";                   
 
 const menuItems = [
   { href: "/profile/listings", icon: ListOrdered, label: "ನನ್ನ ಜಾಹೀರಾತುಗಳು", labelEn: "My Listings" },
@@ -14,6 +15,14 @@ const menuItems = [
 ];
 
 export default function ProfilePage() {
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
+  };
+
   return (
     <AppLayout>
       <div className="max-w-3xl mx-auto p-6">
@@ -24,9 +33,9 @@ export default function ProfilePage() {
               👤
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-gray-800">ರಾಮಣ್ಣ</h2>
-              <p className="text-sm text-gray-500 mt-1">+91 98765 43210</p>
-              <p className="text-sm text-gray-400">ಮಂಡ್ಯ, ಕರ್ನಾಟಕ</p>
+              <h2 className="text-2xl font-bold text-gray-800">{user?.name || "ರಾಮಣ್ಣ"}</h2>
+              <p className="text-sm text-gray-500 mt-1">{user?.phone || "+91 98765 43210"}</p>
+              <p className="text-sm text-gray-400">{user?.location || "ಕರ್ನಾಟಕ"}</p>
             </div>
             <Link
               href="/profile/edit"
@@ -76,7 +85,7 @@ export default function ProfilePage() {
 
         {/* Logout */}
         <button
-          onClick={() => toast.success("ಲಾಗ್ ಔಟ್ ಆಗಿದೆ!")}
+          onClick={handleLogout}
           className="flex items-center gap-3 px-6 py-4 mt-4 w-full text-left bg-white rounded-xl border border-gray-100 hover:bg-red-50 transition"
         >
           <LogOut size={20} className="text-red-500" />

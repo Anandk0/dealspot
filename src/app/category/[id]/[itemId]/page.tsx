@@ -152,7 +152,7 @@ export default function ItemDetailPage() {
                   <p className="text-xs text-gray-500">{item.location}</p>
                 </div>
               </div>
-              <ContactUnlockModal />
+              <ContactUnlockModal listingId={Number(itemId)} />
             </div>
           </div>
         </div>
