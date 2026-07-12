@@ -27,13 +27,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const token = localStorage.getItem("dealspot_token");
     if (token) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000); // 5s timeout
+      
       api.getProfile()
         .then(setUser)
         .catch(() => {
-          // Token might be expired, refresh will handle it via api client
           setUser(null);
         })
-        .finally(() => setIsLoading(false));
+        .finally(() => {
+          clearTimeout(timeout);
+          setIsLoading(false);
+        });
     } else {
       setIsLoading(false);
     }

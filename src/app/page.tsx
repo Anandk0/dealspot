@@ -1,20 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function SplashScreen() {
   const router = useRouter();
-  const [show, setShow] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShow(false);
       router.push("/language");
     }, 2500);
     return () => clearTimeout(timer);
   }, [router]);
-
-  if (!show) return null;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-green-600 to-green-800 text-white">

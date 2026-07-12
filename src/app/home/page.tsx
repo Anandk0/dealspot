@@ -1,47 +1,40 @@
 "use client";
-import { Mic, TrendingUp, ArrowRight } from "lucide-react";
+import { TrendingUp, MapPin } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
-import { categories, banners } from "@/lib/mock-data";
+import { categories } from "@/lib/mock-data";
+import { api, ListingData } from "@/lib/api";
 import { useState, useEffect } from "react";
 
 export default function HomePage() {
-  const [currentBanner, setCurrentBanner] = useState(0);
+  const [recentListings, setRecentListings] = useState<ListingData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentBanner((prev) => (prev + 1) % banners.length);
-    }, 3000);
-    return () => clearInterval(interval);
+    api.getRecentListings()
+      .then(setRecentListings)
+      .catch(() => setRecentListings([]))
+      .finally(() => setLoading(false));
   }, []);
+
+  const getCategoryIcon = (cat: string) => {
+    const icons: Record<string, string> = {
+      "agricultural-products": "🌾", livestock: "🐄", "farm-equipment": "🚜",
+      "tractor-rental": "🚜", "vehicle-rental": "🚗", labor: "👨‍🌾",
+      land: "🏞️", services: "🔧",
+    };
+    return icons[cat] || "📦";
+  };
 
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto p-6 space-y-8">
-        {/* Banner Carousel */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {banners.map((banner, i) => (
-            <div
-              key={banner.id}
-              className={`bg-gradient-to-r ${banner.color} rounded-2xl p-6 text-white transition-all duration-500 ${
-                i === currentBanner ? "ring-2 ring-offset-2 ring-primary/50 scale-[1.02]" : ""
-              }`}
-            >
-              <h3 className="text-lg font-bold">{banner.title}</h3>
-              <p className="text-sm text-white/80 mt-1">{banner.subtitle}</p>
-            </div>
-          ))}
-        </div>
-
         {/* Categories Grid */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">
-              ವಿಭಾಗಗಳು (Categories)
-            </h2>
-            <span className="text-sm text-primary cursor-pointer hover:underline">ಎಲ್ಲಾ ನೋಡಿ →</span>
+            <h2 className="text-lg font-semibold text-gray-800">ವಿಭಾಗಗಳು (Categories)</h2>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {categories.map((cat) => (
               <Link
                 key={cat.id}
@@ -50,9 +43,7 @@ export default function HomePage() {
               >
                 <div className="text-3xl">{cat.icon}</div>
                 <div>
-                  <p className="text-sm font-medium text-gray-800 group-hover:text-primary transition-colors">
-                    {cat.name}
-                  </p>
+                  <p className="text-sm font-medium text-gray-800 group-hover:text-primary transition-colors">{cat.name}</p>
                   <p className="text-xs text-gray-500">{cat.nameEn}</p>
                 </div>
               </Link>
@@ -60,7 +51,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Recent Listings */}
+        {/* Recent Listings from API */}
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-800">
@@ -68,31 +59,54 @@ export default function HomePage() {
               ಇತ್ತೀಚಿನ ಜಾಹೀರಾತುಗಳು (Recent Listings)
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { title: "ರಾಗಿ 50 ಕ್ವಿಂಟಾಲ್", price: "₹2,800/ಕ್ವಿ", loc: "ಮಂಡ್ಯ", icon: "🌾", cat: "agricultural-products", id: "1" },
-              { title: "ಜರ್ಸಿ ಹಸು", price: "₹65,000", loc: "ಹಾಸನ", icon: "🐄", cat: "livestock", id: "1" },
-              { title: "ರೋಟವೇಟರ್", price: "₹1,25,000", loc: "ಮೈಸೂರು", icon: "🚜", cat: "farm-equipment", id: "1" },
-              { title: "5 ಎಕರೆ ಭೂಮಿ", price: "₹25,00,000", loc: "ಮಂಡ್ಯ", icon: "🏞️", cat: "land", id: "1" },
-              { title: "John Deere 5310", price: "₹800/ಗಂಟೆ", loc: "ಮಂಡ್ಯ", icon: "🚜", cat: "tractor-rental", id: "1" },
-              { title: "ಎಲೆಕ್ಟ್ರಿಷಿಯನ್", price: "₹300/ಗಂಟೆ", loc: "ಮಂಡ್ಯ", icon: "🔧", cat: "services", id: "1" },
-              { title: "ಆಟೋ ಬಾಡಿಗೆ", price: "₹15/ಕಿಮೀ", loc: "ಮಂಡ್ಯ", icon: "🚗", cat: "vehicle-rental", id: "1" },
-              { title: "ಕೂಲಿ ಕಾರ್ಮಿಕ", price: "₹500/ದಿನ", loc: "ಮಂಡ್ಯ", icon: "👨‍🌾", cat: "labor", id: "1" },
-            ].map((item, i) => (
-              <Link
-                key={i}
-                href={`/category/${item.cat}/${item.id}`}
-                className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md hover:border-primary/20 transition-all group"
-              >
-                <div className="w-full h-32 bg-gray-100 rounded-lg mb-3 flex items-center justify-center text-4xl group-hover:bg-primary/5 transition-colors">
-                  {item.icon}
+
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[1,2,3,4].map(i => (
+                <div key={i} className="bg-white rounded-xl p-4 shadow-sm border animate-pulse">
+                  <div className="w-full h-32 bg-gray-200 rounded-lg mb-3" />
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
                 </div>
-                <p className="text-sm font-medium text-gray-800 truncate">{item.title}</p>
-                <p className="text-base font-bold text-primary mt-1">{item.price}</p>
-                <p className="text-xs text-gray-500 mt-0.5">📍 {item.loc}</p>
+              ))}
+            </div>
+          ) : recentListings.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {recentListings.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/category/${item.category}/${item.id}`}
+                  className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md hover:border-primary/20 transition-all group"
+                >
+                  <div className="w-full h-32 bg-gray-100 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                    {item.images && item.images.length > 0 ? (
+                      <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-4xl">{getCategoryIcon(item.category)}</span>
+                    )}
+                  </div>
+                  <p className="text-sm font-medium text-gray-800 truncate">{item.title}</p>
+                  <p className="text-base font-bold text-primary mt-1">
+                    {item.price ? `₹${item.price.toLocaleString()}${item.priceUnit ? '/' + item.priceUnit : ''}` : item.rateInfo || ""}
+                  </p>
+                  {item.location && (
+                    <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                      <MapPin size={10} /> {item.location}
+                    </p>
+                  )}
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-white rounded-xl border">
+              <p className="text-4xl mb-3">🌾</p>
+              <p className="text-gray-500">ಇನ್ನೂ ಯಾವುದೇ ಜಾಹೀರಾತುಗಳಿಲ್ಲ</p>
+              <p className="text-sm text-gray-400">No listings yet. Be the first to post!</p>
+              <Link href="/create" className="inline-block mt-4 text-sm text-primary font-medium hover:underline">
+                + ಹೊಸ ಜಾಹೀರಾತು ಹಾಕಿ
               </Link>
-            ))}
-          </div>
+            </div>
+          )}
         </section>
       </div>
     </AppLayout>
