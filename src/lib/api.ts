@@ -251,6 +251,51 @@ class ApiClient {
   async health() {
     return this.request<{ status: string }>("/api/health");
   }
+
+  // ─── Admin ──────────────────────────────────────────────
+  async adminDashboard() {
+    return this.request<Record<string, unknown>>("/api/admin/stats/dashboard");
+  }
+
+  async adminModerationQueue(page = 0, size = 20) {
+    return this.request<PagedResponse<ListingData>>(`/api/admin/moderation/queue?page=${page}&size=${size}`);
+  }
+
+  async adminApproveListing(listingId: number) {
+    return this.request<{ message: string }>(`/api/admin/moderation/${listingId}/approve`, { method: "PUT" });
+  }
+
+  async adminRejectListing(listingId: number, reason: string) {
+    return this.request<{ message: string }>(`/api/admin/moderation/${listingId}/reject`, { method: "PUT", body: JSON.stringify({ reason }) });
+  }
+
+  async adminFlagListing(listingId: number) {
+    return this.request<{ message: string }>(`/api/admin/moderation/${listingId}/flag`, { method: "PUT" });
+  }
+
+  async adminGetUsers(page = 0, size = 20) {
+    return this.request<PagedResponse<UserData>>(`/api/admin/users?page=${page}&size=${size}`);
+  }
+
+  async adminBanUser(userId: number, reason: string) {
+    return this.request<{ message: string }>(`/api/admin/users/${userId}/ban`, { method: "PUT", body: JSON.stringify({ reason }) });
+  }
+
+  async adminUnbanUser(userId: number) {
+    return this.request<{ message: string }>(`/api/admin/users/${userId}/unban`, { method: "PUT" });
+  }
+
+  async adminChangeRole(userId: number, role: string) {
+    return this.request<{ message: string }>(`/api/admin/users/${userId}/role`, { method: "PUT", body: JSON.stringify({ role }) });
+  }
+
+  async adminGetSettings() {
+    return this.request<Record<string, string>>("/api/admin/settings");
+  }
+
+  async adminUpdateSettings(settings: Record<string, string>) {
+    return this.request<{ message: string }>("/api/admin/settings", { method: "PUT", body: JSON.stringify(settings) });
+  }
 }
 
 export const api = new ApiClient();
