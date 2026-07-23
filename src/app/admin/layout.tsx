@@ -63,7 +63,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           >
             {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
-          <h1 className="text-base font-bold">🌾 Deal Spot</h1>
+          <h1 className="text-base font-bold">🌾 Dealspot <span className="text-xs font-normal text-gray-400">connect</span></h1>
         </div>
         <span className="text-xs text-gray-400">Admin</span>
       </div>
@@ -86,7 +86,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         `}
       >
         <div className="p-5 border-b border-gray-700">
-          <h1 className="text-lg font-bold">🌾 Deal Spot</h1>
+          <h1 className="text-lg font-bold">🌾 Dealspot <span className="text-xs font-normal text-gray-400">connect</span></h1>
           <p className="text-xs text-gray-400">Admin Panel</p>
         </div>
         <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">

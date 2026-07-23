@@ -74,7 +74,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-gradient-to-b from-green-50 to-white">
       <div className="text-5xl mb-4">🌾</div>
-      <h1 className="text-2xl font-bold text-gray-800 mb-1">Deal Spot</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-1">Dealspot <span className="text-sm font-normal text-gray-500">connect</span></h1>
       <p className="text-sm text-gray-500 mb-6">ಡೀಲ್ ಸ್ಪಾಟ್</p>
 
       <div className="w-full max-w-sm space-y-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">

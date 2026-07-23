@@ -39,7 +39,7 @@ export default function TopHeader() {
         <Link href="/home" className="flex items-center gap-2 shrink-0">
           <span className="text-3xl">🌾</span>
           <div>
-            <h1 className="text-xl font-bold text-primary leading-tight">Deal Spot</h1>
+            <h1 className="text-xl font-bold text-primary leading-tight">Dealspot <span className="text-xs font-normal text-gray-500">connect</span></h1>
             <p className="text-[10px] text-gray-500 leading-tight">ಡೀಲ್ ಸ್ಪಾಟ್ | ಗ್ರಾಮೀಣ ಮಾರುಕಟ್ಟೆ</p>
           </div>
         </Link>
