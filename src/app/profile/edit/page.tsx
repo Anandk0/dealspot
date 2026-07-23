@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { Camera } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -6,14 +7,31 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import AppLayout from "@/components/AppLayout";
+import { useAuth } from "@/lib/auth-context";
+import { api } from "@/lib/api";
 
 export default function EditProfilePage() {
   const router = useRouter();
+  const { user, refreshProfile } = useAuth();
+  const [name, setName] = useState(user?.name || "");
+  const [location, setLocation] = useState(user?.location || "");
+  const [district, setDistrict] = useState(user?.district || "");
+  const [saving, setSaving] = useState(false);
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("ಪ್ರೊಫೈಲ್ ಉಳಿಸಲಾಗಿದೆ! (Profile Saved)");
-    router.push("/profile");
+    setSaving(true);
+    try {
+      await api.updateProfile({ name, location, district });
+      await refreshProfile();
+      toast.success("ಪ್ರೊಫೈಲ್ ಉಳಿಸಲಾಗಿದೆ! (Profile Saved)");
+      router.push("/profile");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to save profile";
+      toast.error(msg);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -37,25 +55,25 @@ export default function EditProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-1.5 block">ಹೆಸರು (Name)</label>
-                <Input defaultValue="ರಾಮಣ್ಣ" className="h-11" />
+                <Input value={name} onChange={(e) => setName(e.target.value)} className="h-11" />
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-1.5 block">ಫೋನ್ (Phone)</label>
-                <Input defaultValue="+91 98765 43210" className="h-11" disabled />
+                <Input value={user?.phone || ""} className="h-11" disabled />
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-1.5 block">ಸ್ಥಳ (Location)</label>
-                <Input defaultValue="ಮಂಡ್ಯ" className="h-11" />
+                <Input value={location} onChange={(e) => setLocation(e.target.value)} className="h-11" />
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-1.5 block">ಜಿಲ್ಲೆ (District)</label>
-                <Input defaultValue="ಮಂಡ್ಯ" className="h-11" />
+                <Input value={district} onChange={(e) => setDistrict(e.target.value)} className="h-11" />
               </div>
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button type="submit" className="bg-primary px-8 h-11">
-                ಉಳಿಸಿ (Save)
+              <Button type="submit" disabled={saving} className="bg-primary px-8 h-11">
+                {saving ? "ಉಳಿಸಲಾಗುತ್ತಿದೆ..." : "ಉಳಿಸಿ (Save)"}
               </Button>
               <Link href="/profile">
                 <Button type="button" variant="outline" className="h-11">

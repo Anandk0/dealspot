@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { categories } from "@/lib/mock-data";
+import { categories } from "@/lib/categories";
 import { api } from "@/lib/api";
 import AppLayout from "@/components/AppLayout";
 import { useRef, useState } from "react";

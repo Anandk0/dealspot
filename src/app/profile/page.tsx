@@ -1,10 +1,12 @@
 "use client";
+import { useState, useEffect } from "react";
 import { ChevronRight, ListOrdered, Heart, Settings, HelpCircle, Info, LogOut, Edit } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AppLayout from "@/components/AppLayout";
 import { Separator } from "@/components/ui/separator";
-import { useAuth } from "@/lib/auth-context";                   
+import { useAuth } from "@/lib/auth-context";
+import { api } from "@/lib/api";
 
 const menuItems = [
   { href: "/profile/listings", icon: ListOrdered, label: "ನನ್ನ ಜಾಹೀರಾತುಗಳು", labelEn: "My Listings" },
@@ -15,8 +17,20 @@ const menuItems = [
 ];
 
 export default function ProfilePage() {
-  const { user, logout } = useAuth();
+  const { user, isLoggedIn, logout } = useAuth();
   const router = useRouter();
+  const [listingCount, setListingCount] = useState<number | null>(null);
+  const [favoritesCount, setFavoritesCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    api.getMyListings(0, 1)
+      .then((res) => setListingCount(res.totalElements))
+      .catch(() => setListingCount(null));
+    api.getFavorites(0, 1)
+      .then((res) => setFavoritesCount(res.totalElements))
+      .catch(() => setFavoritesCount(null));
+  }, [isLoggedIn]);
 
   const handleLogout = async () => {
     await logout();
@@ -33,9 +47,9 @@ export default function ProfilePage() {
               👤
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-gray-800">{user?.name || "ರಾಮಣ್ಣ"}</h2>
-              <p className="text-sm text-gray-500 mt-1">{user?.phone || "+91 98765 43210"}</p>
-              <p className="text-sm text-gray-400">{user?.location || "ಕರ್ನಾಟಕ"}</p>
+              <h2 className="text-2xl font-bold text-gray-800">{user?.name || "—"}</h2>
+              <p className="text-sm text-gray-500 mt-1">{user?.phone || "—"}</p>
+              <p className="text-sm text-gray-400">{user?.location || "—"}</p>
             </div>
             <Link
               href="/profile/edit"
@@ -50,15 +64,15 @@ export default function ProfilePage() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
-            <p className="text-2xl font-bold text-primary">3</p>
+            <p className="text-2xl font-bold text-primary">{listingCount ?? "—"}</p>
             <p className="text-xs text-gray-500 mt-1">ಜಾಹೀರಾತುಗಳು</p>
           </div>
           <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
-            <p className="text-2xl font-bold text-primary">68</p>
+            <p className="text-2xl font-bold text-primary">—</p>
             <p className="text-xs text-gray-500 mt-1">ವೀಕ್ಷಣೆಗಳು</p>
           </div>
           <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
-            <p className="text-2xl font-bold text-primary">4</p>
+            <p className="text-2xl font-bold text-primary">{favoritesCount ?? "—"}</p>
             <p className="text-xs text-gray-500 mt-1">ಇಷ್ಟಪಟ್ಟಿ</p>
           </div>
         </div>

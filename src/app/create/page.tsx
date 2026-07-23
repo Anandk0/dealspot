@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
-import { categories } from "@/lib/mock-data";
+import { categories } from "@/lib/categories";
 
 export default function CreatePage() {
   return (

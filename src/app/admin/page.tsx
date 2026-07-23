@@ -12,6 +12,7 @@ interface DashboardStats {
   todayRevenue: number;
   monthRevenue: number;
   totalUnlocks: number;
+  conversionRate?: number;
 }
 
 export default function AdminDashboard() {
@@ -27,16 +28,16 @@ export default function AdminDashboard() {
       const data = await api.adminDashboard();
       setStats(data as unknown as DashboardStats);
     } catch {
-      // Use mock stats for demo
+      // Show zeroes if API fails — no mock data
       setStats({
-        totalUsers: 1247,
-        totalListings: 3420,
-        activeListings: 2890,
-        pendingModeration: 34,
-        totalRevenue: 287500,
-        todayRevenue: 4500,
-        monthRevenue: 67800,
-        totalUnlocks: 5750,
+        totalUsers: 0,
+        totalListings: 0,
+        activeListings: 0,
+        pendingModeration: 0,
+        totalRevenue: 0,
+        todayRevenue: 0,
+        monthRevenue: 0,
+        totalUnlocks: 0,
       });
     } finally {
       setLoading(false);
@@ -98,19 +99,19 @@ export default function AdminDashboard() {
           <div className="space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Approval Rate</span>
-              <span className="font-medium text-green-600">94%</span>
+              <span className="font-medium text-gray-400" title="Coming soon">—</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Avg Moderation Time</span>
-              <span className="font-medium">2.3 hrs</span>
+              <span className="font-medium text-gray-400" title="Coming soon">—</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Conversion (view → unlock)</span>
-              <span className="font-medium">12.4%</span>
+              <span className="font-medium">{stats?.conversionRate != null ? `${stats.conversionRate.toFixed(1)}%` : "—"}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Payment Success Rate</span>
-              <span className="font-medium text-green-600">97.8%</span>
+              <span className="font-medium text-gray-400" title="Coming soon">—</span>
             </div>
           </div>
         </div>

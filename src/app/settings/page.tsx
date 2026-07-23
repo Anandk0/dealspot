@@ -8,7 +8,7 @@ const settingsItems = [
   { icon: Bell, label: "ಅಧಿಸೂಚನೆಗಳು (Notifications)", value: "ಆನ್", action: () => toast.info("ಅಧಿಸೂಚನೆಗಳು ಆನ್") },
   { icon: Moon, label: "ಡಾರ್ಕ್ ಮೋಡ್ (Dark Mode)", value: "ಆಫ್", action: () => toast.info("ಡಾರ್ಕ್ ಮೋಡ್ ಬರಲಿದೆ!") },
   { icon: Shield, label: "ಗೌಪ್ಯತೆ (Privacy)", value: "", action: () => toast.info("ಗೌಪ್ಯತೆ ನೀತಿ") },
-  { icon: Trash2, label: "ಖಾತೆ ಅಳಿಸಿ (Delete Account)", value: "", action: () => toast.error("ಡೆಮೋ ಮೋಡ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ"), danger: true },
+  { icon: Trash2, label: "ಖಾತೆ ಅಳಿಸಿ (Delete Account)", value: "", action: () => toast.info("ಈ ವೈಶಿಷ್ಟ್ಯ ಶೀಘ್ರದಲ್ಲಿ ಬರಲಿದೆ (Coming soon)"), danger: true },
 ];
 
 export default function SettingsPage() {
@@ -35,7 +35,7 @@ export default function SettingsPage() {
           ))}
         </div>
 
-        <p className="text-center text-xs text-gray-400 mt-8">Deal Spot ಆವೃತ್ತಿ 1.0.0 (Demo)</p>
+        <p className="text-center text-xs text-gray-400 mt-8">Deal Spot ಆವೃತ್ತಿ 1.0.0</p>
       </div>
     </AppLayout>
   );

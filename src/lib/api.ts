@@ -87,6 +87,40 @@ class ApiClient {
     return response.json();
   }
 
+  private async requestText(endpoint: string, options: RequestInit = {}, retry = true): Promise<string> {
+    const token = this.getToken();
+    const headers: Record<string, string> = {
+      ...(options.headers as Record<string, string>),
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers,
+    });
+
+    if (response.status === 401 && retry) {
+      const refreshed = await this.refreshAccessToken();
+      if (refreshed) {
+        return this.requestText(endpoint, options, false);
+      }
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+      throw new Error("Session expired. Please login again.");
+    }
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: "Request failed" }));
+      throw new Error(error.error || "Something went wrong");
+    }
+
+    return response.text();
+  }
+
   // ─── Auth ───────────────────────────────────────────────
   async register(data: {
     phone: string;
@@ -254,7 +288,7 @@ class ApiClient {
 
   // ─── Admin ──────────────────────────────────────────────
   async adminDashboard() {
-    return this.request<Record<string, unknown>>("/api/admin/stats/dashboard");
+    return this.request<DashboardStats>("/api/admin/stats/dashboard");
   }
 
   async adminModerationQueue(page = 0, size = 20) {
@@ -273,8 +307,10 @@ class ApiClient {
     return this.request<{ message: string }>(`/api/admin/moderation/${listingId}/flag`, { method: "PUT" });
   }
 
-  async adminGetUsers(page = 0, size = 20) {
-    return this.request<PagedResponse<UserData>>(`/api/admin/users?page=${page}&size=${size}`);
+  async adminGetUsers(page = 0, size = 20, search?: string) {
+    const params = new URLSearchParams({ page: String(page), size: String(size) });
+    if (search) params.set("search", search);
+    return this.request<PagedResponse<AdminUserResponse>>(`/api/admin/users?${params}`);
   }
 
   async adminBanUser(userId: number, reason: string) {
@@ -295,6 +331,98 @@ class ApiClient {
 
   async adminUpdateSettings(settings: Record<string, string>) {
     return this.request<{ message: string }>("/api/admin/settings", { method: "PUT", body: JSON.stringify(settings) });
+  }
+
+  async adminRevenue(from: string, to: string) {
+    const params = new URLSearchParams({ from, to });
+    return this.request<RevenueStats>(`/api/admin/stats/revenue?${params}`);
+  }
+
+  async adminTransactions(page = 0, size = 20, from?: string, to?: string) {
+    const params = new URLSearchParams({ page: String(page), size: String(size) });
+    if (from) params.set("from", from);
+    if (to) params.set("to", to);
+    return this.request<PagedResponse<TransactionData>>(`/api/admin/stats/transactions?${params}`);
+  }
+
+  async adminBanners() {
+    return this.request<BannerResponse[]>("/api/admin/banners");
+  }
+
+  async adminCreateBanner(data: CreateBannerRequest) {
+    return this.request<BannerResponse>("/api/admin/banners", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async adminUpdateBanner(id: number, data: Partial<CreateBannerRequest>) {
+    return this.request<BannerResponse>(`/api/admin/banners/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async adminDeleteBanner(id: number) {
+    return this.request<{ message: string }>(`/api/admin/banners/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  async adminAuditLogs(page = 0, size = 20, action?: string, from?: string, to?: string) {
+    const params = new URLSearchParams({ page: String(page), size: String(size) });
+    if (action) params.set("action", action);
+    if (from) params.set("from", from);
+    if (to) params.set("to", to);
+    return this.request<PagedResponse<AuditLogEntry>>(`/api/admin/audit?${params}`);
+  }
+
+  async adminModerationStats() {
+    return this.request<ModerationStats>("/api/admin/moderation/stats");
+  }
+
+  async adminFeatureListing(listingId: number) {
+    return this.request<{ message: string }>(`/api/admin/listings/${listingId}/feature`, { method: "PUT" });
+  }
+
+  async adminUnfeatureListing(listingId: number) {
+    return this.request<{ message: string }>(`/api/admin/listings/${listingId}/unfeature`, { method: "PUT" });
+  }
+
+  async adminExportRevenue(from: string, to: string) {
+    const params = new URLSearchParams({ from, to });
+    return this.requestText(`/api/admin/stats/revenue/export?${params}`);
+  }
+
+  async adminExportRevenueCsv(from: string, to: string): Promise<Blob> {
+    const token = this.getToken();
+    const response = await fetch(`${API_BASE}/api/admin/stats/revenue/export?from=${from}&to=${to}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!response.ok) throw new Error("Export failed");
+    return response.blob();
+  }
+
+  async adminSearchUsers(page = 0, size = 20, search?: string) {
+    return this.adminGetUsers(page, size, search);
+  }
+
+  // ─── Notifications ──────────────────────────────────────
+  async getNotifications(page = 0, size = 20) {
+    return this.request<PagedResponse<NotificationData>>(`/api/notifications?page=${page}&size=${size}`);
+  }
+
+  async getUnreadNotificationCount() {
+    return this.request<{ count: number }>("/api/notifications/unread-count");
+  }
+
+  async markAllNotificationsRead() {
+    return this.request<{ message: string }>("/api/notifications/read-all", { method: "PUT" });
+  }
+
+  // ─── Payments (Public) ──────────────────────────────────
+  async getUnlockPrice() {
+    return this.request<{ amount: number; currency: string }>("/api/payments/unlock-price");
   }
 }
 
@@ -346,6 +474,7 @@ export interface UserData {
   location?: string;
   district?: string;
   profileImage?: string;
+  role?: string;
   createdAt: string;
 }
 
@@ -355,4 +484,104 @@ export interface PagedResponse<T> {
   totalPages: number;
   size: number;
   number: number;
+}
+
+// ─── Admin Types ──────────────────────────────────────────
+
+export interface DashboardStats {
+  totalUsers: number;
+  totalListings: number;
+  activeListings: number;
+  pendingModeration: number;
+  totalRevenue: number;
+  todayRevenue: number;
+  monthRevenue: number;
+  totalUnlocks: number;
+  todayUnlocks: number;
+  conversionRate: number;
+}
+
+export interface RevenueStats {
+  totalRevenue: number;
+  dailyRevenue: { date: string; amount: number }[];
+  categoryBreakdown: { category: string; amount: number; count: number }[];
+  failedPayments: number;
+  refundedPayments: number;
+}
+
+export interface TransactionData {
+  id: number;
+  userId: number;
+  userName: string;
+  listingId: number;
+  listingTitle: string;
+  amount: number;
+  status: string;
+  purpose: string;
+  createdAt: string;
+  paidAt?: string;
+}
+
+export interface BannerResponse {
+  id: number;
+  title: string;
+  subtitle?: string;
+  imageUrl?: string;
+  link?: string;
+  color?: string;
+  active: boolean;
+  startDate?: string;
+  endDate?: string;
+  createdAt: string;
+}
+
+export interface CreateBannerRequest {
+  title: string;
+  subtitle?: string;
+  imageUrl?: string;
+  link?: string;
+  color?: string;
+  active: boolean;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface AuditLogEntry {
+  id: number;
+  actorId: number;
+  actorName?: string;
+  action: string;
+  targetType: string;
+  targetId?: number;
+  details?: string;
+  createdAt: string;
+}
+
+export interface ModerationStats {
+  pendingCount: number;
+  approvedToday: number;
+  rejectedToday: number;
+}
+
+export interface AdminUserResponse {
+  id: number;
+  phone: string;
+  name: string;
+  email?: string;
+  location?: string;
+  district?: string;
+  role: string;
+  banned: boolean;
+  banReason?: string;
+  listingCount: number;
+  createdAt: string;
+}
+
+export interface NotificationData {
+  id: number;
+  title: string;
+  message: string;
+  type?: string;
+  read: boolean;
+  createdAt: string;
 }

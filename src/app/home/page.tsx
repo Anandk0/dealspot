@@ -2,7 +2,7 @@
 import { TrendingUp, MapPin } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
-import { categories } from "@/lib/mock-data";
+import { categories } from "@/lib/categories";
 import { api, ListingData } from "@/lib/api";
 import { useState, useEffect } from "react";
 

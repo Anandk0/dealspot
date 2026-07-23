@@ -39,14 +39,18 @@ interface Props {
   listingId: number;
 }
 
+const UNLOCK_PRICE_PAISE = Number(process.env.NEXT_PUBLIC_UNLOCK_PRICE_PAISE) || 0;
+const UNLOCK_PRICE_RUPEES = UNLOCK_PRICE_PAISE > 0 ? UNLOCK_PRICE_PAISE / 100 : null;
+
 export default function ContactUnlockModal({ listingId }: Props) {
   const { isLoggedIn, user } = useAuth();
   const [unlocked, setUnlocked] = useState(false);
   const [phone, setPhone] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [price, setPrice] = useState<number | null>(UNLOCK_PRICE_RUPEES);
 
-  // Check if already unlocked on mount
+  // Check if already unlocked on mount + fetch price if not set from env
   useEffect(() => {
     if (!isLoggedIn) {
       setChecking(false);
@@ -61,6 +65,13 @@ export default function ContactUnlockModal({ listingId }: Props) {
       })
       .catch(() => {})
       .finally(() => setChecking(false));
+
+    // If price not set from env, try fetching from API
+    if (!UNLOCK_PRICE_RUPEES) {
+      api.getUnlockPrice()
+        .then((res) => setPrice(res.amount / 100))
+        .catch(() => {}); // price stays null, UI shows loading
+    }
   }, [listingId, isLoggedIn]);
 
   // Load Razorpay script
@@ -82,6 +93,9 @@ export default function ContactUnlockModal({ listingId }: Props) {
     setLoading(true);
     try {
       const order = await api.createUnlockOrder(listingId);
+
+      // Update price from the actual order amount
+      setPrice(order.amount / 100);
 
       const options: RazorpayOptions = {
         key: order.keyId,
@@ -119,6 +133,8 @@ export default function ContactUnlockModal({ listingId }: Props) {
     }
   };
 
+  const priceDisplay = price ? `₹${price}` : "...";
+
   // If already unlocked, show contact directly
   if (unlocked && phone) {
     return (
@@ -147,7 +163,7 @@ export default function ContactUnlockModal({ listingId }: Props) {
     <Dialog>
       <DialogTrigger render={<Button className="w-full bg-primary" />}>
         <Lock size={16} className="mr-2" />
-        ಕಾಂಟ್ಯಾಕ್ಟ್ ನೋಡಿ (View Contact) - ₹50
+        ಕಾಂಟ್ಯಾಕ್ಟ್ ನೋಡಿ (View Contact) - {priceDisplay}
       </DialogTrigger>
       <DialogContent className="max-w-sm mx-auto">
         <DialogHeader>
@@ -158,10 +174,10 @@ export default function ContactUnlockModal({ listingId }: Props) {
         </DialogHeader>
         <div className="text-center space-y-4 py-4">
           <p className="text-gray-600 text-sm">
-            ಮಾಲೀಕರ ಫೋನ್ ನಂಬರ್ ನೋಡಲು ₹50 ಪಾವತಿಸಿ
+            ಮಾಲೀಕರ ಫೋನ್ ನಂಬರ್ ನೋಡಲು {priceDisplay} ಪಾವತಿಸಿ
           </p>
           <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-2xl font-bold text-primary">₹50</p>
+            <p className="text-2xl font-bold text-primary">{priceDisplay}</p>
             <p className="text-xs text-gray-500">ಒಂದು ಕಾಂಟ್ಯಾಕ್ಟ್ ಅನ್‌ಲಾಕ್ (UPI / Card / Net Banking)</p>
           </div>
           <Button
@@ -172,7 +188,7 @@ export default function ContactUnlockModal({ listingId }: Props) {
             {loading ? (
               <><Loader2 size={16} className="mr-2 animate-spin" /> ಪ್ರಕ್ರಿಯೆ ಮಾಡಲಾಗುತ್ತಿದೆ...</>
             ) : (
-              "₹50 ಪಾವತಿಸಿ (Pay ₹50)"
+              `${priceDisplay} ಪಾವತಿಸಿ (Pay ${priceDisplay})`
             )}
           </Button>
           <p className="text-[10px] text-gray-400">Powered by Razorpay • Secure Payment</p>

@@ -40,6 +40,7 @@ export default function LoginPage() {
     }
 
     setLoading(true);
+    const fullPhone = `+91${form.phone}`;
     try {
       if (isRegister) {
         if (!form.name) {
@@ -48,7 +49,7 @@ export default function LoginPage() {
           return;
         }
         const res = await api.register({
-          phone: form.phone,
+          phone: fullPhone,
           password: form.password,
           name: form.name,
           email: form.email || undefined,
@@ -57,7 +58,7 @@ export default function LoginPage() {
         login(res);
         toast.success("ಯಶಸ್ವಿಯಾಗಿ ನೋಂದಣಿ ಆಗಿದೆ!");
       } else {
-        const res = await api.login(form.phone, form.password);
+        const res = await api.login(fullPhone, form.password);
         login(res);
         toast.success("ಯಶಸ್ವಿಯಾಗಿ ಲಾಗಿನ್ ಆಗಿದೆ!");
       }

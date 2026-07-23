@@ -44,13 +44,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = (userData: { userId: number; name: string; phone: string }) => {
+  const login = async (userData: { userId: number; name: string; phone: string }) => {
+    // Set basic user data immediately for UI responsiveness
     setUser({
       id: userData.userId,
       name: userData.name,
       phone: userData.phone,
       createdAt: new Date().toISOString(),
     });
+    // Fetch full profile (including role) from server
+    try {
+      const profile = await api.getProfile();
+      setUser(profile);
+    } catch {
+      // Keep the basic data if profile fetch fails
+    }
   };
 
   const logout = async () => {

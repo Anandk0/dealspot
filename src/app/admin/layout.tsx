@@ -4,21 +4,46 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, FileCheck, Users, IndianRupee, Image, Settings, ScrollText, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
+import { useAdminGuard, hasMinimumRole, type AdminRole } from "@/lib/useAdminGuard";
 
-const adminNav = [
-  { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/moderation", icon: FileCheck, label: "Moderation" },
-  { href: "/admin/users", icon: Users, label: "Users" },
-  { href: "/admin/revenue", icon: IndianRupee, label: "Revenue" },
-  { href: "/admin/banners", icon: Image, label: "Banners" },
-  { href: "/admin/settings", icon: Settings, label: "Settings" },
-  { href: "/admin/audit", icon: ScrollText, label: "Audit Logs" },
+interface NavItem {
+  href: string;
+  icon: typeof LayoutDashboard;
+  label: string;
+  minimumRole: AdminRole;
+}
+
+const adminNav: NavItem[] = [
+  { href: "/admin", icon: LayoutDashboard, label: "Dashboard", minimumRole: "ADMIN" },
+  { href: "/admin/moderation", icon: FileCheck, label: "Moderation", minimumRole: "CHECKER" },
+  { href: "/admin/users", icon: Users, label: "Users", minimumRole: "ADMIN" },
+  { href: "/admin/revenue", icon: IndianRupee, label: "Revenue", minimumRole: "ADMIN" },
+  { href: "/admin/banners", icon: Image, label: "Banners", minimumRole: "ADMIN" },
+  { href: "/admin/settings", icon: Settings, label: "Settings", minimumRole: "SUPER_ADMIN" },
+  { href: "/admin/audit", icon: ScrollText, label: "Audit Logs", minimumRole: "SUPER_ADMIN" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
+  const { isAuthorized, isLoading } = useAdminGuard("CHECKER");
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return null;
+  }
+
+  const visibleNav = adminNav.filter((item) =>
+    hasMinimumRole(user?.role, item.minimumRole)
+  );
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
@@ -29,7 +54,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <p className="text-xs text-gray-400">Admin Panel</p>
         </div>
         <nav className="flex-1 py-4 px-3 space-y-1">
-          {adminNav.map((item) => {
+          {visibleNav.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link

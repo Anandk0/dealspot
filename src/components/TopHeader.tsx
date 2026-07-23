@@ -1,7 +1,10 @@
 "use client";
+import { useState, useEffect } from "react";
 import { Bell, Search, Globe, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { api } from "@/lib/api";
 
 const topNavLinks = [
   { href: "/home", label: "ಹೋಮ್" },
@@ -15,6 +18,18 @@ const topNavLinks = [
 
 export default function TopHeader() {
   const pathname = usePathname();
+  const { user, isLoggedIn } = useAuth();
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setUnreadCount(0);
+      return;
+    }
+    api.getUnreadNotificationCount()
+      .then((res) => setUnreadCount(res.count))
+      .catch(() => setUnreadCount(0));
+  }, [isLoggedIn]);
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -50,16 +65,20 @@ export default function TopHeader() {
 
           <Link href="/notifications" className="relative p-2 text-gray-600 hover:text-primary transition">
             <Bell size={20} />
-            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] flex items-center justify-center rounded-full">
-              2
-            </span>
+            {isLoggedIn && unreadCount > 0 && (
+              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] flex items-center justify-center rounded-full">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
           </Link>
 
           <Link href="/profile" className="flex items-center gap-2 text-gray-600 hover:text-primary transition">
             <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
               <User size={16} className="text-primary" />
             </div>
-            <span className="hidden xl:inline text-sm">ರಾಮಣ್ಣ</span>
+            {isLoggedIn && user?.name && (
+              <span className="hidden xl:inline text-sm">{user.name}</span>
+            )}
           </Link>
         </div>
       </div>
