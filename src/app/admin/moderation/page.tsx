@@ -173,7 +173,7 @@ export default function ModerationPage() {
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-3 gap-3 lg:gap-4 mb-6">
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-yellow-100 rounded-lg">
@@ -226,23 +226,23 @@ export default function ModerationPage() {
             {queue.content.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex items-start gap-4"
+                className="bg-white rounded-xl p-4 lg:p-5 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start gap-3 sm:gap-4"
               >
                 {/* Thumbnail */}
                 {item.images && item.images.length > 0 ? (
                   <img
                     src={item.images[0]}
                     alt={item.title}
-                    className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                    className="w-full sm:w-16 h-32 sm:h-16 rounded-lg object-cover flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-full sm:w-16 h-32 sm:h-16 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
                     <span className="text-gray-400 text-xs">No img</span>
                   </div>
                 )}
 
                 {/* Info */}
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 w-full">
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="font-semibold text-gray-800 truncate">{item.title}</p>
                     {getStatusBadge(item.status)}
@@ -259,10 +259,10 @@ export default function ModerationPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2 flex-shrink-0">
+                <div className="flex gap-2 flex-shrink-0 w-full sm:w-auto">
                   <Button
                     size="sm"
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-green-600 hover:bg-green-700 flex-1 sm:flex-none"
                     onClick={() => handleApprove(item)}
                     disabled={actionLoading === item.id}
                   >
@@ -272,6 +272,7 @@ export default function ModerationPage() {
                   <Button
                     size="sm"
                     variant="destructive"
+                    className="flex-1 sm:flex-none"
                     onClick={() => openRejectDialog(item)}
                     disabled={actionLoading === item.id}
                   >

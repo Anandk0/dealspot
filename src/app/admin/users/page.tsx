@@ -209,7 +209,8 @@ export default function UsersPage() {
             No users found
           </div>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[700px]">
             <thead className="bg-gray-50 border-b">
               <tr>
                 <th className="text-left px-5 py-3 text-gray-600 font-medium">Name</th>
@@ -296,6 +297,7 @@ export default function UsersPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 
