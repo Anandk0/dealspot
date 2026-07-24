@@ -123,6 +123,12 @@ export default function ContactUnlockModal({ listingId }: Props) {
         theme: { color: "#16a34a" },
       };
 
+      if (!window.Razorpay) {
+        toast.error("Payment system not loaded. Please refresh and try again.");
+        setLoading(false);
+        return;
+      }
+
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err: unknown) {
