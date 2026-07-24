@@ -28,7 +28,7 @@ export default function BannersPage() {
   // Create form state
   const [formTitle, setFormTitle] = useState("");
   const [formSubtitle, setFormSubtitle] = useState("");
-  const [formImageUrl, setFormImageUrl] = useState("");
+  const [formImage, setFormImage] = useState<File | null>(null);
   const [formLink, setFormLink] = useState("");
   const [formColor, setFormColor] = useState("");
   const [formStartDate, setFormStartDate] = useState("");
@@ -55,7 +55,7 @@ export default function BannersPage() {
   const resetForm = () => {
     setFormTitle("");
     setFormSubtitle("");
-    setFormImageUrl("");
+    setFormImage(null);
     setFormLink("");
     setFormColor("");
     setFormStartDate("");
@@ -70,17 +70,16 @@ export default function BannersPage() {
 
     try {
       setSubmitting(true);
-      const data: CreateBannerRequest = {
-        title: formTitle.trim(),
-        subtitle: formSubtitle.trim() || undefined,
-        imageUrl: formImageUrl.trim() || undefined,
-        link: formLink.trim() || undefined,
-        color: formColor.trim() || undefined,
-        active: true,
-        startDate: formStartDate ? `${formStartDate}T00:00:00` : undefined,
-        endDate: formEndDate ? `${formEndDate}T23:59:59` : undefined,
-      };
-      await api.adminCreateBanner(data);
+      const formData = new FormData();
+      formData.append("title", formTitle.trim());
+      if (formSubtitle.trim()) formData.append("subtitle", formSubtitle.trim());
+      if (formLink.trim()) formData.append("link", formLink.trim());
+      if (formColor.trim()) formData.append("color", formColor.trim());
+      if (formStartDate) formData.append("startDate", formStartDate);
+      if (formEndDate) formData.append("endDate", formEndDate);
+      if (formImage) formData.append("image", formImage);
+
+      await api.adminCreateBannerUpload(formData);
       toast.success("Banner created");
       setCreateDialogOpen(false);
       resetForm();
@@ -225,12 +224,16 @@ export default function BannersPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Image URL</label>
+              <label className="text-sm font-medium text-gray-700">Banner Image</label>
               <Input
-                value={formImageUrl}
-                onChange={(e) => setFormImageUrl(e.target.value)}
-                placeholder="https://..."
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFormImage(e.target.files?.[0] || null)}
+                className="cursor-pointer"
               />
+              {formImage && (
+                <p className="text-xs text-gray-500 mt-1">{formImage.name}</p>
+              )}
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700">Link URL</label>

@@ -356,6 +356,13 @@ class ApiClient {
     });
   }
 
+  async adminCreateBannerUpload(formData: FormData) {
+    return this.request<BannerResponse>("/api/admin/banners/upload", {
+      method: "POST",
+      body: formData,
+    });
+  }
+
   async adminUpdateBanner(id: number, data: Partial<CreateBannerRequest>) {
     return this.request<BannerResponse>(`/api/admin/banners/${id}`, {
       method: "PUT",
