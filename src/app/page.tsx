@@ -6,9 +6,14 @@ export default function SplashScreen() {
   const router = useRouter();
 
   useEffect(() => {
+    const token = localStorage.getItem("dealspot_token");
     const timer = setTimeout(() => {
-      router.push("/language");
-    }, 2500);
+      if (token) {
+        router.push("/home");
+      } else {
+        router.push("/login");
+      }
+    }, 2000);
     return () => clearTimeout(timer);
   }, [router]);
 

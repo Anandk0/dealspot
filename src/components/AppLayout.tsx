@@ -1,9 +1,13 @@
 "use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import TopHeader from "./TopHeader";
 import Sidebar from "./BottomNav";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 import { Home, Search, PlusCircle, Heart, User } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 const mobileNavItems = [
   { href: "/home", icon: Home, label: "ಮುಖಪುಟ" },
@@ -15,6 +19,26 @@ const mobileNavItems = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { isLoggedIn, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !isLoggedIn) {
+      router.push("/login");
+    }
+  }, [isLoading, isLoggedIn, router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary" size={32} />
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50" suppressHydrationWarning>
