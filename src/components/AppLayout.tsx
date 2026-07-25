@@ -41,7 +41,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" suppressHydrationWarning>
+    <div className="min-h-screen bg-background" suppressHydrationWarning>
       <TopHeader />
       <div className="flex pt-0">
         <Sidebar />
@@ -51,7 +51,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 flex items-center justify-around px-2 py-1.5">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border flex items-center justify-around px-2 py-1.5">
         {mobileNavItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -59,7 +59,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               key={item.href}
               href={item.href}
               className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${
-                isActive ? "text-primary" : "text-gray-500"
+                isActive ? "text-primary" : "text-muted-foreground"
               }`}
             >
               <item.icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />

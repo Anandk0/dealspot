@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { api } from "@/lib/api";
+import ThemeToggle from "./ThemeToggle";
 
 const topNavLinks = [
   { href: "/home", label: "ಹೋಮ್" },
@@ -32,20 +33,22 @@ export default function TopHeader() {
   }, [isLoggedIn]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+    <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
       {/* Main Bar */}
       <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between">
         {/* Logo */}
         <Link href="/home" className="flex items-center gap-2 shrink-0">
           <span className="text-2xl">🌾</span>
           <div>
-            <h1 className="text-lg font-bold text-primary leading-tight">Dealspot <span className="text-[10px] font-normal text-gray-500">connect</span></h1>
+            <h1 className="text-lg font-bold text-primary leading-tight">Dealspot <span className="text-[10px] font-normal text-muted-foreground">connect</span></h1>
           </div>
         </Link>
 
         {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <Link href="/language" className="p-2 text-gray-600 hover:text-primary transition">
+          <ThemeToggle />
+
+          <Link href="/language" className="p-2 text-foreground/70 hover:text-primary transition">
             <Globe size={18} />
           </Link>
 
