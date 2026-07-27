@@ -19,8 +19,8 @@ export default function SplashScreen() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-green-600 to-green-800 text-white">
-      <div className="animate-pulse">
-        <div className="text-6xl mb-4 text-center">🌾</div>
+      <div className="animate-pulse flex flex-col items-center">
+        <img src="/logo.png" alt="Deal Spot Connect" className="w-32 h-32 rounded-full object-cover mb-4 shadow-2xl" />
         <h1 className="text-4xl font-bold text-center">Deal Spot</h1>
         <p className="text-xl text-center mt-2 text-green-200">ಡೀಲ್ ಸ್ಪಾಟ್</p>
         <p className="text-sm text-center mt-4 text-green-300">

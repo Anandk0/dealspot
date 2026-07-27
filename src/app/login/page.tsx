@@ -73,7 +73,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-gradient-to-b from-green-50 to-white">
-      <div className="text-5xl mb-4">🌾</div>
+      <img src="/logo.png" alt="Deal Spot Connect" className="w-24 h-24 rounded-full object-cover mb-4 shadow-lg" />
       <h1 className="text-2xl font-bold text-gray-800 mb-1">Dealspot <span className="text-sm font-normal text-gray-500">connect</span></h1>
       <p className="text-sm text-gray-500 mb-6">ಡೀಲ್ ಸ್ಪಾಟ್</p>
 
