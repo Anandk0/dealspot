@@ -115,19 +115,19 @@ export default function HomePage() {
         </div>
 
         {/* Content that scrolls over the banner */}
-        <div className="relative z-10 -mt-6 rounded-t-3xl bg-gray-50 min-h-screen shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
+        <div className="relative z-10 -mt-6 rounded-t-3xl bg-background min-h-screen shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
           <div className="max-w-6xl mx-auto px-4 pt-5 pb-6 space-y-5">
             {/* Pull indicator */}
             <div className="flex justify-center">
-              <div className="w-10 h-1 bg-gray-300 rounded-full" />
+              <div className="w-10 h-1 bg-border rounded-full" />
             </div>
 
             {/* Search Bar */}
             <Link href="/search" className="block">
-              <div className="flex items-center gap-3 bg-white rounded-full px-5 py-3 shadow-sm border border-gray-200 hover:border-primary/40 transition">
-                <Search size={20} className="text-gray-400" />
-                <span className="flex-1 text-sm text-gray-400">ದನಕರು, ಕುರಿ, ಮೇವು ಹುಡುಕಿ ...</span>
-                <Mic size={20} className="text-gray-400" />
+              <div className="flex items-center gap-3 bg-card rounded-full px-5 py-3 shadow-sm border border-border hover:border-primary/40 transition">
+                <Search size={20} className="text-muted-foreground" />
+                <span className="flex-1 text-sm text-muted-foreground">ದನಕರು, ಕುರಿ, ಮೇವು ಹುಡುಕಿ ...</span>
+                <Mic size={20} className="text-muted-foreground" />
               </div>
             </Link>
 
@@ -138,9 +138,9 @@ export default function HomePage() {
                   <Link
                     key={cat.id}
                     href={`/category/${cat.id}`}
-                    className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md hover:border-primary/20 transition-all group"
+                    className="bg-card rounded-xl overflow-hidden border border-border shadow-sm hover:shadow-md hover:border-primary/20 transition-all group"
                   >
-                    <div className="w-full h-28 sm:h-36 bg-gray-100 overflow-hidden">
+                    <div className="w-full h-28 sm:h-36 bg-muted overflow-hidden">
                       <img
                         src={categoryImages[cat.id] || ""}
                         alt={cat.name}
@@ -149,8 +149,8 @@ export default function HomePage() {
                       />
                     </div>
                     <div className="px-3 py-2.5 flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-800">{cat.name}</span>
-                      <ChevronRight size={16} className="text-gray-400 group-hover:text-primary transition-colors" />
+                      <span className="text-sm font-medium text-foreground">{cat.name}</span>
+                      <ChevronRight size={16} className="text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
                   </Link>
                 ))}
@@ -160,7 +160,7 @@ export default function HomePage() {
             {/* Recent Listings */}
             <section>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-base font-semibold text-gray-800 flex items-center gap-2">
+                <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
                   <TrendingUp size={16} className="text-primary" />
                   ಇತ್ತೀಚಿನ ಜಾಹೀರಾತು
                 </h2>
@@ -170,10 +170,10 @@ export default function HomePage() {
               {loading ? (
                 <div className="grid grid-cols-2 gap-3">
                   {[1,2,3,4].map(i => (
-                    <div key={i} className="bg-white rounded-xl p-3 shadow-sm border animate-pulse">
-                      <div className="w-full h-24 bg-gray-200 rounded-lg mb-2" />
-                      <div className="h-3 bg-gray-200 rounded w-3/4 mb-1" />
-                      <div className="h-3 bg-gray-200 rounded w-1/2" />
+                    <div key={i} className="bg-card rounded-xl p-3 shadow-sm border border-border animate-pulse">
+                      <div className="w-full h-24 bg-muted rounded-lg mb-2" />
+                      <div className="h-3 bg-muted rounded w-3/4 mb-1" />
+                      <div className="h-3 bg-muted rounded w-1/2" />
                     </div>
                   ))}
                 </div>
@@ -183,22 +183,22 @@ export default function HomePage() {
                     <Link
                       key={item.id}
                       href={`/category/${item.category}/${item.id}`}
-                      className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-all group"
+                      className="bg-card rounded-xl overflow-hidden shadow-sm border border-border hover:shadow-md transition-all group"
                     >
-                      <div className="w-full h-24 sm:h-32 bg-gray-100 overflow-hidden">
+                      <div className="w-full h-24 sm:h-32 bg-muted overflow-hidden">
                         {item.images && item.images.length > 0 ? (
                           <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-3xl bg-gray-50">🌾</div>
+                          <div className="w-full h-full flex items-center justify-center text-3xl bg-muted">🌾</div>
                         )}
                       </div>
                       <div className="p-2.5">
-                        <p className="text-xs font-medium text-gray-800 truncate">{item.title}</p>
+                        <p className="text-xs font-medium text-foreground truncate">{item.title}</p>
                         <p className="text-sm font-bold text-primary mt-0.5">
                           {item.price ? `₹${item.price.toLocaleString()}` : item.rateInfo || ""}
                         </p>
                         {item.location && (
-                          <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-0.5">
+                          <p className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-0.5">
                             <MapPin size={8} /> {item.location}
                           </p>
                         )}
@@ -207,9 +207,9 @@ export default function HomePage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-10 bg-white rounded-xl border">
+                <div className="text-center py-10 bg-card rounded-xl border border-border">
                   <p className="text-3xl mb-2">🌾</p>
-                  <p className="text-sm text-gray-500">ಇನ್ನೂ ಯಾವುದೇ ಜಾಹೀರಾತುಗಳಿಲ್ಲ</p>
+                  <p className="text-sm text-muted-foreground">ಇನ್ನೂ ಯಾವುದೇ ಜಾಹೀರಾತುಗಳಿಲ್ಲ</p>
                   <Link href="/create" className="inline-block mt-3 text-xs text-primary font-medium hover:underline">
                     + ಹೊಸ ಜಾಹೀರಾತು ಹಾಕಿ
                   </Link>
