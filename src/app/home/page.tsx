@@ -7,12 +7,12 @@ import { categories } from "@/lib/categories";
 import { api, ListingData, BannerResponse } from "@/lib/api";
 
 const categoryImages: Record<string, string> = {
-  "property": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=300&h=200&fit=crop",
-  "agriculture-equipment": "https://images.unsplash.com/photo-1580674285054-bed31e145f59?w=300&h=200&fit=crop",
-  "vehicle-rent": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=300&h=200&fit=crop",
-  "animals-pets": "https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=300&h=200&fit=crop",
-  "agent": "https://images.unsplash.com/photo-1556745757-8d76bdb6984b?w=300&h=200&fit=crop",
-  "services": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=300&h=200&fit=crop",
+  "property": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop&q=80",
+  "agriculture-equipment": "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=300&fit=crop&q=80",
+  "vehicle-rent": "https://images.unsplash.com/photo-1549317661-bd32c8ce0afa?w=400&h=300&fit=crop&q=80",
+  "animals-pets": "https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=400&h=300&fit=crop&q=80",
+  "agent": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=300&fit=crop&q=80",
+  "services": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&h=300&fit=crop&q=80",
 };
 
 interface BannerSlide {
