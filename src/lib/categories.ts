@@ -83,9 +83,9 @@ export const categories: CategoryItem[] = [
   },
 ];
 
-export const getCategoryIcon = (catId?: string): string => {
+export function getCategoryIcon(catId?: string): string {
   if (!catId) return '📦';
-  const found = categories.find(c => c.id === catId);
+  const found = categories.find((c) => c.id === catId);
   if (found) return found.icon;
   const legacyMap: Record<string, string> = {
     'property': '🏠',
@@ -107,5 +107,8 @@ export const getCategoryIcon = (catId?: string): string => {
     'services': '🔧',
   };
   return legacyMap[catId] || '📦';
-};
+}
+
+export default categories;
+
 
