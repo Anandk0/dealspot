@@ -5,6 +5,7 @@ import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import ContactUnlockModal from "@/components/ContactUnlockModal";
 import { api, ListingData } from "@/lib/api";
+import { getCategoryIcon } from "@/lib/categories";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 
@@ -27,15 +28,6 @@ export default function ItemDetailPage() {
       .catch(() => setItem(null))
       .finally(() => setLoading(false));
   }, [itemId]);
-
-  const getCategoryIcon = (cat: string) => {
-    const icons: Record<string, string> = {
-      "agricultural-products": "🌾", livestock: "🐄", "farm-equipment": "🚜",
-      "tractor-rental": "🚜", "vehicle-rental": "🚗", labor: "👨‍🌾",
-      land: "🏞️", services: "🔧",
-    };
-    return icons[cat] || "📦";
-  };
 
   if (loading) {
     return (

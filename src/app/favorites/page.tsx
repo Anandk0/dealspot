@@ -3,6 +3,7 @@ import { Heart, Trash2, MapPin } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import { api, ListingData } from "@/lib/api";
+import { getCategoryIcon } from "@/lib/categories";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 
@@ -25,15 +26,6 @@ export default function FavoritesPage() {
     } catch {
       toast.error("Failed to remove");
     }
-  };
-
-  const getCategoryIcon = (cat: string) => {
-    const icons: Record<string, string> = {
-      "agricultural-products": "🌾", livestock: "🐄", "farm-equipment": "🚜",
-      "tractor-rental": "🚜", "vehicle-rental": "🚗", labor: "👨‍🌾",
-      land: "🏞️", services: "🔧",
-    };
-    return icons[cat] || "📦";
   };
 
   return (

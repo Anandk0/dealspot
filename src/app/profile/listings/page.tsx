@@ -5,6 +5,7 @@ import AppLayout from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { api, ListingData } from "@/lib/api";
+import { getCategoryIcon } from "@/lib/categories";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 
@@ -27,15 +28,6 @@ export default function MyListingsPage() {
     } catch {
       toast.error("ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ");
     }
-  };
-
-  const getCategoryIcon = (cat: string) => {
-    const icons: Record<string, string> = {
-      "agricultural-products": "🌾", livestock: "🐄", "farm-equipment": "🚜",
-      "tractor-rental": "🚜", "vehicle-rental": "🚗", labor: "👨‍🌾",
-      land: "🏞️", services: "🔧",
-    };
-    return icons[cat] || "📦";
   };
 
   return (

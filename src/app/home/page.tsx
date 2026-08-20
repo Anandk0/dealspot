@@ -7,21 +7,25 @@ import { categories } from "@/lib/categories";
 import { api, ListingData, BannerResponse } from "@/lib/api";
 
 const categoryImages: Record<string, string> = {
-  "property": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop&q=80",
+  "property-sales": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop&q=80",
+  "property-rent": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop&q=80",
   "agriculture-equipment": "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=300&fit=crop&q=80",
+  "agents": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=300&fit=crop&q=80",
+  "danakarugalu": "https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=400&h=300&fit=crop&q=80",
+  "pets": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&h=300&fit=crop&q=80",
   "vehicle-rent": "https://images.unsplash.com/photo-1549317661-bd32c8ce0afa?w=400&h=300&fit=crop&q=80",
-  "animals-pets": "https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=400&h=300&fit=crop&q=80",
-  "agent": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=300&fit=crop&q=80",
   "services": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&h=300&fit=crop&q=80",
 };
 
 // Gradient accent per category for the icon badge
 const categoryGradients: Record<string, string> = {
-  "property": "from-blue-500 to-cyan-400",
+  "property-sales": "from-blue-500 to-cyan-400",
+  "property-rent": "from-sky-500 to-blue-400",
   "agriculture-equipment": "from-green-500 to-emerald-400",
+  "agents": "from-purple-500 to-fuchsia-400",
+  "danakarugalu": "from-amber-500 to-yellow-400",
+  "pets": "from-pink-500 to-rose-400",
   "vehicle-rent": "from-orange-500 to-amber-400",
-  "animals-pets": "from-amber-500 to-yellow-400",
-  "agent": "from-purple-500 to-fuchsia-400",
   "services": "from-rose-500 to-red-400",
 };
 
@@ -139,9 +143,9 @@ export default function HomePage() {
           <h2 className="text-lg font-bold text-foreground">ವಿಭಾಗಗಳು <span className="text-sm font-normal text-muted-foreground">Categories</span></h2>
         </div>
 
-        {/* Categories Grid - premium cards */}
+        {/* Categories Grid - premium responsive cards */}
         <section>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {categories.map((cat, idx) => (
               <Link
                 key={cat.id}
@@ -151,22 +155,22 @@ export default function HomePage() {
               >
                 <div className="relative w-full h-32 sm:h-40 overflow-hidden">
                   <img
-                    src={categoryImages[cat.id] || ""}
+                    src={cat.image || categoryImages[cat.id] || ""}
                     alt={cat.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   {/* Icon badge */}
-                  <div className={`absolute top-2 left-2 w-9 h-9 rounded-xl bg-gradient-to-br ${categoryGradients[cat.id] || "from-primary to-primary"} flex items-center justify-center shadow-lg text-lg`}>
+                  <div className={`absolute top-2 left-2 w-9 h-9 rounded-xl bg-gradient-to-br ${cat.gradient || categoryGradients[cat.id] || "from-primary to-primary"} flex items-center justify-center shadow-lg text-lg`}>
                     {cat.icon}
                   </div>
                 </div>
                 <div className="px-3 py-3">
-                  <span className="text-sm font-semibold text-foreground block leading-tight">{cat.name}</span>
+                  <span className="text-sm font-semibold text-foreground block leading-tight truncate">{cat.name}</span>
                   <div className="flex items-center justify-between mt-1">
-                    <span className="text-[10px] text-muted-foreground">{cat.nameEn}</span>
-                    <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                    <span className="text-[10px] text-muted-foreground truncate mr-1">{cat.nameEn}</span>
+                    <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
                       <ArrowRight size={12} className="text-primary group-hover:text-white" />
                     </span>
                   </div>

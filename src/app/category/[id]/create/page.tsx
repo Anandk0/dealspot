@@ -53,61 +53,74 @@ export default function CreateListingPage() {
 
   const getFields = (): { key: string; label: string }[] => {
     switch (categoryId) {
-      case "agricultural-products":
+      case "property-sales":
+      case "property":
         return [
-          { key: "title", label: "ಬೆಳೆ ಹೆಸರು (Crop Name)" },
-          { key: "priceUnit", label: "ಪ್ರಮಾಣ (Quantity)" },
+          { key: "title", label: "ಆಸ್ತಿ ವಿವರ / ಶೀರ್ಷಿಕೆ (Property Title)" },
+          { key: "area", label: "ವಿಸ್ತೀರ್ಣ (Area / Sq.ft / Acres)" },
+          { key: "price", label: "ಮಾರಾಟ ಬೆಲೆ (Selling Price ₹)" },
+          { key: "location", label: "ಸ್ಥಳ / ಗ್ರಾಮ (Location / Village)" },
+          { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
+        ];
+      case "property-rent":
+        return [
+          { key: "title", label: "ಆಸ್ತಿ ವಿವರ (Property Title)" },
+          { key: "rateInfo", label: "ತಿಂಗಳ ಬಾಡಿಗೆ (Monthly Rent ₹/mo)" },
+          { key: "price", label: "ಅಡ್ವಾನ್ಸ್ / ಡೆಪಾಸಿಟ್ (Deposit ₹)" },
+          { key: "location", label: "ಸ್ಥಳ (Location)" },
+          { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
+        ];
+      case "agriculture-equipment":
+      case "farm-equipment":
+      case "tractor-rental":
+        return [
+          { key: "title", label: "ಉಪಕರಣ ಹೆಸರು (Equipment Name)" },
+          { key: "condition", label: "ಸ್ಥಿತಿ (Condition - New/Used)" },
+          { key: "price", label: "ಬೆಲೆ / ಬಾಡಿಗೆ ದರ (Price/Rate ₹)" },
+          { key: "location", label: "ಸ್ಥಳ (Location)" },
+        ];
+      case "agents":
+      case "agent":
+      case "labor":
+        return [
+          { key: "title", label: "ಏಜೆಂಟ್ ಹೆಸರು (Agent Name)" },
+          { key: "skill", label: "ಸೇವೆ ಪ್ರಕಾರ (Specialization / Domain)" },
+          { key: "experience", label: "ಅನುಭವ (Experience)" },
+          { key: "location", label: "ಸ್ಥಳ / ವ್ಯಾಪ್ತಿ (Service Location)" },
+        ];
+      case "danakarugalu":
+      case "livestock":
+        return [
+          { key: "title", label: "ದನಕರು ವಿವರ (Cattle - Cow/Bull/Buffalo)" },
+          { key: "breed", label: "ತಳಿ (Breed)" },
+          { key: "age", label: "ವಯಸ್ಸು / ಹಾಲು (Age / Details)" },
           { key: "price", label: "ಬೆಲೆ (Price ₹)" },
           { key: "location", label: "ಸ್ಥಳ (Location)" },
         ];
-      case "livestock":
+      case "pets":
+      case "animals-pets":
         return [
-          { key: "title", label: "ಪ್ರಾಣಿ ಹೆಸರು (Animal)" },
+          { key: "title", label: "ಪೆಟ್ ಹೆಸರು (Pet Name / Type)" },
           { key: "breed", label: "ತಳಿ (Breed)" },
           { key: "age", label: "ವಯಸ್ಸು (Age)" },
           { key: "price", label: "ಬೆಲೆ (Price ₹)" },
-        ];
-      case "farm-equipment":
-        return [
-          { key: "title", label: "ಉಪಕರಣ ಹೆಸರು (Equipment)" },
-          { key: "condition", label: "ಸ್ಥಿತಿ (Condition)" },
-          { key: "price", label: "ಬೆಲೆ (Price ₹)" },
           { key: "location", label: "ಸ್ಥಳ (Location)" },
         ];
-      case "tractor-rental":
-        return [
-          { key: "title", label: "ಟ್ರ್ಯಾಕ್ಟರ್ ಹೆಸರು (Tractor)" },
-          { key: "hp", label: "HP" },
-          { key: "rateInfo", label: "ಬಾಡಿಗೆ ದರ (Rate ₹/hr)" },
-          { key: "location", label: "ಸ್ಥಳ (Location)" },
-        ];
+      case "vehicle-rent":
+      case "car-auto-rent":
       case "vehicle-rental":
         return [
-          { key: "title", label: "ವಾಹನ ಹೆಸರು (Vehicle)" },
-          { key: "vehicleType", label: "ವಿಧ (Type)" },
-          { key: "rateInfo", label: "ಬಾಡಿಗೆ ದರ (Rate ₹/km)" },
+          { key: "title", label: "ವಾಹನ ಹೆಸರು (Vehicle Name / Model)" },
+          { key: "vehicleType", label: "ವಿಧ (Car / Auto / Van)" },
+          { key: "rateInfo", label: "ಬಾಡಿಗೆ ದರ (Rate ₹/km or ₹/day)" },
           { key: "location", label: "ಸ್ಥಳ (Location)" },
-        ];
-      case "labor":
-        return [
-          { key: "title", label: "ಹೆಸರು (Name)" },
-          { key: "skill", label: "ಕೌಶಲ (Skill)" },
-          { key: "experience", label: "ಅನುಭವ (Experience)" },
-          { key: "price", label: "ದೈನಿಕ ವೇತನ (Daily Wage ₹)" },
-        ];
-      case "land":
-        return [
-          { key: "area", label: "ವಿಸ್ತೀರ್ಣ (Area)" },
-          { key: "price", label: "ಬೆಲೆ (Price ₹)" },
-          { key: "location", label: "ಗ್ರಾಮ (Village)" },
-          { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
         ];
       case "services":
         return [
           { key: "title", label: "ಸೇವೆ ಹೆಸರು (Service)" },
-          { key: "rateInfo", label: "ದರ (Rate)" },
-          { key: "location", label: "ಸ್ಥಳ (Location)" },
+          { key: "rateInfo", label: "ದರ (Rate Info)" },
           { key: "experience", label: "ಅನುಭವ (Experience)" },
+          { key: "location", label: "ಸ್ಥಳ (Location)" },
         ];
       default:
         return [

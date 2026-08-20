@@ -4,7 +4,7 @@ import { Plus, Heart, MapPin } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { categories } from "@/lib/categories";
+import { categories, getCategoryIcon } from "@/lib/categories";
 import { api, ListingData } from "@/lib/api";
 import { useState, useEffect } from "react";
 
@@ -22,15 +22,6 @@ export default function CategoryPage() {
       .catch(() => setListings([]))
       .finally(() => setLoading(false));
   }, [id]);
-
-  const getCategoryIcon = (cat: string) => {
-    const icons: Record<string, string> = {
-      "agricultural-products": "🌾", livestock: "🐄", "farm-equipment": "🚜",
-      "tractor-rental": "🚜", "vehicle-rental": "🚗", labor: "👨‍🌾",
-      land: "🏞️", services: "🔧",
-    };
-    return icons[cat] || "📦";
-  };
 
   return (
     <AppLayout>

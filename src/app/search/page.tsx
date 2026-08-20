@@ -5,6 +5,7 @@ import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import { Input } from "@/components/ui/input";
 import { api, ListingData } from "@/lib/api";
+import { getCategoryIcon } from "@/lib/categories";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -29,15 +30,6 @@ export default function SearchPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const getCategoryIcon = (cat: string) => {
-    const icons: Record<string, string> = {
-      "agricultural-products": "🌾", livestock: "🐄", "farm-equipment": "🚜",
-      "tractor-rental": "🚜", "vehicle-rental": "🚗", labor: "👨‍🌾",
-      land: "🏞️", services: "🔧",
-    };
-    return icons[cat] || "📦";
   };
 
   return (

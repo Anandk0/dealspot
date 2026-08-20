@@ -9,12 +9,14 @@ import ThemeToggle from "./ThemeToggle";
 
 const topNavLinks = [
   { href: "/home", label: "ಹೋಮ್" },
-  { href: "/category/agricultural-products", label: "ಕೃಷಿ ಉತ್ಪನ್ನ" },
-  { href: "/category/livestock", label: "ಜಾನುವಾರು" },
-  { href: "/category/farm-equipment", label: "ಉಪಕರಣ" },
-  { href: "/category/tractor-rental", label: "ಟ್ರ್ಯಾಕ್ಟರ್" },
-  { href: "/category/land", label: "ಭೂಮಿ" },
-  { href: "/category/services", label: "ಸೇವೆಗಳು" },
+  { href: "/category/property-sales", label: "ಆಸ್ತಿ ಮಾರಾಟ" },
+  { href: "/category/property-rent", label: "ಆಸ್ತಿ ಬಾಡಿಗೆ" },
+  { href: "/category/agriculture-equipment", label: "ಕೃಷಿ ಉಪಕರಣ" },
+  { href: "/category/agents", label: "ಏಜೆಂಟರು" },
+  { href: "/category/danakarugalu", label: "ದನಕರುಗಳು" },
+  { href: "/category/pets", label: "ಪೆಟ್ಸ್" },
+  { href: "/category/vehicle-rent", label: "ಕಾರು & ಆಟೋ" },
+  { href: "/category/services", label: "ಇತರ ಸೇವೆ" },
 ];
 
 export default function TopHeader() {
