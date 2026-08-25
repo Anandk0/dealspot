@@ -2,25 +2,11 @@
 import { useState, useEffect } from "react";
 import { Bell, Globe, User } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { api } from "@/lib/api";
 import ThemeToggle from "./ThemeToggle";
 
-const topNavLinks = [
-  { href: "/home", label: "ಹೋಮ್" },
-  { href: "/category/property-sales", label: "ಆಸ್ತಿ ಮಾರಾಟ" },
-  { href: "/category/property-rent", label: "ಆಸ್ತಿ ಬಾಡಿಗೆ" },
-  { href: "/category/agriculture-equipment", label: "ಕೃಷಿ ಉಪಕರಣ" },
-  { href: "/category/agents", label: "ಏಜೆಂಟರು" },
-  { href: "/category/danakarugalu", label: "ದನಕರುಗಳು" },
-  { href: "/category/pets", label: "ಪೆಟ್ಸ್" },
-  { href: "/category/vehicle-rent", label: "ಕಾರು & ಆಟೋ" },
-  { href: "/category/services", label: "ಇತರ ಸೇವೆ" },
-];
-
 export default function TopHeader() {
-  const pathname = usePathname();
   const { user, isLoggedIn } = useAuth();
   const [unreadCount, setUnreadCount] = useState<number>(0);
 
@@ -73,26 +59,6 @@ export default function TopHeader() {
             </div>
           </Link>
         </div>
-      </div>
-
-      {/* Category Nav — desktop only */}
-      <div className="max-w-7xl mx-auto px-4 hidden lg:block">
-        <nav className="flex items-center gap-1 py-1 overflow-x-auto">
-          {topNavLinks.map((link) => {
-            const isActive = pathname === link.href || pathname?.startsWith(link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-3 py-2 text-sm rounded-lg whitespace-nowrap transition-colors ${
-                  isActive ? "bg-primary/10 text-primary font-medium" : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
       </div>
     </header>
   );

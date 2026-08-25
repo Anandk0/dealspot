@@ -17,7 +17,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 min-h-screen border-r border-border bg-background fixed left-0 top-[108px] bottom-0 z-30 pt-4">
+    <aside className="hidden lg:flex flex-col w-64 min-h-screen border-r border-border bg-background fixed left-0 top-[57px] bottom-0 z-30 pt-4">
       <nav className="flex flex-col gap-1 px-3">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");

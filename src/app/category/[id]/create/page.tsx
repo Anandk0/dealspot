@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { categories } from "@/lib/categories";
 import { api } from "@/lib/api";
 import AppLayout from "@/components/AppLayout";
+import AgentRegistration from "@/components/AgentRegistration";
 import { useRef, useState } from "react";
 
 export default function CreateListingPage() {
@@ -17,6 +18,14 @@ export default function CreateListingPage() {
   const categoryId = params.id as string;
   const category = categories.find((c) => c.id === categoryId);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  if (categoryId === "agents" || categoryId === "agent") {
+    return (
+      <AppLayout>
+        <AgentRegistration />
+      </AppLayout>
+    );
+  }
 
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -134,33 +143,42 @@ export default function CreateListingPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!api.getToken()) {
+      toast.error("ಜಾಹೀರಾತು ಹಾಕಲು ದಯವಿಟ್ಟು ಮೊದಲು ಲಾಗಿನ್ ಮಾಡಿ (Please login first to post an ad)");
+      router.push("/login");
+      return;
+    }
+
     // Validation
     const fields = getFields();
     const titleField = fields[0].key;
     if (!formData[titleField]) {
-      toast.error(`${fields[0].label} ಅಗತ್ಯ`);
+      toast.error(`${fields[0].label} ಅಗತ್ಯ (${fields[0].label} is required)`);
       return;
     }
 
     setLoading(true);
     try {
+      const rawPrice = formData.price ? String(formData.price).replace(/[^0-9.]/g, "") : "";
+      const parsedPrice = rawPrice ? parseFloat(rawPrice) : null;
+
       const listingData: Record<string, unknown> = {
-        title: formData.title || formData[titleField],
+        title: (formData.title || formData[titleField] || "").trim(),
         category: categoryId,
-        description: formData.description || "",
-        location: formData.location || "",
-        district: formData.district || "",
-        price: formData.price ? parseFloat(formData.price) : null,
-        priceUnit: formData.priceUnit || "",
-        breed: formData.breed || null,
-        age: formData.age || null,
-        condition: formData.condition || null,
-        hp: formData.hp || null,
-        area: formData.area || null,
-        skill: formData.skill || null,
-        experience: formData.experience || null,
-        vehicleType: formData.vehicleType || null,
-        rateInfo: formData.rateInfo || null,
+        description: formData.description?.trim() || "",
+        location: formData.location?.trim() || "",
+        district: formData.district?.trim() || "",
+        price: parsedPrice && !isNaN(parsedPrice) ? parsedPrice : null,
+        priceUnit: formData.priceUnit?.trim() || "",
+        breed: formData.breed?.trim() || null,
+        age: formData.age?.trim() || null,
+        condition: formData.condition?.trim() || null,
+        hp: formData.hp?.trim() || null,
+        area: formData.area?.trim() || null,
+        skill: formData.skill?.trim() || null,
+        experience: formData.experience?.trim() || null,
+        vehicleType: formData.vehicleType?.trim() || null,
+        rateInfo: formData.rateInfo?.trim() || null,
       };
 
       await api.createListing(listingData, images.length > 0 ? images : undefined);
@@ -176,24 +194,24 @@ export default function CreateListingPage() {
 
   return (
     <AppLayout>
-      <div className="max-w-3xl mx-auto p-6">
+      <div className="max-w-3xl mx-auto px-4 py-4 sm:p-6 pb-28 lg:pb-8">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-          <Link href="/home" className="hover:text-primary">ಹೋಮ್</Link>
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6 overflow-x-auto">
+          <Link href="/home" className="hover:text-primary shrink-0">ಹೋಮ್</Link>
           <span>/</span>
-          <Link href={`/category/${categoryId}`} className="hover:text-primary">{category?.nameEn}</Link>
+          <Link href={`/category/${categoryId}`} className="hover:text-primary shrink-0">{category?.nameEn}</Link>
           <span>/</span>
-          <span className="text-gray-800">ಹೊಸ ಜಾಹೀರಾತು</span>
+          <span className="text-foreground font-medium shrink-0">ಹೊಸ ಜಾಹೀರಾತು</span>
         </div>
 
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-          <h1 className="text-xl font-bold text-gray-800 mb-1">ಹೊಸ ಜಾಹೀರಾತು (New Listing)</h1>
-          <p className="text-sm text-gray-500 mb-6">{category?.name} • {category?.nameEn}</p>
+        <div className="bg-card rounded-2xl p-4 sm:p-8 shadow-sm border border-border">
+          <h1 className="text-lg sm:text-xl font-bold text-foreground mb-1">ಹೊಸ ಜಾಹೀರಾತು (New Listing)</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-5 sm:mb-6">{category?.name} • {category?.nameEn}</p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             {/* Photo upload */}
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
+              <label className="text-sm font-medium text-foreground mb-2 block">
                 ಫೋಟೋಗಳು (Photos) — ಗರಿಷ್ಠ 5
               </label>
               <input
@@ -204,14 +222,14 @@ export default function CreateListingPage() {
                 onChange={handleImageSelect}
                 className="hidden"
               />
-              <div className="flex gap-3 flex-wrap">
+              <div className="flex gap-2.5 sm:gap-3 flex-wrap">
                 {previews.map((preview, i) => (
-                  <div key={i} className="relative w-24 h-24">
-                    <img src={preview} alt="" className="w-full h-full object-cover rounded-xl border" />
+                  <div key={i} className="relative w-20 h-20 sm:w-24 sm:h-24">
+                    <img src={preview} alt="" className="w-full h-full object-cover rounded-xl border border-border" />
                     <button
                       type="button"
                       onClick={() => removeImage(i)}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center"
+                      className="absolute -top-2 -right-2 w-5 h-5 sm:w-6 sm:h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
                     >
                       <X size={12} />
                     </button>
@@ -221,9 +239,9 @@ export default function CreateListingPage() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:border-primary hover:text-primary transition"
+                    className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition bg-muted/30"
                   >
-                    {images.length === 0 ? <Camera size={24} /> : <Plus size={20} />}
+                    {images.length === 0 ? <Camera size={22} /> : <Plus size={18} />}
                     <span className="text-[10px] mt-1">{images.length === 0 ? "ಸೇರಿಸಿ" : "ಇನ್ನಷ್ಟು"}</span>
                   </button>
                 )}
@@ -231,15 +249,15 @@ export default function CreateListingPage() {
             </div>
 
             {/* Dynamic Fields */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {getFields().map((field) => (
                 <div key={field.key}>
-                  <label className="text-sm font-medium text-gray-700 mb-1.5 block">{field.label}</label>
+                  <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{field.label}</label>
                   <Input
                     value={formData[field.key] || ""}
                     onChange={(e) => handleChange(field.key, e.target.value)}
                     placeholder={field.label}
-                    className="h-11"
+                    className="h-10 sm:h-11"
                     type={field.key === "price" ? "number" : "text"}
                   />
                 </div>
@@ -248,7 +266,7 @@ export default function CreateListingPage() {
 
             {/* Description */}
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+              <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">
                 ವಿವರಣೆ (Description)
               </label>
               <Textarea
@@ -259,16 +277,16 @@ export default function CreateListingPage() {
               />
             </div>
 
-            <div className="flex gap-3 pt-2">
-              <Button type="submit" disabled={loading} className="bg-primary px-8 h-11">
+            <div className="flex flex-col sm:flex-row gap-3 pt-3">
+              <Button type="submit" disabled={loading} className="bg-primary w-full sm:w-auto px-8 h-11 text-sm font-medium">
                 {loading ? (
                   <><Loader2 size={16} className="mr-2 animate-spin" /> ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...</>
                 ) : (
                   "ಸಲ್ಲಿಸಿ (Submit Listing)"
                 )}
               </Button>
-              <Link href={`/category/${categoryId}`}>
-                <Button type="button" variant="outline" className="h-11">
+              <Link href={`/category/${categoryId}`} className="w-full sm:w-auto">
+                <Button type="button" variant="outline" className="w-full h-11 text-sm">
                   ರದ್ದುಮಾಡಿ (Cancel)
                 </Button>
               </Link>

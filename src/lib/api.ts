@@ -1,7 +1,7 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://dealspot-backend.onrender.com";
 
 class ApiClient {
-  private getToken(): string | null {
+  public getToken(): string | null {
     if (typeof window === "undefined") return null;
     return localStorage.getItem("dealspot_token");
   }
@@ -66,22 +66,33 @@ class ApiClient {
       headers,
     });
 
-    // If 401 and we have a refresh token, try to refresh
-    if (response.status === 401 && retry) {
+    // If 401/403 and unauthenticated/session expired
+    if ((response.status === 401 || response.status === 403) && retry) {
       const refreshed = await this.refreshAccessToken();
       if (refreshed) {
         return this.request<T>(endpoint, options, false);
       }
-      // Redirect to login
+      this.clearTokens();
       if (typeof window !== "undefined") {
         window.location.href = "/login";
       }
-      throw new Error("Session expired. Please login again.");
+      throw new Error("ದಯವಿಟ್ಟು ಮೊದಲು ಲಾಗಿನ್ ಮಾಡಿ (Please login to continue)");
     }
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: "Request failed" }));
-      throw new Error(error.error || "Something went wrong");
+      let errorMsg = "Something went wrong";
+      try {
+        const error = await response.json();
+        errorMsg = error.message || error.error || (typeof error === "string" ? error : JSON.stringify(error));
+      } catch {
+        try {
+          const text = await response.text();
+          if (text) errorMsg = text;
+        } catch {
+          // ignore
+        }
+      }
+      throw new Error(errorMsg);
     }
 
     return response.json();
@@ -102,20 +113,32 @@ class ApiClient {
       headers,
     });
 
-    if (response.status === 401 && retry) {
+    if ((response.status === 401 || response.status === 403) && retry) {
       const refreshed = await this.refreshAccessToken();
       if (refreshed) {
         return this.requestText(endpoint, options, false);
       }
+      this.clearTokens();
       if (typeof window !== "undefined") {
         window.location.href = "/login";
       }
-      throw new Error("Session expired. Please login again.");
+      throw new Error("ದಯವಿಟ್ಟು ಮೊದಲು ಲಾಗಿನ್ ಮಾಡಿ (Please login to continue)");
     }
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: "Request failed" }));
-      throw new Error(error.error || "Something went wrong");
+      let errorMsg = "Something went wrong";
+      try {
+        const error = await response.json();
+        errorMsg = error.message || error.error || (typeof error === "string" ? error : JSON.stringify(error));
+      } catch {
+        try {
+          const text = await response.text();
+          if (text) errorMsg = text;
+        } catch {
+          // ignore
+        }
+      }
+      throw new Error(errorMsg);
     }
 
     return response.text();
@@ -343,6 +366,10 @@ class ApiClient {
     if (from) params.set("from", from);
     if (to) params.set("to", to);
     return this.request<PagedResponse<TransactionData>>(`/api/admin/stats/transactions?${params}`);
+  }
+
+  async getActiveBanners() {
+    return this.request<BannerResponse[]>("/api/banners/active");
   }
 
   async adminBanners() {

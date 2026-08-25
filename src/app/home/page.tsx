@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
-import { Search, Mic, ArrowRight, MapPin, TrendingUp, Sparkles, Plus } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Search, Mic, ArrowRight, MapPin, TrendingUp, Sparkles, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import { categories } from "@/lib/categories";
@@ -46,6 +46,17 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [banners, setBanners] = useState<BannerSlide[]>(defaultBanners);
+  const recentSliderRef = useRef<HTMLDivElement>(null);
+
+  const scrollRecent = (direction: "left" | "right") => {
+    if (recentSliderRef.current) {
+      const scrollAmount = 260;
+      recentSliderRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   useEffect(() => {
     api.getRecentListings()
@@ -55,7 +66,7 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    api.adminBanners()
+    api.getActiveBanners()
       .then((apiBanners: BannerResponse[]) => {
         if (apiBanners && apiBanners.length > 0) {
           const activeBanners = apiBanners.filter(b => b.active);
@@ -80,12 +91,12 @@ export default function HomePage() {
 
   return (
     <AppLayout>
-      <div className="max-w-6xl mx-auto px-4 pt-4 pb-24 space-y-6">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 pt-3 sm:pt-4 pb-24 space-y-5 sm:space-y-6 w-full min-w-0 overflow-x-hidden">
 
         {/* Hero Banner - Card style with glow */}
-        <section className="relative">
-          <div className="rounded-3xl overflow-hidden shadow-xl ring-1 ring-black/5">
-            <div className="relative h-[190px] sm:h-[240px]">
+        <section className="relative w-full min-w-0">
+          <div className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl ring-1 ring-black/5">
+            <div className="relative h-[160px] sm:h-[220px] md:h-[250px]">
               {banners.map((banner, i) => (
                 <div
                   key={i}
@@ -97,29 +108,29 @@ export default function HomePage() {
                     <img src={banner.image} alt={banner.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-emerald-600 via-green-500 to-teal-500 flex items-center justify-center">
-                      <span className="text-6xl animate-pulse">🌾</span>
+                      <span className="text-5xl sm:text-6xl animate-pulse">🌾</span>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-5">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent flex flex-col justify-end p-4 sm:p-5">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <Sparkles size={14} className="text-yellow-300" />
-                      <span className="text-yellow-300 text-[11px] font-medium uppercase tracking-wide">Featured</span>
+                      <Sparkles size={13} className="text-yellow-300" />
+                      <span className="text-yellow-300 text-[10px] sm:text-[11px] font-medium uppercase tracking-wide">Featured</span>
                     </div>
-                    <h2 className="text-white text-xl font-bold drop-shadow-lg leading-tight">{banner.title}</h2>
-                    <p className="text-white/85 text-sm mt-1 drop-shadow">{banner.subtitle}</p>
+                    <h2 className="text-white text-lg sm:text-xl font-bold drop-shadow-lg leading-tight">{banner.title}</h2>
+                    <p className="text-white/85 text-xs sm:text-sm mt-0.5 sm:mt-1 drop-shadow line-clamp-1">{banner.subtitle}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
           {/* Dots */}
-          <div className="flex justify-center gap-1.5 mt-3">
+          <div className="flex justify-center gap-1.5 mt-2.5 sm:mt-3">
             {banners.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentSlide(i)}
-                className={`h-2 rounded-full transition-all ${
-                  i === currentSlide ? "bg-primary w-6" : "bg-muted-foreground/30 w-2"
+                className={`h-1.5 sm:h-2 rounded-full transition-all ${
+                  i === currentSlide ? "bg-primary w-5 sm:w-6" : "bg-muted-foreground/30 w-1.5 sm:w-2"
                 }`}
                 aria-label={`Slide ${i + 1}`}
               />
@@ -129,49 +140,49 @@ export default function HomePage() {
 
         {/* Search Bar - elevated */}
         <Link href="/search" className="block -mt-1">
-          <div className="flex items-center gap-3 bg-card rounded-2xl px-5 py-3.5 shadow-lg shadow-primary/5 border border-border hover:border-primary/50 hover:shadow-primary/10 transition-all">
-            <Search size={20} className="text-primary" />
-            <span className="flex-1 text-sm text-muted-foreground">ದನಕರು, ಕುರಿ, ಮೇವು ಹುಡುಕಿ ...</span>
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <Mic size={16} className="text-primary" />
+          <div className="flex items-center gap-2.5 sm:gap-3 bg-card rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 shadow-md border border-border hover:border-primary/50 transition-all">
+            <Search size={18} className="text-primary shrink-0" />
+            <span className="flex-1 text-xs sm:text-sm text-muted-foreground truncate">ದನಕರು, ಕುರಿ, ಮೇವು ಹುಡುಕಿ ...</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <Mic size={15} className="text-primary" />
             </div>
           </div>
         </Link>
 
         {/* Section heading */}
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-foreground">ವಿಭಾಗಗಳು <span className="text-sm font-normal text-muted-foreground">Categories</span></h2>
+          <h2 className="text-base sm:text-lg font-bold text-foreground">ವಿಭಾಗಗಳು <span className="text-xs sm:text-sm font-normal text-muted-foreground">Categories</span></h2>
         </div>
 
         {/* Categories Grid - premium responsive cards */}
-        <section>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <section className="w-full min-w-0">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
             {categories.map((cat, idx) => (
               <Link
                 key={cat.id}
                 href={`/category/${cat.id}`}
-                className="relative bg-card rounded-2xl overflow-hidden border border-border shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+                className="relative bg-card rounded-xl sm:rounded-2xl overflow-hidden border border-border shadow-sm sm:shadow-md hover:shadow-xl hover:-translate-y-0.5 sm:hover:-translate-y-1 transition-all duration-300 group"
                 style={{ animationDelay: `${idx * 50}ms` }}
               >
-                <div className="relative w-full h-32 sm:h-40 overflow-hidden">
+                <div className="relative w-full h-24 sm:h-36 md:h-40 overflow-hidden">
                   <img
                     src={cat.image || categoryImages[cat.id] || ""}
                     alt={cat.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
                   {/* Icon badge */}
-                  <div className={`absolute top-2 left-2 w-9 h-9 rounded-xl bg-gradient-to-br ${cat.gradient || categoryGradients[cat.id] || "from-primary to-primary"} flex items-center justify-center shadow-lg text-lg`}>
+                  <div className={`absolute top-1.5 left-1.5 sm:top-2 sm:left-2 w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-gradient-to-br ${cat.gradient || categoryGradients[cat.id] || "from-primary to-primary"} flex items-center justify-center shadow text-sm sm:text-lg`}>
                     {cat.icon}
                   </div>
                 </div>
-                <div className="px-3 py-3">
-                  <span className="text-sm font-semibold text-foreground block leading-tight truncate">{cat.name}</span>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-[10px] text-muted-foreground truncate mr-1">{cat.nameEn}</span>
-                    <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
-                      <ArrowRight size={12} className="text-primary group-hover:text-white" />
+                <div className="px-2.5 py-2 sm:px-3 sm:py-3">
+                  <span className="text-xs sm:text-sm font-semibold text-foreground block leading-tight truncate">{cat.name}</span>
+                  <div className="flex items-center justify-between mt-0.5 sm:mt-1">
+                    <span className="text-[9px] sm:text-[10px] text-muted-foreground truncate mr-1">{cat.nameEn}</span>
+                    <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
+                      <ArrowRight size={10} className="text-primary group-hover:text-white sm:w-3 sm:h-3" />
                     </span>
                   </div>
                 </div>
@@ -180,52 +191,92 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Recent Listings */}
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <TrendingUp size={18} className="text-primary" />
-              ಇತ್ತೀಚಿನ ಜಾಹೀರಾತು
-            </h2>
-            <Link href="/search" className="text-xs text-primary font-semibold flex items-center gap-1">
-              ಎಲ್ಲಾ ನೋಡಿ <ArrowRight size={12} />
-            </Link>
+        {/* Recent Listings - Sliding Carousel */}
+        <section className="relative w-full min-w-0 overflow-hidden">
+          <div className="flex items-center justify-between mb-2.5 sm:mb-3">
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-1.5 sm:gap-2">
+                <TrendingUp size={16} className="text-primary sm:w-[18px] sm:h-[18px]" />
+                ಇತ್ತೀಚಿನ ಜಾಹೀರಾತು <span className="text-[11px] sm:text-xs font-normal text-muted-foreground">Recent Ads</span>
+              </h2>
+            </div>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {/* Navigation arrows for sliding */}
+              {recentListings.length > 2 && (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => scrollRecent("left")}
+                    className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-card border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition shadow-xs"
+                    aria-label="Previous Ads"
+                  >
+                    <ChevronLeft size={14} className="sm:w-4 sm:h-4" />
+                  </button>
+                  <button
+                    onClick={() => scrollRecent("right")}
+                    className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-card border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition shadow-xs"
+                    aria-label="Next Ads"
+                  >
+                    <ChevronRight size={14} className="sm:w-4 sm:h-4" />
+                  </button>
+                </div>
+              )}
+              <Link href="/search" className="text-xs text-primary font-semibold flex items-center gap-0.5 sm:gap-1 hover:underline ml-0.5 sm:ml-1">
+                ಎಲ್ಲಾ ನೋಡಿ <ArrowRight size={11} className="sm:w-3 sm:h-3" />
+              </Link>
+            </div>
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-2 gap-4">
-              {[1,2,3,4].map(i => (
-                <div key={i} className="bg-card rounded-2xl p-3 shadow-sm border border-border animate-pulse">
-                  <div className="w-full h-28 bg-muted rounded-xl mb-2" />
-                  <div className="h-3 bg-muted rounded w-3/4 mb-1" />
-                  <div className="h-3 bg-muted rounded w-1/2" />
+            <div className="flex gap-3 sm:gap-4 overflow-hidden">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="w-[170px] sm:w-[240px] shrink-0 bg-card rounded-2xl p-2.5 sm:p-3 shadow-sm border border-border animate-pulse">
+                  <div className="w-full h-24 sm:h-36 bg-muted rounded-xl mb-2" />
+                  <div className="h-3.5 bg-muted rounded w-3/4 mb-1.5" />
+                  <div className="h-3.5 bg-muted rounded w-1/2" />
                 </div>
               ))}
             </div>
           ) : recentListings.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4">
-              {recentListings.slice(0, 6).map((item) => (
+            <div
+              ref={recentSliderRef}
+              className="flex gap-3 sm:gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-3 px-0.5 w-full min-w-0 touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {recentListings.map((item) => (
                 <Link
                   key={item.id}
                   href={`/category/${item.category}/${item.id}`}
-                  className="bg-card rounded-2xl overflow-hidden shadow-md border border-border hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+                  className="w-[170px] sm:w-[230px] md:w-[250px] shrink-0 snap-start bg-card rounded-2xl overflow-hidden shadow-sm sm:shadow-md border border-border hover:shadow-lg hover:-translate-y-0.5 sm:hover:-translate-y-1 transition-all duration-300 group flex flex-col"
                 >
-                  <div className="relative w-full h-28 sm:h-36 bg-muted overflow-hidden">
+                  <div className="relative w-full h-26 sm:h-34 md:h-36 bg-muted overflow-hidden">
                     {item.images && item.images.length > 0 ? (
-                      <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img
+                        src={item.images[0]}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-3xl bg-muted">🌾</div>
+                      <div className="w-full h-full flex items-center justify-center text-2xl sm:text-3xl bg-muted">🌾</div>
                     )}
-                    <span className="absolute top-2 right-2 bg-primary text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow">NEW</span>
+                    <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-primary text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full shadow-xs">
+                      NEW
+                    </span>
+                    <span className="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 bg-black/60 backdrop-blur-xs text-white text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-md capitalize max-w-[85%] truncate">
+                      {item.category.replace(/-/g, " ")}
+                    </span>
                   </div>
-                  <div className="p-3">
-                    <p className="text-xs font-semibold text-foreground truncate">{item.title}</p>
-                    <p className="text-base font-bold text-primary mt-0.5">
-                      {item.price ? `₹${item.price.toLocaleString()}` : item.rateInfo || ""}
-                    </p>
+                  <div className="p-2.5 sm:p-3 flex-1 flex flex-col justify-between">
+                    <div>
+                      <p className="text-xs sm:text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                        {item.title}
+                      </p>
+                      <p className="text-sm sm:text-base md:text-lg font-bold text-primary mt-0.5 sm:mt-1">
+                        {item.price ? `₹${item.price.toLocaleString()}${item.priceUnit ? '/' + item.priceUnit : ''}` : item.rateInfo || ""}
+                      </p>
+                    </div>
                     {item.location && (
-                      <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-0.5">
-                        <MapPin size={9} /> {item.location}
+                      <p className="text-[10px] sm:text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1 truncate">
+                        <MapPin size={10} className="shrink-0 text-primary/70 sm:w-3 sm:h-3" /> {item.location}
                       </p>
                     )}
                   </div>
