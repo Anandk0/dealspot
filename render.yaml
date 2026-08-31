@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: dealspot-frontend
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://dealspot-backend.onrender.com
+      - key: NEXT_PUBLIC_RAZORPAY_KEY_ID
+        sync: false
+      - key: NEXT_PUBLIC_UNLOCK_PRICE_PAISE
+        value: "5000"
+      - key: NEXT_PUBLIC_SUPPORT_PHONE
+        value: "+91 80001 00001"
+      - key: NEXT_PUBLIC_SUPPORT_EMAIL
+        value: help@dealspot.in
+      - key: PORT
+        value: "3000"

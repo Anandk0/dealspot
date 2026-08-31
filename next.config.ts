@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://dealspot-backend.onrender.com";
+
 const nextConfig: NextConfig = {
   allowedDevOrigins: [
     "riley-arturo-unjudicable.ngrok-free.dev",
@@ -8,15 +10,15 @@ const nextConfig: NextConfig = {
     "*.ngrok.io",
     "*.devtunnels.ms",
     "10.182.211.233",
-    "10.182.211.233:3000",
-    "localhost:3000",
-    "127.0.0.1:3000",
+    "192.168.31.186",
+    "localhost",
+    "127.0.0.1",
   ],
   async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:8081/api/:path*",
+        destination: `${API_URL}/api/:path*`,
       },
     ];
   },
