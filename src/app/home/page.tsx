@@ -3,7 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { Search, Mic, ArrowRight, MapPin, TrendingUp, Sparkles, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
-import { categories } from "@/lib/categories";
+import { topLevelCategories } from "@/lib/categories";
+import { useCategories } from "@/lib/useCategories";
 import { api, ListingData, BannerResponse } from "@/lib/api";
 
 const categoryImages: Record<string, string> = {
@@ -47,6 +48,10 @@ export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [banners, setBanners] = useState<BannerSlide[]>(defaultBanners);
   const recentSliderRef = useRef<HTMLDivElement>(null);
+  const { topLevel: apiTopLevel } = useCategories();
+
+  // Use API categories if loaded, otherwise fall back to hardcoded
+  const displayCategories = apiTopLevel.length > 0 ? apiTopLevel : topLevelCategories;
 
   const scrollRecent = (direction: "left" | "right") => {
     if (recentSliderRef.current) {
@@ -157,7 +162,7 @@ export default function HomePage() {
         {/* Categories Grid - premium responsive cards */}
         <section className="w-full min-w-0">
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
-            {categories.map((cat, idx) => (
+            {displayCategories.map((cat, idx) => (
               <Link
                 key={cat.id}
                 href={`/category/${cat.id}`}

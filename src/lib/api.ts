@@ -29,7 +29,10 @@ class ApiClient {
     try {
       const response = await fetch(`${API_BASE}/api/auth/refresh`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
         body: JSON.stringify({ refreshToken }),
       });
 
@@ -60,6 +63,9 @@ class ApiClient {
     if (!(options.body instanceof FormData)) {
       headers["Content-Type"] = "application/json";
     }
+
+    // Required to bypass ngrok browser warning page for API calls
+    headers["ngrok-skip-browser-warning"] = "true";
 
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
@@ -107,6 +113,9 @@ class ApiClient {
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
+
+    // Required to bypass ngrok browser warning page for API calls
+    headers["ngrok-skip-browser-warning"] = "true";
 
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
@@ -458,6 +467,36 @@ class ApiClient {
   async getUnlockPrice() {
     return this.request<{ amount: number; currency: string }>("/api/payments/unlock-price");
   }
+
+  // ─── Categories (Public) ────────────────────────────────
+  async getCategories() {
+    return this.request<CategoryPublicResponse[]>("/api/categories");
+  }
+
+  // ─── Admin Categories ───────────────────────────────────
+  async adminGetCategories() {
+    return this.request<AdminCategoryResponse[]>("/api/admin/categories");
+  }
+
+  async adminCreateCategory(data: CategoryRequestData) {
+    return this.request<AdminCategoryResponse>("/api/admin/categories", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async adminUpdateCategory(id: number, data: CategoryRequestData) {
+    return this.request<AdminCategoryResponse>(`/api/admin/categories/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async adminDeleteCategory(id: number) {
+    return this.request<{ message: string }>(`/api/admin/categories/${id}`, {
+      method: "DELETE",
+    });
+  }
 }
 
 export const api = new ApiClient();
@@ -618,4 +657,50 @@ export interface NotificationData {
   type?: string;
   read: boolean;
   createdAt: string;
+}
+
+// ─── Category Types ──────────────────────────────────────
+
+export interface CategoryPublicResponse {
+  id: number;
+  name: string;
+  nameEn: string;
+  slug: string;
+  icon?: string;
+  imageUrl?: string;
+  color?: string;
+  parentId?: number | null;
+  subcategories: CategoryPublicResponse[];
+}
+
+export interface AdminCategoryResponse {
+  id: number;
+  name: string;
+  nameEn: string;
+  slug: string;
+  icon?: string;
+  imageUrl?: string;
+  color?: string;
+  active: boolean;
+  sortOrder: number;
+  moderationLevel: string;
+  listingCount: number;
+  createdAt: string;
+  updatedAt?: string;
+  parentId?: number | null;
+  parentName?: string | null;
+  subcategories: AdminCategoryResponse[];
+}
+
+export interface CategoryRequestData {
+  name: string;
+  nameEn: string;
+  slug?: string;
+  icon?: string;
+  imageUrl?: string;
+  color?: string;
+  sortOrder?: number;
+  active?: boolean;
+  moderationLevel?: string;
+  parentId?: number | null;
 }

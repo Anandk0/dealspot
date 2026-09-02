@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
-import { categories } from "@/lib/categories";
+import { useCategories } from "@/lib/useCategories";
 
 export default function CreatePage() {
+  const { topLevel } = useCategories();
   return (
     <AppLayout>
       <div className="max-w-5xl mx-auto p-6">
@@ -11,7 +12,7 @@ export default function CreatePage() {
         <p className="text-sm text-muted-foreground mb-6">ವಿಭಾಗ ಆಯ್ಕೆಮಾಡಿ (Select a category to get started)</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {categories.map((cat) => (
+          {topLevel.map((cat) => (
             <Link
               key={cat.id}
               href={`/category/${cat.id}/create`}

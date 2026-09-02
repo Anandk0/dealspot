@@ -1,17 +1,22 @@
 "use client";
 import { useParams } from "next/navigation";
-import { Plus, Heart, MapPin } from "lucide-react";
+import { Plus, Heart, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { categories, getCategoryIcon } from "@/lib/categories";
+import { getCategoryIcon } from "@/lib/categories";
+import { useCategories } from "@/lib/useCategories";
 import { api, ListingData } from "@/lib/api";
 import { useState, useEffect } from "react";
 
 export default function CategoryPage() {
   const params = useParams();
   const id = params.id as string;
-  const category = categories.find((c) => c.id === id);
+
+  const { getCategory, getSubcats, getParent } = useCategories();
+  const category = getCategory(id);
+  const subcategories = getSubcats(id);
+  const parentCategory = getParent(id);
 
   const [listings, setListings] = useState<ListingData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +33,20 @@ export default function CategoryPage() {
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto px-4 py-6 pb-28 lg:pb-8">
+
+        {/* Breadcrumb for subcategories */}
+        {parentCategory && (
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
+            <Link href="/home" className="hover:text-primary">ಮುಖಪುಟ</Link>
+            <span>/</span>
+            <Link href={`/category/${parentCategory.id}`} className="hover:text-primary">
+              {parentCategory.name}
+            </Link>
+            <span>/</span>
+            <span className="text-foreground font-medium">{category?.name}</span>
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-foreground">{category?.name}</h1>
@@ -45,6 +64,52 @@ export default function CategoryPage() {
             </Button>
           </Link>
         </div>
+
+        {/* Subcategories grid */}
+        {subcategories.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">ವಿಭಾಗಗಳು / Categories</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
+              {subcategories.map((sub, idx) => (
+                <Link
+                  key={sub.id}
+                  href={`/category/${sub.id}`}
+                  className="relative bg-card rounded-xl sm:rounded-2xl overflow-hidden border border-border shadow-sm hover:shadow-xl hover:-translate-y-0.5 sm:hover:-translate-y-1 transition-all duration-300 group"
+                  style={{ animationDelay: `${idx * 50}ms` }}
+                >
+                  <div className="relative w-full h-24 sm:h-36 overflow-hidden">
+                    {sub.image ? (
+                      <img
+                        src={sub.image}
+                        alt={sub.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className={`w-full h-full ${sub.color || "bg-green-100"} flex items-center justify-center`}>
+                        <span className="text-4xl sm:text-5xl">{sub.icon}</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
+                    {/* Icon badge */}
+                    <div className={`absolute top-1.5 left-1.5 sm:top-2 sm:left-2 w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-gradient-to-br ${sub.gradient || "from-green-500 to-emerald-400"} flex items-center justify-center shadow text-sm sm:text-lg`}>
+                      {sub.icon}
+                    </div>
+                  </div>
+                  <div className="px-2.5 py-2 sm:px-3 sm:py-3">
+                    <span className="text-xs sm:text-sm font-semibold text-foreground block leading-tight truncate">{sub.name}</span>
+                    <div className="flex items-center justify-between mt-0.5 sm:mt-1">
+                      <span className="text-[9px] sm:text-[10px] text-muted-foreground truncate mr-1">{sub.nameEn}</span>
+                      <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
+                        <ArrowRight size={10} className="text-primary group-hover:text-white sm:w-3 sm:h-3" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Dedicated Agent Callout Banner */}
         {isAgentCategory && (

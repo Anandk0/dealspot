@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { categories } from "@/lib/categories";
+import { useCategories } from "@/lib/useCategories";
 import { api } from "@/lib/api";
 import AppLayout from "@/components/AppLayout";
 import AgentRegistration from "@/components/AgentRegistration";
@@ -16,7 +16,8 @@ export default function CreateListingPage() {
   const params = useParams();
   const router = useRouter();
   const categoryId = params.id as string;
-  const category = categories.find((c) => c.id === categoryId);
+  const { getCategory } = useCategories();
+  const category = getCategory(categoryId);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (categoryId === "agents" || categoryId === "agent") {

@@ -6,6 +6,7 @@ export interface CategoryItem {
   color: string;
   gradient?: string;
   image?: string;
+  parentId?: string; // if set, this is a subcategory
 }
 
 export const categories: CategoryItem[] = [
@@ -36,6 +37,80 @@ export const categories: CategoryItem[] = [
     gradient: 'from-green-500 to-emerald-400',
     image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=300&fit=crop&q=80',
   },
+  // ── ಕೃಷಿ ಉಪಕರಣ subcategories ──────────────────────────────
+  {
+    id: 'agriculture-equipment-tractor',
+    name: 'ಟ್ರ್ಯಾಕ್ಟರ್',
+    nameEn: 'Tractor',
+    icon: '🚜',
+    color: 'bg-green-100',
+    gradient: 'from-green-600 to-emerald-500',
+    parentId: 'agriculture-equipment',
+  },
+  {
+    id: 'agriculture-equipment-rotavator',
+    name: 'ರೋಟವೇಟರ್',
+    nameEn: 'Rotavator',
+    icon: '⚙️',
+    color: 'bg-green-100',
+    gradient: 'from-green-600 to-emerald-500',
+    parentId: 'agriculture-equipment',
+  },
+  {
+    id: 'agriculture-equipment-cultivator',
+    name: 'ಕಲ್ಟಿವೇಟರ್',
+    nameEn: 'Cultivator',
+    icon: '🌱',
+    color: 'bg-green-100',
+    gradient: 'from-green-600 to-emerald-500',
+    parentId: 'agriculture-equipment',
+  },
+  {
+    id: 'agriculture-equipment-seeder',
+    name: 'ಬಿತ್ತನೆ ಯಂತ್ರ',
+    nameEn: 'Seeder',
+    icon: '🌾',
+    color: 'bg-green-100',
+    gradient: 'from-green-600 to-emerald-500',
+    parentId: 'agriculture-equipment',
+  },
+  {
+    id: 'agriculture-equipment-sprayer',
+    name: 'ಸ್ಪ್ರೇಯರ್',
+    nameEn: 'Sprayer',
+    icon: '💧',
+    color: 'bg-green-100',
+    gradient: 'from-green-600 to-emerald-500',
+    parentId: 'agriculture-equipment',
+  },
+  {
+    id: 'agriculture-equipment-water-pump',
+    name: 'ವಾಟರ್ ಪಂಪ್',
+    nameEn: 'Water Pump',
+    icon: '🚰',
+    color: 'bg-green-100',
+    gradient: 'from-green-600 to-emerald-500',
+    parentId: 'agriculture-equipment',
+  },
+  {
+    id: 'agriculture-equipment-harvester',
+    name: 'ಕೊಯ್ಲು ಯಂತ್ರ',
+    nameEn: 'Harvester',
+    icon: '🌿',
+    color: 'bg-green-100',
+    gradient: 'from-green-600 to-emerald-500',
+    parentId: 'agriculture-equipment',
+  },
+  {
+    id: 'agriculture-equipment-other',
+    name: 'ಇತರ ಉಪಕರಣ',
+    nameEn: 'Other Equipment',
+    icon: '🔩',
+    color: 'bg-green-100',
+    gradient: 'from-green-600 to-emerald-500',
+    parentId: 'agriculture-equipment',
+  },
+  // ────────────────────────────────────────────────────────────
   {
     id: 'agents',
     name: 'ಏಜೆಂಟರು',
@@ -82,6 +157,14 @@ export const categories: CategoryItem[] = [
     image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&h=300&fit=crop&q=80',
   },
 ];
+
+// Returns only top-level categories (no parentId)
+export const topLevelCategories = categories.filter((c) => !c.parentId);
+
+// Returns subcategories for a given parent
+export function getSubcategories(parentId: string): CategoryItem[] {
+  return categories.filter((c) => c.parentId === parentId);
+}
 
 export function getCategoryIcon(catId?: string): string {
   if (!catId) return '📦';

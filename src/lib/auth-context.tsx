@@ -27,18 +27,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const token = localStorage.getItem("dealspot_token");
     if (token) {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 5000); // 5s timeout
-      
-      api.getProfile()
-        .then(setUser)
-        .catch(() => {
-          setUser(null);
-        })
-        .finally(() => {
-          clearTimeout(timeout);
-          setIsLoading(false);
-        });
+      // Race between profile fetch and a 5s timeout
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), 5000)
+      );
+
+      Promise.race([api.getProfile(), timeout])
+        .then((profile) => setUser(profile as UserData))
+        .catch(() => setUser(null))
+        .finally(() => setIsLoading(false));
     } else {
       setIsLoading(false);
     }

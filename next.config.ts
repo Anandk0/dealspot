@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     "*.ngrok-free.app",
     "*.ngrok.io",
     "*.devtunnels.ms",
+    "*.trycloudflare.com",
     "10.182.211.233",
     "192.168.31.186",
     "localhost",
