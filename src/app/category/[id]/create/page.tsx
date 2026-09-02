@@ -16,14 +16,28 @@ export default function CreateListingPage() {
   const params = useParams();
   const router = useRouter();
   const categoryId = params.id as string;
-  const { getCategory } = useCategories();
+  const { getCategory, getParent, loading: catsLoading } = useCategories();
   const category = getCategory(categoryId);
+  const parentCategory = getParent(categoryId);
+  // Use parent slug for field mapping if this is a subcategory, fallback to categoryId
+  const fieldCategoryId = parentCategory?.id ?? categoryId;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (categoryId === "agents" || categoryId === "agent") {
     return (
       <AppLayout>
         <AgentRegistration />
+      </AppLayout>
+    );
+  }
+
+  // Wait for categories to load so parent resolution works correctly
+  if (catsLoading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="animate-spin text-primary" size={28} />
+        </div>
       </AppLayout>
     );
   }
@@ -62,83 +76,90 @@ export default function CreateListingPage() {
   };
 
   const getFields = (): { key: string; label: string }[] => {
-    switch (categoryId) {
-      case "property-sales":
-      case "property":
-        return [
-          { key: "title", label: "ಆಸ್ತಿ ವಿವರ / ಶೀರ್ಷಿಕೆ (Property Title)" },
-          { key: "area", label: "ವಿಸ್ತೀರ್ಣ (Area / Sq.ft / Acres)" },
-          { key: "price", label: "ಮಾರಾಟ ಬೆಲೆ (Selling Price ₹)" },
-          { key: "location", label: "ಸ್ಥಳ / ಗ್ರಾಮ (Location / Village)" },
-          { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
-        ];
-      case "property-rent":
-        return [
-          { key: "title", label: "ಆಸ್ತಿ ವಿವರ (Property Title)" },
-          { key: "rateInfo", label: "ತಿಂಗಳ ಬಾಡಿಗೆ (Monthly Rent ₹/mo)" },
-          { key: "price", label: "ಅಡ್ವಾನ್ಸ್ / ಡೆಪಾಸಿಟ್ (Deposit ₹)" },
-          { key: "location", label: "ಸ್ಥಳ (Location)" },
-          { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
-        ];
-      case "agriculture-equipment":
-      case "farm-equipment":
-      case "tractor-rental":
-        return [
-          { key: "title", label: "ಉಪಕರಣ ಹೆಸರು (Equipment Name)" },
-          { key: "condition", label: "ಸ್ಥಿತಿ (Condition - New/Used)" },
-          { key: "price", label: "ಬೆಲೆ / ಬಾಡಿಗೆ ದರ (Price/Rate ₹)" },
-          { key: "location", label: "ಸ್ಥಳ (Location)" },
-        ];
-      case "agents":
-      case "agent":
-      case "labor":
-        return [
-          { key: "title", label: "ಏಜೆಂಟ್ ಹೆಸರು (Agent Name)" },
-          { key: "skill", label: "ಸೇವೆ ಪ್ರಕಾರ (Specialization / Domain)" },
-          { key: "experience", label: "ಅನುಭವ (Experience)" },
-          { key: "location", label: "ಸ್ಥಳ / ವ್ಯಾಪ್ತಿ (Service Location)" },
-        ];
-      case "danakarugalu":
-      case "livestock":
-        return [
-          { key: "title", label: "ದನಕರು ವಿವರ (Cattle - Cow/Bull/Buffalo)" },
-          { key: "breed", label: "ತಳಿ (Breed)" },
-          { key: "age", label: "ವಯಸ್ಸು / ಹಾಲು (Age / Details)" },
-          { key: "price", label: "ಬೆಲೆ (Price ₹)" },
-          { key: "location", label: "ಸ್ಥಳ (Location)" },
-        ];
-      case "pets":
-      case "animals-pets":
-        return [
-          { key: "title", label: "ಪೆಟ್ ಹೆಸರು (Pet Name / Type)" },
-          { key: "breed", label: "ತಳಿ (Breed)" },
-          { key: "age", label: "ವಯಸ್ಸು (Age)" },
-          { key: "price", label: "ಬೆಲೆ (Price ₹)" },
-          { key: "location", label: "ಸ್ಥಳ (Location)" },
-        ];
-      case "vehicle-rent":
-      case "car-auto-rent":
-      case "vehicle-rental":
-        return [
-          { key: "title", label: "ವಾಹನ ಹೆಸರು (Vehicle Name / Model)" },
-          { key: "vehicleType", label: "ವಿಧ (Car / Auto / Van)" },
-          { key: "rateInfo", label: "ಬಾಡಿಗೆ ದರ (Rate ₹/km or ₹/day)" },
-          { key: "location", label: "ಸ್ಥಳ (Location)" },
-        ];
-      case "services":
-        return [
-          { key: "title", label: "ಸೇವೆ ಹೆಸರು (Service)" },
-          { key: "rateInfo", label: "ದರ (Rate Info)" },
-          { key: "experience", label: "ಅನುಭವ (Experience)" },
-          { key: "location", label: "ಸ್ಥಳ (Location)" },
-        ];
-      default:
-        return [
-          { key: "title", label: "ಹೆಸರು (Name)" },
-          { key: "price", label: "ಬೆಲೆ (Price ₹)" },
-          { key: "location", label: "ಸ್ಥಳ (Location)" },
-        ];
+    // Resolve to parent for subcategories — fieldCategoryId is already the parent slug
+    const resolvedId = fieldCategoryId;
+
+    if (resolvedId === "property-sales" || resolvedId === "property") {
+      return [
+        { key: "title", label: "ಆಸ್ತಿ ವಿವರ / ಶೀರ್ಷಿಕೆ (Property Title)" },
+        { key: "area", label: "ವಿಸ್ತೀರ್ಣ (Area / Sq.ft / Acres)" },
+        { key: "price", label: "ಮಾರಾಟ ಬೆಲೆ (Selling Price ₹)" },
+        { key: "location", label: "ಸ್ಥಳ / ಗ್ರಾಮ (Location / Village)" },
+        { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
+      ];
     }
+    if (resolvedId === "property-rent") {
+      return [
+        { key: "title", label: "ಆಸ್ತಿ ವಿವರ (Property Title)" },
+        { key: "rateInfo", label: "ತಿಂಗಳ ಬಾಡಿಗೆ (Monthly Rent ₹/mo)" },
+        { key: "price", label: "ಅಡ್ವಾನ್ಸ್ / ಡೆಪಾಸಿಟ್ (Deposit ₹)" },
+        { key: "location", label: "ಸ್ಥಳ (Location)" },
+        { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
+      ];
+    }
+    if (resolvedId === "agriculture-equipment" || resolvedId === "farm-equipment" || resolvedId === "tractor-rental") {
+      return [
+        { key: "title", label: "ಉಪಕರಣ ಹೆಸರು (Equipment Name)" },
+        { key: "condition", label: "ಸ್ಥಿತಿ (Condition - New/Used)" },
+        { key: "price", label: "ಬೆಲೆ / ಬಾಡಿಗೆ ದರ (Price/Rate ₹)" },
+        { key: "location", label: "ಸ್ಥಳ (Location)" },
+        { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
+      ];
+    }
+    if (resolvedId === "agents" || resolvedId === "agent" || resolvedId === "labor") {
+      return [
+        { key: "title", label: "ಏಜೆಂಟ್ ಹೆಸರು (Agent Name)" },
+        { key: "skill", label: "ಸೇವೆ ಪ್ರಕಾರ (Specialization / Domain)" },
+        { key: "experience", label: "ಅನುಭವ (Experience)" },
+        { key: "location", label: "ಸ್ಥಳ / ವ್ಯಾಪ್ತಿ (Service Location)" },
+      ];
+    }
+    if (resolvedId === "danakarugalu" || resolvedId === "livestock") {
+      return [
+        { key: "title", label: "ದನಕರು ವಿವರ (Cattle - Cow/Bull/Buffalo)" },
+        { key: "breed", label: "ತಳಿ (Breed)" },
+        { key: "age", label: "ವಯಸ್ಸು / ಹಾಲು (Age / Details)" },
+        { key: "price", label: "ಬೆಲೆ (Price ₹)" },
+        { key: "location", label: "ಸ್ಥಳ (Location)" },
+        { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
+      ];
+    }
+    if (resolvedId === "pets" || resolvedId === "animals-pets") {
+      return [
+        { key: "title", label: "ಪೆಟ್ ಹೆಸರು (Pet Name / Type)" },
+        { key: "breed", label: "ತಳಿ (Breed)" },
+        { key: "age", label: "ವಯಸ್ಸು (Age)" },
+        { key: "price", label: "ಬೆಲೆ (Price ₹)" },
+        { key: "location", label: "ಸ್ಥಳ (Location)" },
+        { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
+      ];
+    }
+    if (resolvedId === "vehicle-rent" || resolvedId === "car-auto-rent" || resolvedId === "vehicle-rental") {
+      return [
+        { key: "title", label: "ವಾಹನ ಹೆಸರು (Vehicle Name / Model)" },
+        { key: "vehicleType", label: "ವಿಧ (Car / Auto / Van)" },
+        { key: "rateInfo", label: "ಬಾಡಿಗೆ ದರ (Rate ₹/km or ₹/day)" },
+        { key: "location", label: "ಸ್ಥಳ (Location)" },
+        { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
+      ];
+    }
+    if (resolvedId === "services") {
+      return [
+        { key: "title", label: "ಸೇವೆ ಹೆಸರು (Service)" },
+        { key: "rateInfo", label: "ದರ (Rate Info)" },
+        { key: "experience", label: "ಅನುಭವ (Experience)" },
+        { key: "location", label: "ಸ್ಥಳ (Location)" },
+        { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
+      ];
+    }
+    // Default — generic fields for any other category or subcategory
+    return [
+      { key: "title", label: "ಹೆಸರು (Name / Title)" },
+      { key: "price", label: "ಬೆಲೆ (Price ₹)" },
+      { key: "condition", label: "ಸ್ಥಿತಿ (Condition - New/Used)" },
+      { key: "location", label: "ಸ್ಥಳ (Location)" },
+      { key: "district", label: "ಜಿಲ್ಲೆ (District)" },
+    ];
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -200,6 +221,12 @@ export default function CreateListingPage() {
         <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6 overflow-x-auto">
           <Link href="/home" className="hover:text-primary shrink-0">ಹೋಮ್</Link>
           <span>/</span>
+          {parentCategory && (
+            <>
+              <Link href={`/category/${parentCategory.id}`} className="hover:text-primary shrink-0">{parentCategory.nameEn}</Link>
+              <span>/</span>
+            </>
+          )}
           <Link href={`/category/${categoryId}`} className="hover:text-primary shrink-0">{category?.nameEn}</Link>
           <span>/</span>
           <span className="text-foreground font-medium shrink-0">ಹೊಸ ಜಾಹೀರಾತು</span>
@@ -207,7 +234,10 @@ export default function CreateListingPage() {
 
         <div className="bg-card rounded-2xl p-4 sm:p-8 shadow-sm border border-border">
           <h1 className="text-lg sm:text-xl font-bold text-foreground mb-1">ಹೊಸ ಜಾಹೀರಾತು (New Listing)</h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mb-5 sm:mb-6">{category?.name} • {category?.nameEn}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-5 sm:mb-6">
+            {parentCategory && <span>{parentCategory.name} → </span>}
+            {category?.name} • {category?.nameEn}
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             {/* Photo upload */}
