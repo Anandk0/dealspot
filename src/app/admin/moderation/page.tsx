@@ -162,10 +162,10 @@ export default function ModerationPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Moderation Queue</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-lg sm:text-2xl font-bold text-gray-800">Moderation Queue</h1>
+          <p className="text-xs sm:text-sm text-gray-500">
             {queue ? `${queue.totalElements} listings pending review` : "Loading..."}
           </p>
         </div>
@@ -173,37 +173,37 @@ export default function ModerationPage() {
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-3 gap-3 lg:gap-4 mb-6">
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <Clock size={20} className="text-yellow-600" />
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
+          <div className="bg-white rounded-xl p-2.5 sm:p-4 shadow-sm border border-gray-100">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-yellow-100 rounded-lg">
+                <Clock className="text-yellow-600 w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-800">{stats.pendingCount}</p>
-                <p className="text-xs text-gray-500">Pending</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-800 leading-none">{stats.pendingCount}</p>
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Pending</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle2 size={20} className="text-green-600" />
+          <div className="bg-white rounded-xl p-2.5 sm:p-4 shadow-sm border border-gray-100">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-green-100 rounded-lg">
+                <CheckCircle2 className="text-green-600 w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-800">{stats.approvedToday}</p>
-                <p className="text-xs text-gray-500">Approved Today</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-800 leading-none">{stats.approvedToday}</p>
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Approved Today</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <XCircle size={20} className="text-red-600" />
+          <div className="bg-white rounded-xl p-2.5 sm:p-4 shadow-sm border border-gray-100">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-red-100 rounded-lg">
+                <XCircle className="text-red-600 w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-800">{stats.rejectedToday}</p>
-                <p className="text-xs text-gray-500">Rejected Today</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-800 leading-none">{stats.rejectedToday}</p>
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Rejected Today</p>
               </div>
             </div>
           </div>
@@ -216,9 +216,9 @@ export default function ModerationPage() {
           <Loader2 className="animate-spin text-gray-400" size={32} />
         </div>
       ) : !queue || queue.content.length === 0 ? (
-        <div className="bg-white rounded-xl p-12 text-center shadow-sm border">
-          <CheckCircle2 size={48} className="mx-auto text-green-400 mb-3" />
-          <p className="text-gray-500">All caught up! No pending listings.</p>
+        <div className="bg-white rounded-xl p-8 sm:p-12 text-center shadow-sm border">
+          <CheckCircle2 size={44} className="mx-auto text-green-400 mb-3" />
+          <p className="text-sm sm:text-base text-gray-500">All caught up! No pending listings.</p>
         </div>
       ) : (
         <>
@@ -262,27 +262,29 @@ export default function ModerationPage() {
                 <div className="flex gap-2 flex-shrink-0 w-full sm:w-auto">
                   <Button
                     size="sm"
-                    className="bg-green-600 hover:bg-green-700 flex-1 sm:flex-none"
+                    className="bg-green-600 hover:bg-green-700 flex-1 sm:flex-none text-xs sm:text-sm"
                     onClick={() => handleApprove(item)}
                     disabled={actionLoading === item.id}
                   >
-                    <CheckCircle2 size={14} className="mr-1" />
-                    Approve
+                    {actionLoading === item.id
+                      ? <Loader2 size={14} className="animate-spin mr-1" />
+                      : <CheckCircle2 size={14} className="mr-1" />}
+                    <span>Approve</span>
                   </Button>
                   <Button
                     size="sm"
                     variant="destructive"
-                    className="flex-1 sm:flex-none"
+                    className="flex-1 sm:flex-none text-xs sm:text-sm"
                     onClick={() => openRejectDialog(item)}
                     disabled={actionLoading === item.id}
                   >
                     <XCircle size={14} className="mr-1" />
-                    Reject
+                    <span>Reject</span>
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
-                    className="text-orange-600 border-orange-200 hover:bg-orange-50"
+                    className="text-orange-600 border-orange-200 hover:bg-orange-50 shrink-0"
                     onClick={() => handleFlag(item)}
                     disabled={actionLoading === item.id}
                   >

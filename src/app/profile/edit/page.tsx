@@ -36,17 +36,17 @@ export default function EditProfilePage() {
 
   return (
     <AppLayout>
-      <div className="max-w-2xl mx-auto p-6">
-        <h1 className="text-xl font-bold text-gray-800 mb-6">ಪ್ರೊಫೈಲ್ ಬದಲಾಯಿಸಿ (Edit Profile)</h1>
+      <div className="max-w-2xl mx-auto px-4 py-5 sm:p-6 pb-28 lg:pb-8">
+        <h1 className="text-xl font-bold text-foreground mb-4 sm:mb-6">ಪ್ರೊಫೈಲ್ ಬದಲಾಯಿಸಿ (Edit Profile)</h1>
 
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+        <div className="bg-card rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm border border-border">
           <form onSubmit={handleSave} className="space-y-6">
             <div className="flex justify-center">
               <div className="relative">
-                <div className="w-28 h-28 bg-primary/10 rounded-full flex items-center justify-center text-5xl">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-primary/10 rounded-full flex items-center justify-center text-4xl sm:text-5xl">
                   👤
                 </div>
-                <button type="button" className="absolute bottom-1 right-1 w-9 h-9 bg-primary rounded-full flex items-center justify-center shadow-md">
+                <button type="button" className="absolute bottom-1 right-1 w-8 h-8 sm:w-9 sm:h-9 bg-primary rounded-full flex items-center justify-center shadow-md">
                   <Camera size={16} className="text-white" />
                 </button>
               </div>
@@ -54,29 +54,29 @@ export default function EditProfilePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1.5 block">ಹೆಸರು (Name)</label>
-                <Input value={name} onChange={(e) => setName(e.target.value)} className="h-11" />
+                <label className="text-sm font-medium text-foreground mb-1.5 block">ಹೆಸರು (Name)</label>
+                <Input value={name} onChange={(e) => setName(e.target.value)} className="h-11 bg-background" />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1.5 block">ಫೋನ್ (Phone)</label>
-                <Input value={user?.phone || ""} className="h-11" disabled />
+                <label className="text-sm font-medium text-foreground mb-1.5 block">ಫೋನ್ (Phone)</label>
+                <Input value={user?.phone || ""} className="h-11 bg-muted" disabled />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1.5 block">ಸ್ಥಳ (Location)</label>
-                <Input value={location} onChange={(e) => setLocation(e.target.value)} className="h-11" />
+                <label className="text-sm font-medium text-foreground mb-1.5 block">ಸ್ಥಳ (Location)</label>
+                <Input value={location} onChange={(e) => setLocation(e.target.value)} className="h-11 bg-background" />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1.5 block">ಜಿಲ್ಲೆ (District)</label>
-                <Input value={district} onChange={(e) => setDistrict(e.target.value)} className="h-11" />
+                <label className="text-sm font-medium text-foreground mb-1.5 block">ಜಿಲ್ಲೆ (District)</label>
+                <Input value={district} onChange={(e) => setDistrict(e.target.value)} className="h-11 bg-background" />
               </div>
             </div>
 
-            <div className="flex gap-3 pt-2">
-              <Button type="submit" disabled={saving} className="bg-primary px-8 h-11">
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Button type="submit" disabled={saving} className="bg-primary px-6 sm:px-8 h-11 flex-1 sm:flex-none">
                 {saving ? "ಉಳಿಸಲಾಗುತ್ತಿದೆ..." : "ಉಳಿಸಿ (Save)"}
               </Button>
-              <Link href="/profile">
-                <Button type="button" variant="outline" className="h-11">
+              <Link href="/profile" className="flex-1 sm:flex-none">
+                <Button type="button" variant="outline" className="h-11 w-full">
                   ರದ್ದುಮಾಡಿ (Cancel)
                 </Button>
               </Link>

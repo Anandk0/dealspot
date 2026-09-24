@@ -18,6 +18,7 @@ const EMPTY_FORM: CategoryRequestData = {
   active: true,
   moderationLevel: "CHECKER_ONLY",
   parentId: null,
+  isFree: false,
 };
 
 const COLORS = [
@@ -89,6 +90,7 @@ export default function AdminCategoriesPage() {
       active: cat.active,
       moderationLevel: cat.moderationLevel,
       parentId: cat.parentId ?? null,
+      isFree: cat.isFree ?? false,
     });
     setShowForm(true);
   };
@@ -210,6 +212,11 @@ export default function AdminCategoriesPage() {
                           {cat.listingCount} listings
                         </span>
                       )}
+                      {cat.isFree && (
+                        <span className="text-[10px] bg-emerald-100 text-emerald-700 font-semibold px-1.5 py-0.5 rounded-full">
+                          FREE
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -257,6 +264,11 @@ export default function AdminCategoriesPage() {
                             {sub.listingCount > 0 && (
                               <span className="text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded-full">
                                 {sub.listingCount} listings
+                              </span>
+                            )}
+                            {sub.isFree && (
+                              <span className="text-[10px] bg-emerald-100 text-emerald-700 font-semibold px-1.5 py-0.5 rounded-full">
+                                FREE
                               </span>
                             )}
                           </div>
@@ -447,6 +459,20 @@ export default function AdminCategoriesPage() {
                   <span className={`block w-4 h-4 bg-white rounded-full shadow transition-transform mx-1 ${form.active ? "translate-x-4" : "translate-x-0"}`} />
                 </button>
                 <span className="text-sm text-gray-700">{form.active ? "Active" : "Inactive"}</span>
+              </div>
+
+              {/* Free contact toggle */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setForm(f => ({ ...f, isFree: !f.isFree }))}
+                  className={`w-10 h-6 rounded-full transition-colors ${form.isFree ? "bg-green-500" : "bg-gray-300"}`}
+                >
+                  <span className={`block w-4 h-4 bg-white rounded-full shadow transition-transform mx-1 ${form.isFree ? "translate-x-4" : "translate-x-0"}`} />
+                </button>
+                <div>
+                  <span className="text-sm text-gray-700">{form.isFree ? "Free Contact" : "Paid Contact"}</span>
+                  <p className="text-[11px] text-gray-400">{form.isFree ? "Contact shown for free, no payment" : "Users pay to unlock contact"}</p>
+                </div>
               </div>
             </div>
 

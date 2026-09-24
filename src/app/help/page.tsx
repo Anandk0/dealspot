@@ -18,19 +18,19 @@ const faqItems = [
 export default function HelpPage() {
   return (
     <AppLayout>
-      <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-xl font-bold text-gray-800 mb-6">ಸಹಾಯ (Help & Support)</h1>
+      <div className="max-w-4xl mx-auto px-4 py-5 sm:p-6 pb-28 lg:pb-8">
+        <h1 className="text-xl font-bold text-foreground mb-4 sm:mb-6">ಸಹಾಯ (Help & Support)</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* FAQ */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <h3 className="font-semibold text-base mb-4">ಪದೇ ಪದೇ ಕೇಳುವ ಪ್ರಶ್ನೆಗಳು (FAQ)</h3>
+            <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-sm border border-border">
+              <h3 className="font-semibold text-base mb-4 text-foreground">ಪದೇ ಪದೇ ಕೇಳುವ ಪ್ರಶ್ನೆಗಳು (FAQ)</h3>
               <div className="space-y-4">
                 {faqItems.map((item, i) => (
-                  <div key={i} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                    <p className="font-medium text-gray-700">{item.q}</p>
-                    <p className="text-sm text-gray-500 mt-1">{item.a}</p>
+                  <div key={i} className="border-b border-border pb-4 last:border-0 last:pb-0">
+                    <p className="font-medium text-foreground">{item.q}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{item.a}</p>
                   </div>
                 ))}
               </div>
@@ -39,34 +39,34 @@ export default function HelpPage() {
 
           {/* Contact */}
           <div>
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <h3 className="font-semibold text-base mb-4">ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ</h3>
-              <div className="space-y-4">
-                <a href={`tel:${SUPPORT_PHONE}`} className="flex items-center gap-3 w-full text-left p-3 rounded-lg hover:bg-gray-50 transition">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+            <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-sm border border-border">
+              <h3 className="font-semibold text-base mb-4 text-foreground">ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ</h3>
+              <div className="space-y-3">
+                <a href={`tel:${SUPPORT_PHONE}`} className="flex items-center gap-3 w-full text-left p-3 rounded-xl hover:bg-muted/50 transition">
+                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                     <Phone size={16} className="text-primary" />
                   </div>
-                  <div>
-                    <p className="text-sm font-medium">{SUPPORT_PHONE}</p>
-                    <p className="text-xs text-gray-400">ಕರೆ ಮಾಡಿ</p>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{SUPPORT_PHONE}</p>
+                    <p className="text-xs text-muted-foreground">ಕರೆ ಮಾಡಿ</p>
                   </div>
                 </a>
-                <a href={`mailto:${SUPPORT_EMAIL}`} className="flex items-center gap-3 w-full text-left p-3 rounded-lg hover:bg-gray-50 transition">
-                  <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="flex items-center gap-3 w-full text-left p-3 rounded-xl hover:bg-muted/50 transition">
+                  <div className="w-10 h-10 bg-blue-50 dark:bg-blue-950/40 rounded-full flex items-center justify-center shrink-0">
                     <Mail size={16} className="text-blue-500" />
                   </div>
-                  <div>
-                    <p className="text-sm font-medium">{SUPPORT_EMAIL}</p>
-                    <p className="text-xs text-gray-400">ಇಮೇಲ್</p>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{SUPPORT_EMAIL}</p>
+                    <p className="text-xs text-muted-foreground">ಇಮೇಲ್</p>
                   </div>
                 </a>
-                <button onClick={() => toast.info("WhatsApp ಚಾಟ್ ತೆರೆಯಲಾಗುತ್ತಿದೆ...")} className="flex items-center gap-3 w-full text-left p-3 rounded-lg hover:bg-gray-50 transition">
-                  <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center">
+                <button onClick={() => toast.info("WhatsApp ಚಾಟ್ ತೆರೆಯಲಾಗುತ್ತಿದೆ...")} className="flex items-center gap-3 w-full text-left p-3 rounded-xl hover:bg-muted/50 transition">
+                  <div className="w-10 h-10 bg-green-50 dark:bg-green-950/40 rounded-full flex items-center justify-center shrink-0">
                     <MessageCircle size={16} className="text-green-500" />
                   </div>
-                  <div>
-                    <p className="text-sm font-medium">WhatsApp ಸಹಾಯ</p>
-                    <p className="text-xs text-gray-400">ಚಾಟ್</p>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">WhatsApp ಸಹಾಯ</p>
+                    <p className="text-xs text-muted-foreground">ಚಾಟ್</p>
                   </div>
                 </button>
               </div>

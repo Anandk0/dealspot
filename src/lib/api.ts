@@ -1,4 +1,11 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://dealspot-backend.onrender.com";
+// In the browser we call relative "/api/..." paths so requests go to the same
+// origin the app is served from — Next.js rewrites() then proxies them to the
+// backend. This avoids CORS and stale-IP issues entirely.
+// On the server (SSR) we need an absolute URL.
+const API_BASE =
+  typeof window !== "undefined"
+    ? ""
+    : (process.env.NEXT_PUBLIC_API_URL || "https://dealspot-backend.onrender.com");
 
 class ApiClient {
   public getToken(): string | null {
@@ -72,8 +79,12 @@ class ApiClient {
       headers,
     });
 
-    // If 401/403 and unauthenticated/session expired
-    if ((response.status === 401 || response.status === 403) && retry) {
+    // Auth endpoints (login, register, OTP) are public — never trigger the
+    // token-refresh / redirect-to-login flow on their errors. Just surface them.
+    const isAuthEndpoint = endpoint.startsWith("/api/auth/");
+
+    // If 401/403 on a protected endpoint, try refresh, else redirect to login
+    if ((response.status === 401 || response.status === 403) && retry && !isAuthEndpoint) {
       const refreshed = await this.refreshAccessToken();
       if (refreshed) {
         return this.request<T>(endpoint, options, false);
@@ -204,6 +215,21 @@ class ApiClient {
     });
   }
 
+  // Email OTP (registration)
+  async sendEmailOtp(email: string) {
+    return this.request<{ message: string; otp?: string }>("/api/auth/email-otp/send", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async verifyEmailOtp(email: string, otp: string) {
+    return this.request<{ verified: boolean }>("/api/auth/email-otp/verify", {
+      method: "POST",
+      body: JSON.stringify({ email, otp }),
+    });
+  }
+
   // ─── Listings ───────────────────────────────────────────
   async getListingsByCategory(category: string, page = 0, size = 20) {
     return this.request<PagedResponse<ListingData>>(
@@ -309,6 +335,7 @@ class ApiClient {
   async checkUnlock(listingId: number) {
     return this.request<{
       unlocked: boolean;
+      free: boolean;
       phone?: string;
     }>(`/api/payments/unlock/check/${listingId}`);
   }
@@ -670,6 +697,7 @@ export interface CategoryPublicResponse {
   imageUrl?: string;
   color?: string;
   parentId?: number | null;
+  isFree?: boolean;
   subcategories: CategoryPublicResponse[];
 }
 
@@ -689,6 +717,7 @@ export interface AdminCategoryResponse {
   updatedAt?: string;
   parentId?: number | null;
   parentName?: string | null;
+  isFree?: boolean;
   subcategories: AdminCategoryResponse[];
 }
 
@@ -703,4 +732,5 @@ export interface CategoryRequestData {
   active?: boolean;
   moderationLevel?: string;
   parentId?: number | null;
+  isFree?: boolean;
 }

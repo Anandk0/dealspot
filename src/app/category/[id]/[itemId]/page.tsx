@@ -16,6 +16,8 @@ export default function ItemDetailPage() {
 
   const [item, setItem] = useState<ListingData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
 
   useEffect(() => {
     const id = parseInt(itemId);
@@ -27,7 +29,38 @@ export default function ItemDetailPage() {
       .then(setItem)
       .catch(() => setItem(null))
       .finally(() => setLoading(false));
+
+    // Check if this listing is already in favorites
+    if (api.getToken()) {
+      api.getFavorites(0, 100)
+        .then((res) => setIsFavorited(res.content.some((f) => f.id === id)))
+        .catch(() => {});
+    }
   }, [itemId]);
+
+  const toggleFavorite = async () => {
+    if (!item) return;
+    if (!api.getToken()) {
+      toast.error("ದಯವಿಟ್ಟು ಮೊದಲು ಲಾಗಿನ್ ಮಾಡಿ (Please login first)");
+      return;
+    }
+    setFavLoading(true);
+    try {
+      if (isFavorited) {
+        await api.removeFavorite(item.id);
+        setIsFavorited(false);
+        toast.success("ಇಷ್ಟಪಟ್ಟಿಯಿಂದ ತೆಗೆಯಲಾಗಿದೆ (Removed from favorites)");
+      } else {
+        await api.addFavorite(item.id);
+        setIsFavorited(true);
+        toast.success("ಇಷ್ಟಪಟ್ಟಿಗೆ ಸೇರಿಸಲಾಗಿದೆ! (Added to favorites)");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed");
+    } finally {
+      setFavLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -144,10 +177,28 @@ export default function ItemDetailPage() {
                   {item.titleEn && <p className="text-sm text-gray-500">{item.titleEn}</p>}
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => toast.success("ಇಷ್ಟಪಟ್ಟಿಗೆ ಸೇರಿಸಲಾಗಿದೆ!")} className="p-2 rounded-full hover:bg-gray-100">
-                    <Heart size={20} className="text-gray-400" />
+                  <button
+                    onClick={toggleFavorite}
+                    disabled={favLoading}
+                    className="p-2 rounded-full hover:bg-gray-100 transition disabled:opacity-50"
+                    aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+                  >
+                    <Heart
+                      size={20}
+                      className={isFavorited ? "text-red-500 fill-red-500" : "text-gray-400"}
+                    />
                   </button>
-                  <button onClick={() => toast.success("ಲಿಂಕ್ ಕಾಪಿ ಆಗಿದೆ!")} className="p-2 rounded-full hover:bg-gray-100">
+                  <button
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({ title: item.title, url: window.location.href }).catch(() => {});
+                      } else {
+                        navigator.clipboard.writeText(window.location.href);
+                        toast.success("ಲಿಂಕ್ ಕಾಪಿ ಆಗಿದೆ!");
+                      }
+                    }}
+                    className="p-2 rounded-full hover:bg-gray-100"
+                  >
                     <Share2 size={20} className="text-gray-400" />
                   </button>
                 </div>

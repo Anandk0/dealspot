@@ -5,6 +5,7 @@ import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import { topLevelCategories } from "@/lib/categories";
 import { useCategories } from "@/lib/useCategories";
+import { useLang } from "@/lib/lang-context";
 import { api, ListingData, BannerResponse } from "@/lib/api";
 
 const categoryImages: Record<string, string> = {
@@ -49,9 +50,12 @@ export default function HomePage() {
   const [banners, setBanners] = useState<BannerSlide[]>(defaultBanners);
   const recentSliderRef = useRef<HTMLDivElement>(null);
   const { topLevel: apiTopLevel } = useCategories();
+  const { lang } = useLang();
 
   // Use API categories if loaded, otherwise fall back to hardcoded
   const displayCategories = apiTopLevel.length > 0 ? apiTopLevel : topLevelCategories;
+  const primaryName = (c: { name: string; nameEn: string }) => (lang === "en" ? c.nameEn : c.name);
+  const secondaryName = (c: { name: string; nameEn: string }) => (lang === "en" ? c.name : c.nameEn);
 
   const scrollRecent = (direction: "left" | "right") => {
     if (recentSliderRef.current) {
@@ -183,9 +187,9 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="px-2.5 py-2 sm:px-3 sm:py-3">
-                  <span className="text-xs sm:text-sm font-semibold text-foreground block leading-tight truncate">{cat.name}</span>
+                  <span className="text-xs sm:text-sm font-semibold text-foreground block leading-tight truncate">{primaryName(cat)}</span>
                   <div className="flex items-center justify-between mt-0.5 sm:mt-1">
-                    <span className="text-[9px] sm:text-[10px] text-muted-foreground truncate mr-1">{cat.nameEn}</span>
+                    <span className="text-[9px] sm:text-[10px] text-muted-foreground truncate mr-1">{secondaryName(cat)}</span>
                     <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
                       <ArrowRight size={10} className="text-primary group-hover:text-white sm:w-3 sm:h-3" />
                     </span>

@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Bell, Globe, User, Menu, X, Home, Search, PlusCircle, Heart, Settings, LogOut } from "lucide-react";
+import { Bell, User, Menu, X, Home, Search, PlusCircle, Heart, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { useLang } from "@/lib/lang-context";
 import { api } from "@/lib/api";
 import ThemeToggle from "./ThemeToggle";
 
@@ -19,6 +20,7 @@ const menuItems = [
 
 export default function TopHeader() {
   const { user, isLoggedIn, logout } = useAuth();
+  const { lang, setLang } = useLang();
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -77,15 +79,20 @@ export default function TopHeader() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <ThemeToggle />
+            {/* <ThemeToggle /> */}
 
-            <Link href="/language" className="p-2 text-foreground/70 hover:text-primary transition">
-              <Globe size={18} />
-            </Link>
-
+            {/* Language toggle */}
+            {/* <button
+              onClick={() => setLang(lang === "en" ? "kn" : "en")}
+              className="px-2.5 py-1.5 rounded-lg text-foreground/70 hover:text-primary hover:bg-accent transition text-xs font-medium"
+              title="Switch language"
+            >
+              {lang === "en" ? "ಕನ್ನಡ" : "EN"}
+            </button> */}
+{/* 
             <Link href="/create" className="hidden sm:inline-flex bg-primary text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/90 transition">
               + ಜಾಹೀರಾತು ಹಾಕಿ
-            </Link>
+            </Link> */}
 
             <Link href="/notifications" className="relative p-2 text-gray-600 hover:text-primary transition">
               <Bell size={18} />

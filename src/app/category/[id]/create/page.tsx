@@ -19,10 +19,16 @@ export default function CreateListingPage() {
   const { getCategory, getParent, loading: catsLoading } = useCategories();
   const category = getCategory(categoryId);
   const parentCategory = getParent(categoryId);
-  // Use parent slug for field mapping if this is a subcategory, fallback to categoryId
   const fieldCategoryId = parentCategory?.id ?? categoryId;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // ── All hooks must be before any early return ──
+  const [images, setImages] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<Record<string, string>>({});
+
+  // Early returns AFTER all hooks
   if (categoryId === "agents" || categoryId === "agent") {
     return (
       <AppLayout>
@@ -31,7 +37,6 @@ export default function CreateListingPage() {
     );
   }
 
-  // Wait for categories to load so parent resolution works correctly
   if (catsLoading) {
     return (
       <AppLayout>
@@ -41,11 +46,6 @@ export default function CreateListingPage() {
       </AppLayout>
     );
   }
-
-  const [images, setImages] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<Record<string, string>>({});
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);

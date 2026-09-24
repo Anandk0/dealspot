@@ -6,9 +6,11 @@ export interface CategoryItem {
   color: string;
   gradient?: string;
   image?: string;
-  parentId?: string; // if set, this is a subcategory
+  parentId?: string;
 }
 
+// ── Top-level categories (fallback if API is unavailable) ──────────
+// Subcategories are loaded dynamically from the API
 export const categories: CategoryItem[] = [
   {
     id: 'property-sales',
@@ -37,80 +39,6 @@ export const categories: CategoryItem[] = [
     gradient: 'from-green-500 to-emerald-400',
     image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=300&fit=crop&q=80',
   },
-  // ── ಕೃಷಿ ಉಪಕರಣ subcategories ──────────────────────────────
-  {
-    id: 'agriculture-equipment-tractor',
-    name: 'ಟ್ರ್ಯಾಕ್ಟರ್',
-    nameEn: 'Tractor',
-    icon: '🚜',
-    color: 'bg-green-100',
-    gradient: 'from-green-600 to-emerald-500',
-    parentId: 'agriculture-equipment',
-  },
-  {
-    id: 'agriculture-equipment-rotavator',
-    name: 'ರೋಟವೇಟರ್',
-    nameEn: 'Rotavator',
-    icon: '⚙️',
-    color: 'bg-green-100',
-    gradient: 'from-green-600 to-emerald-500',
-    parentId: 'agriculture-equipment',
-  },
-  {
-    id: 'agriculture-equipment-cultivator',
-    name: 'ಕಲ್ಟಿವೇಟರ್',
-    nameEn: 'Cultivator',
-    icon: '🌱',
-    color: 'bg-green-100',
-    gradient: 'from-green-600 to-emerald-500',
-    parentId: 'agriculture-equipment',
-  },
-  {
-    id: 'agriculture-equipment-seeder',
-    name: 'ಬಿತ್ತನೆ ಯಂತ್ರ',
-    nameEn: 'Seeder',
-    icon: '🌾',
-    color: 'bg-green-100',
-    gradient: 'from-green-600 to-emerald-500',
-    parentId: 'agriculture-equipment',
-  },
-  {
-    id: 'agriculture-equipment-sprayer',
-    name: 'ಸ್ಪ್ರೇಯರ್',
-    nameEn: 'Sprayer',
-    icon: '💧',
-    color: 'bg-green-100',
-    gradient: 'from-green-600 to-emerald-500',
-    parentId: 'agriculture-equipment',
-  },
-  {
-    id: 'agriculture-equipment-water-pump',
-    name: 'ವಾಟರ್ ಪಂಪ್',
-    nameEn: 'Water Pump',
-    icon: '🚰',
-    color: 'bg-green-100',
-    gradient: 'from-green-600 to-emerald-500',
-    parentId: 'agriculture-equipment',
-  },
-  {
-    id: 'agriculture-equipment-harvester',
-    name: 'ಕೊಯ್ಲು ಯಂತ್ರ',
-    nameEn: 'Harvester',
-    icon: '🌿',
-    color: 'bg-green-100',
-    gradient: 'from-green-600 to-emerald-500',
-    parentId: 'agriculture-equipment',
-  },
-  {
-    id: 'agriculture-equipment-other',
-    name: 'ಇತರ ಉಪಕರಣ',
-    nameEn: 'Other Equipment',
-    icon: '🔩',
-    color: 'bg-green-100',
-    gradient: 'from-green-600 to-emerald-500',
-    parentId: 'agriculture-equipment',
-  },
-  // ────────────────────────────────────────────────────────────
   {
     id: 'agents',
     name: 'ಏಜೆಂಟರು',
@@ -123,7 +51,7 @@ export const categories: CategoryItem[] = [
   {
     id: 'danakarugalu',
     name: 'ದನಕರುಗಳು',
-    nameEn: 'Danakarugalu',
+    nameEn: 'Livestock',
     icon: '🐄',
     color: 'bg-amber-100',
     gradient: 'from-amber-500 to-yellow-400',
@@ -131,7 +59,7 @@ export const categories: CategoryItem[] = [
   },
   {
     id: 'pets',
-    name: 'ಸಾಕು ಪ್ರಾಣಿಗಳು & ಪೆಟ್ಸ್',
+    name: 'ಸಾಕು ಪ್ರಾಣಿಗಳು',
     nameEn: 'Pets',
     icon: '🐕',
     color: 'bg-pink-100',
@@ -140,8 +68,8 @@ export const categories: CategoryItem[] = [
   },
   {
     id: 'vehicle-rent',
-    name: 'ಕಾರು & ಆಟೋ ಬಾಡಿಗೆ',
-    nameEn: 'Car and Auto Rent',
+    name: 'ಬಾಡಿಗೆ ವಾಹನ',
+    nameEn: 'Vehicle for Rent',
     icon: '🚗',
     color: 'bg-orange-100',
     gradient: 'from-orange-500 to-amber-400',
@@ -150,7 +78,7 @@ export const categories: CategoryItem[] = [
   {
     id: 'services',
     name: 'ಇತರ ಸೇವೆಗಳು',
-    nameEn: 'Others Service',
+    nameEn: 'Other Services',
     icon: '🔧',
     color: 'bg-red-100',
     gradient: 'from-rose-500 to-red-400',
@@ -158,10 +86,8 @@ export const categories: CategoryItem[] = [
   },
 ];
 
-// Returns only top-level categories (no parentId)
 export const topLevelCategories = categories.filter((c) => !c.parentId);
 
-// Returns subcategories for a given parent
 export function getSubcategories(parentId: string): CategoryItem[] {
   return categories.filter((c) => c.parentId === parentId);
 }
@@ -173,25 +99,55 @@ export function getCategoryIcon(catId?: string): string {
   const legacyMap: Record<string, string> = {
     'property': '🏠',
     'property-sales': '🏠',
+    'property-sales-house': '🏠',
+    'property-sales-plots': '📐',
+    'property-sales-agri-land': '🌾',
+    'property-sales-shop': '🏪',
     'property-rent': '🏢',
+    'property-rent-house': '🏠',
+    'property-rent-shop': '🏪',
+    'property-rent-pg': '🛏️',
+    'agriculture-equipment': '🚜',
+    'agri-tractor': '🚜',
+    'agri-rotavator': '⚙️',
+    'agri-cultivator': '🌱',
+    'agri-seeder': '🌾',
+    'agri-sprayer': '💧',
+    'agri-trailer': '🚛',
+    'agri-water-pump': '🚰',
+    'danakarugalu': '🐄',
+    'livestock-dairy': '🥛',
+    'livestock-sheep': '🐑',
+    'livestock-goat': '🐐',
+    'livestock-buffalo': '🐃',
+    'livestock-cow': '🐄',
+    'livestock-bull': '🐂',
+    'pets': '🐕',
+    'pets-dog': '🐕',
+    'pets-cat': '🐈',
+    'vehicle-rent': '🚗',
+    'vehicle-rent-car': '🚗',
+    'vehicle-rent-auto': '🛺',
+    'vehicle-rent-tempo': '🚐',
+    'vehicle-rent-mini-truck': '🚚',
+    'services': '🔧',
+    'services-electrician': '⚡',
+    'services-plumber': '🔧',
+    'services-carpenter': '🪚',
+    'services-painter': '🎨',
+    'services-cctv': '📷',
+    'agents': '🤝',
+    'agent': '🤝',
     'agricultural-products': '🌾',
     'livestock': '🐄',
     'farm-equipment': '🚜',
     'tractor-rental': '🚜',
     'vehicle-rental': '🚗',
-    'vehicle-rent': '🚗',
     'labor': '👨‍🌾',
     'land': '🏞️',
-    'agents': '🤝',
-    'agent': '🤝',
-    'danakarugalu': '🐄',
-    'pets': '🐕',
     'animals-pets': '🐕',
-    'services': '🔧',
   };
   return legacyMap[catId] || '📦';
 }
 
 export default categories;
-
-

@@ -45,12 +45,13 @@ const UNLOCK_PRICE_RUPEES = UNLOCK_PRICE_PAISE > 0 ? UNLOCK_PRICE_PAISE / 100 : 
 export default function ContactUnlockModal({ listingId }: Props) {
   const { isLoggedIn, user } = useAuth();
   const [unlocked, setUnlocked] = useState(false);
+  const [isFree, setIsFree] = useState(false);
   const [phone, setPhone] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [price, setPrice] = useState<number | null>(UNLOCK_PRICE_RUPEES);
 
-  // Check if already unlocked on mount + fetch price if not set from env
+  // Check if already unlocked / free on mount + fetch price if not set from env
   useEffect(() => {
     if (!isLoggedIn) {
       setChecking(false);
@@ -58,6 +59,7 @@ export default function ContactUnlockModal({ listingId }: Props) {
     }
     api.checkUnlock(listingId)
       .then((res) => {
+        if (res.free) setIsFree(true);
         if (res.unlocked) {
           setUnlocked(true);
           setPhone(res.phone || null);
@@ -141,12 +143,14 @@ export default function ContactUnlockModal({ listingId }: Props) {
 
   const priceDisplay = price ? `₹${price}` : "...";
 
-  // If already unlocked, show contact directly
+  // If already unlocked (paid) or free category, show contact directly
   if (unlocked && phone) {
     return (
       <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
         <CheckCircle2 className="mx-auto mb-2 text-green-500" size={28} />
-        <p className="text-sm text-green-700 font-medium mb-2">ಕಾಂಟ್ಯಾಕ್ಟ್ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ</p>
+        <p className="text-sm text-green-700 font-medium mb-2">
+          {isFree ? "ಉಚಿತ ಕಾಂಟ್ಯಾಕ್ಟ್ (Free Contact)" : "ಕಾಂಟ್ಯಾಕ್ಟ್ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ"}
+        </p>
         <p className="text-xl font-bold text-green-800">{phone}</p>
         <a href={`tel:${phone}`} className="mt-2 inline-block">
           <Button variant="outline" size="sm" className="border-green-300 text-green-700">

@@ -1,12 +1,14 @@
 "use client";
 import { useParams } from "next/navigation";
-import { Plus, Heart, MapPin, ArrowRight } from "lucide-react";
+import { Heart, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { getCategoryIcon } from "@/lib/categories";
 import { useCategories } from "@/lib/useCategories";
+import { useLang } from "@/lib/lang-context";
 import { api, ListingData } from "@/lib/api";
+import { toast } from "sonner";
 import { useState, useEffect } from "react";
 
 export default function CategoryPage() {
@@ -14,19 +16,71 @@ export default function CategoryPage() {
   const id = params.id as string;
 
   const { getCategory, getSubcats, getParent } = useCategories();
+  const { lang } = useLang();
   const category = getCategory(id);
   const subcategories = getSubcats(id);
   const parentCategory = getParent(id);
 
+  // Primary/secondary name based on selected language
+  const primaryName = (c?: { name: string; nameEn: string }) =>
+    !c ? "" : lang === "en" ? c.nameEn : c.name;
+  const secondaryName = (c?: { name: string; nameEn: string }) =>
+    !c ? "" : lang === "en" ? c.name : c.nameEn;
+
   const [listings, setListings] = useState<ListingData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
+    // Only fetch listings if this category has no subcategories
+    if (subcategories.length > 0) {
+      setLoading(false);
+      return;
+    }
     api.getListingsByCategory(id)
       .then((res) => setListings(res.content))
       .catch(() => setListings([]))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, subcategories.length]);
+
+  // Load which listings are already favorited
+  useEffect(() => {
+    if (!api.getToken()) return;
+    api.getFavorites(0, 100)
+      .then((res) => setFavoriteIds(new Set(res.content.map((f) => f.id))))
+      .catch(() => {});
+  }, []);
+
+  const toggleFavorite = async (e: React.MouseEvent, listingId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!api.getToken()) {
+      toast.error("ದಯವಿಟ್ಟು ಮೊದಲು ಲಾಗಿನ್ ಮಾಡಿ (Please login first)");
+      return;
+    }
+    const isFav = favoriteIds.has(listingId);
+    // Optimistic update
+    setFavoriteIds((prev) => {
+      const next = new Set(prev);
+      isFav ? next.delete(listingId) : next.add(listingId);
+      return next;
+    });
+    try {
+      if (isFav) {
+        await api.removeFavorite(listingId);
+      } else {
+        await api.addFavorite(listingId);
+      }
+    } catch {
+      // Revert on failure
+      setFavoriteIds((prev) => {
+        const next = new Set(prev);
+        isFav ? next.add(listingId) : next.delete(listingId);
+        return next;
+      });
+      toast.error("Failed to update favorite");
+    }
+  };
 
   const isAgentCategory = id === "agents" || id === "agent";
 
@@ -37,32 +91,30 @@ export default function CategoryPage() {
         {/* Breadcrumb for subcategories */}
         {parentCategory && (
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
-            <Link href="/home" className="hover:text-primary">ಮುಖಪುಟ</Link>
+            <Link href="/home" className="hover:text-primary">{lang === "en" ? "Home" : "ಮುಖಪುಟ"}</Link>
             <span>/</span>
             <Link href={`/category/${parentCategory.id}`} className="hover:text-primary">
-              {parentCategory.name}
+              {primaryName(parentCategory)}
             </Link>
             <span>/</span>
-            <span className="text-foreground font-medium">{category?.name}</span>
+            <span className="text-foreground font-medium">{primaryName(category)}</span>
           </div>
         )}
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground">{category?.name}</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">{primaryName(category)}</h1>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              {isAgentCategory ? "ನೋಂದಾಯಿತ ಅಧಿಕೃತ ಏಜೆಂಟರು (Verified Agents)" : category?.nameEn} • {listings.length} {isAgentCategory ? "ಏಜೆಂಟರು" : "ಜಾಹೀರಾತುಗಳು"}
+              {isAgentCategory ? (lang === "en" ? "Verified Agents" : "ನೋಂದಾಯಿತ ಅಧಿಕೃತ ಏಜೆಂಟರು") : secondaryName(category)} • {listings.length} {isAgentCategory ? (lang === "en" ? "Agents" : "ಏಜೆಂಟರು") : (lang === "en" ? "Listings" : "ಜಾಹೀರಾತುಗಳು")}
             </p>
           </div>
-          <Link href={`/category/${id}/create`}>
-            <Button className="bg-primary hover:bg-primary/90 text-xs sm:text-sm font-medium w-full sm:w-auto">
-              {isAgentCategory ? (
-                <>🤝 ಏಜೆಂಟ್ ನೋಂದಣಿ / ರೆಫರಲ್ ಐಡಿ</>
-              ) : (
-                <><Plus size={16} className="mr-1.5" /> ಹೊಸ ಜಾಹೀರಾತು</>
-              )}
-            </Button>
-          </Link>
+          {isAgentCategory && (
+            <Link href={`/category/${id}/create`}>
+              <Button className="bg-primary hover:bg-primary/90 text-xs sm:text-sm font-medium w-full sm:w-auto">
+                🤝 ಏಜೆಂಟ್ ನೋಂದಣಿ / ರೆಫರಲ್ ಐಡಿ
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Subcategories grid */}
@@ -81,7 +133,7 @@ export default function CategoryPage() {
                     {sub.image ? (
                       <img
                         src={sub.image}
-                        alt={sub.name}
+                        alt={sub.nameEn}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         loading="lazy"
                       />
@@ -90,18 +142,19 @@ export default function CategoryPage() {
                         <span className="text-4xl sm:text-5xl">{sub.icon}</span>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
-                    {/* Icon badge */}
-                    <div className={`absolute top-1.5 left-1.5 sm:top-2 sm:left-2 w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-gradient-to-br ${sub.gradient || "from-green-500 to-emerald-400"} flex items-center justify-center shadow text-sm sm:text-lg`}>
-                      {sub.icon}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    {/* Category name overlaid on image */}
+                    <div className="absolute bottom-0 left-0 right-0 px-2.5 py-2">
+                      <span className="text-white text-xs sm:text-sm font-semibold drop-shadow leading-tight line-clamp-1">
+                        {primaryName(sub)}
+                      </span>
                     </div>
                   </div>
-                  <div className="px-2.5 py-2 sm:px-3 sm:py-3">
-                    <span className="text-xs sm:text-sm font-semibold text-foreground block leading-tight truncate">{sub.name}</span>
-                    <div className="flex items-center justify-between mt-0.5 sm:mt-1">
-                      <span className="text-[9px] sm:text-[10px] text-muted-foreground truncate mr-1">{sub.nameEn}</span>
-                      <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
-                        <ArrowRight size={10} className="text-primary group-hover:text-white sm:w-3 sm:h-3" />
+                  <div className="px-2.5 py-2 sm:px-3 sm:py-2.5">
+                    <span className="text-[10px] sm:text-xs text-muted-foreground block truncate">{secondaryName(sub)}</span>
+                    <div className="flex items-center justify-end mt-0.5">
+                      <span className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
+                        <ArrowRight size={10} className="text-primary group-hover:text-white" />
                       </span>
                     </div>
                   </div>
@@ -168,8 +221,15 @@ export default function CategoryPage() {
                         <p className="font-semibold text-sm sm:text-base text-foreground truncate">{item.title}</p>
                         <p className="text-xs text-muted-foreground mt-0.5 truncate">{item.titleEn || item.skill || item.experience || ""}</p>
                       </div>
-                      <button className="text-muted-foreground/50 hover:text-red-500 transition-colors p-1" onClick={(e) => e.preventDefault()}>
-                        <Heart size={16} />
+                      <button
+                        className="transition-colors p-1"
+                        onClick={(e) => toggleFavorite(e, item.id)}
+                        aria-label="Toggle favorite"
+                      >
+                        <Heart
+                          size={16}
+                          className={favoriteIds.has(item.id) ? "text-red-500 fill-red-500" : "text-muted-foreground/50 hover:text-red-500"}
+                        />
                       </button>
                     </div>
                     <p className="text-base sm:text-lg font-bold text-primary mt-1.5 truncate">
@@ -186,7 +246,7 @@ export default function CategoryPage() {
               </Link>
             ))}
           </div>
-        ) : (
+        ) : subcategories.length > 0 ? null : (
           <div className="text-center py-14 bg-card rounded-2xl border border-border">
             <p className="text-4xl sm:text-5xl mb-3">{getCategoryIcon(id)}</p>
             <p className="text-foreground font-medium text-sm sm:text-base">
@@ -195,11 +255,13 @@ export default function CategoryPage() {
             <p className="text-xs text-muted-foreground mt-1">
               {isAgentCategory ? "ನೀವೂ ಅಧಿಕೃತ Dealspot ಏಜೆಂಟ್ ಆಗಿ ನೋಂದಾಯಿಸಬಹುದು!" : "No listings in this category yet"}
             </p>
-            <Link href={`/category/${id}/create`} className="inline-block mt-4">
-              <Button className="bg-primary hover:bg-primary/90 text-xs sm:text-sm">
-                {isAgentCategory ? "🤝 ಮೊದಲ ಏಜೆಂಟ್ ಆಗಿ ನೋಂದಾಯಿಸಿ" : <><Plus size={16} className="mr-1.5" /> ಮೊದಲ ಜಾಹೀರಾತು ಹಾಕಿ</>}
-              </Button>
-            </Link>
+            {isAgentCategory && (
+              <Link href={`/category/${id}/create`} className="inline-block mt-4">
+                <Button className="bg-primary hover:bg-primary/90 text-xs sm:text-sm">
+                  🤝 ಮೊದಲ ಏಜೆಂಟ್ ಆಗಿ ನೋಂದಾಯಿಸಿ
+                </Button>
+              </Link>
+            )}
           </div>
         )}
       </div>
