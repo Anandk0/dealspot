@@ -19,7 +19,7 @@ const adminNav: NavItem[] = [
   { href: "/admin/moderation", icon: FileCheck, label: "Moderation", minimumRole: "CHECKER" },
   { href: "/admin/users", icon: Users, label: "Users", minimumRole: "ADMIN" },
   { href: "/admin/revenue", icon: IndianRupee, label: "Revenue", minimumRole: "ADMIN" },
-  { href: "/admin/banners", icon: Image, label: "Banners", minimumRole: "ADMIN" },
+  { href: "/admin/banners", icon: Image, label: "Banners", minimumRole: "CHECKER" },
   { href: "/admin/categories", icon: Tag, label: "Categories", minimumRole: "ADMIN" },
   { href: "/admin/settings", icon: Settings, label: "Settings", minimumRole: "SUPER_ADMIN" },
   { href: "/admin/audit", icon: ScrollText, label: "Audit Logs", minimumRole: "SUPER_ADMIN" },

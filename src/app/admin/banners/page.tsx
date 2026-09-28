@@ -14,10 +14,16 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { api, type BannerResponse, type CreateBannerRequest } from "@/lib/api";
-import { useAdminGuard } from "@/lib/useAdminGuard";
+import { useAdminGuard, hasMinimumRole } from "@/lib/useAdminGuard";
+import { useAuth } from "@/lib/auth-context";
 
 export default function BannersPage() {
-  const { isAuthorized, isLoading: guardLoading } = useAdminGuard("ADMIN");
+  const { isAuthorized, isLoading: guardLoading } = useAdminGuard("CHECKER");
+  const { user } = useAuth();
+
+  // ADMIN/SUPER_ADMIN can delete any banner; a CHECKER can only delete their own.
+  const canDeleteBanner = (banner: BannerResponse) =>
+    hasMinimumRole(user?.role, "ADMIN") || banner.createdById === user?.id;
 
   const [banners, setBanners] = useState<BannerResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -184,16 +190,26 @@ export default function BannersPage() {
                       <LinkIcon size={14} />
                     </a>
                   )}
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-red-500 h-7"
-                    onClick={() => setDeleteTarget(banner)}
-                  >
-                    <Trash2 size={12} className="mr-1" /> Delete
-                  </Button>
+                  {canDeleteBanner(banner) && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-red-500 h-7"
+                      onClick={() => setDeleteTarget(banner)}
+                    >
+                      <Trash2 size={12} className="mr-1" /> Delete
+                    </Button>
+                  )}
                 </div>
               </div>
+              {banner.createdByName && (
+                <div className="px-4 pb-3 -mt-1">
+                  <span className="text-[11px] text-muted-foreground">
+                    Created by {banner.createdByName}
+                    {banner.createdById === user?.id ? " (you)" : ""}
+                  </span>
+                </div>
+              )}
             </div>
           ))}
         </div>

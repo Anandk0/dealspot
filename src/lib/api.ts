@@ -633,6 +633,8 @@ export interface BannerResponse {
   startDate?: string;
   endDate?: string;
   createdAt: string;
+  createdById?: number;
+  createdByName?: string;
 }
 
 export interface CreateBannerRequest {
