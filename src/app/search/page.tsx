@@ -38,17 +38,17 @@ export default function SearchPage() {
         {/* Search Input */}
         <div className="flex items-center gap-3 mb-8">
           <div className="flex-1 relative">
-            <SearchIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <SearchIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="ಉತ್ಪನ್ನ, ಪ್ರಾಣಿ, ಸೇವೆ ಹುಡುಕಿ..."
               value={query}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-11 pr-10 h-12 rounded-xl bg-white border-gray-200 text-base"
+              className="pl-11 pr-10 h-12 rounded-xl bg-card border-border text-base"
               autoFocus
             />
             {query && (
               <button onClick={() => { setQuery(""); setResults([]); setSearched(false); }} className="absolute right-4 top-1/2 -translate-y-1/2">
-                <X size={18} className="text-gray-400" />
+                <X size={18} className="text-muted-foreground" />
               </button>
             )}
           </div>
@@ -60,26 +60,26 @@ export default function SearchPage() {
         {loading ? (
           <div className="space-y-3">
             {[1,2,3].map(i => (
-              <div key={i} className="flex items-center gap-4 p-4 bg-white rounded-xl border animate-pulse">
-                <div className="w-12 h-12 bg-gray-200 rounded-xl" />
+              <div key={i} className="flex items-center gap-4 p-4 bg-card rounded-xl border border-border animate-pulse">
+                <div className="w-12 h-12 bg-muted rounded-xl" />
                 <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
-                  <div className="h-3 bg-gray-200 rounded w-1/3" />
+                  <div className="h-4 bg-muted rounded w-1/2 mb-2" />
+                  <div className="h-3 bg-muted rounded w-1/3" />
                 </div>
               </div>
             ))}
           </div>
         ) : searched && results.length > 0 ? (
           <div>
-            <p className="text-sm text-gray-500 mb-4">{results.length} ಫಲಿತಾಂಶಗಳು</p>
+            <p className="text-sm text-muted-foreground mb-4">{results.length} ಫಲಿತಾಂಶಗಳು</p>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               {results.map((item) => (
                 <Link
                   key={item.id}
                   href={`/category/${item.category}/${item.id}`}
-                  className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:border-primary/20 hover:shadow-sm transition"
+                  className="flex items-center gap-4 p-4 bg-card rounded-xl border border-border hover:border-primary/40 hover:shadow-sm transition"
                 >
-                  <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
+                  <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center overflow-hidden">
                     {item.images && item.images.length > 0 ? (
                       <img src={item.images[0]} alt="" className="w-full h-full object-cover" />
                     ) : (
@@ -87,12 +87,12 @@ export default function SearchPage() {
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-800">{item.title}</p>
+                    <p className="font-medium text-card-foreground">{item.title}</p>
                     <p className="text-sm text-primary font-semibold">
                       {item.price ? `₹${item.price.toLocaleString()}` : item.rateInfo || ""}
                     </p>
                     {item.location && (
-                      <div className="flex items-center gap-1 text-xs text-gray-400 mt-0.5">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
                         <MapPin size={11} />
                         <span>{item.location}</span>
                       </div>
@@ -104,14 +104,14 @@ export default function SearchPage() {
           </div>
         ) : searched ? (
           <div className="text-center py-16">
-            <SearchIcon size={56} className="mx-auto text-gray-200 mb-4" />
-            <p className="text-gray-500">ಯಾವುದೇ ಫಲಿತಾಂಶ ಸಿಗಲಿಲ್ಲ</p>
-            <p className="text-gray-400 text-sm">No results found for &quot;{query}&quot;</p>
+            <SearchIcon size={56} className="mx-auto text-muted-foreground/40 mb-4" />
+            <p className="text-muted-foreground">ಯಾವುದೇ ಫಲಿತಾಂಶ ಸಿಗಲಿಲ್ಲ</p>
+            <p className="text-muted-foreground/70 text-sm">No results found for &quot;{query}&quot;</p>
           </div>
         ) : (
           <div className="text-center py-16">
-            <SearchIcon size={56} className="mx-auto text-gray-200 mb-4" />
-            <p className="text-gray-400">ಹುಡುಕಲು ಟೈಪ್ ಮಾಡಿ (Type to search)</p>
+            <SearchIcon size={56} className="mx-auto text-muted-foreground/40 mb-4" />
+            <p className="text-muted-foreground/70">ಹುಡುಕಲು ಟೈಪ್ ಮಾಡಿ (Type to search)</p>
           </div>
         )}
       </div>

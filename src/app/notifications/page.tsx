@@ -49,10 +49,10 @@ export default function NotificationsPage() {
     return (
       <AppLayout>
         <div className="max-w-3xl mx-auto p-6">
-          <div className="text-center py-16 bg-white rounded-xl border">
-            <LogIn size={40} className="mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-600 font-medium">ಅಧಿಸೂಚನೆಗಳನ್ನು ನೋಡಲು ಲಾಗಿನ್ ಮಾಡಿ</p>
-            <p className="text-sm text-gray-400 mt-1">Please login to see notifications.</p>
+          <div className="text-center py-16 bg-card rounded-xl border border-border">
+            <LogIn size={40} className="mx-auto text-muted-foreground/50 mb-4" />
+            <p className="text-foreground font-medium">ಅಧಿಸೂಚನೆಗಳನ್ನು ನೋಡಲು ಲಾಗಿನ್ ಮಾಡಿ</p>
+            <p className="text-sm text-muted-foreground mt-1">Please login to see notifications.</p>
             <Link href="/login">
               <Button className="mt-4 bg-primary">ಲಾಗಿನ್ (Login)</Button>
             </Link>
@@ -66,7 +66,7 @@ export default function NotificationsPage() {
     <AppLayout>
       <div className="max-w-3xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-bold text-gray-800">ಅಧಿಸೂಚನೆಗಳು (Notifications)</h1>
+          <h1 className="text-xl font-bold text-foreground">ಅಧಿಸೂಚನೆಗಳು (Notifications)</h1>
           {notifications.length > 0 && (
             <Button variant="ghost" size="sm" onClick={handleMarkAllRead}>
               <CheckCheck size={16} className="mr-1" /> ಎಲ್ಲಾ ಓದಿದೆ
@@ -77,12 +77,12 @@ export default function NotificationsPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="p-5 rounded-xl border bg-white animate-pulse">
+              <div key={i} className="p-5 rounded-xl border border-border bg-card animate-pulse">
                 <div className="flex gap-4">
-                  <div className="w-11 h-11 rounded-full bg-gray-200" />
+                  <div className="w-11 h-11 rounded-full bg-muted" />
                   <div className="flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-1/3 mb-2" />
-                    <div className="h-3 bg-gray-200 rounded w-2/3" />
+                    <div className="h-4 bg-muted rounded w-1/3 mb-2" />
+                    <div className="h-3 bg-muted rounded w-2/3" />
                   </div>
                 </div>
               </div>
@@ -94,32 +94,32 @@ export default function NotificationsPage() {
               <div
                 key={n.id}
                 className={`p-5 rounded-xl border transition-all hover:shadow-sm ${
-                  n.read ? "bg-white border-gray-100" : "bg-primary/5 border-primary/20"
+                  n.read ? "bg-card border-border" : "bg-primary/10 border-primary/30"
                 }`}
               >
                 <div className="flex gap-4">
                   <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
-                    n.read ? "bg-gray-100" : "bg-primary/10"
+                    n.read ? "bg-muted" : "bg-primary/20"
                   }`}>
-                    <Bell size={18} className={n.read ? "text-gray-400" : "text-primary"} />
+                    <Bell size={18} className={n.read ? "text-muted-foreground" : "text-primary"} />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-start justify-between">
-                      <p className="font-medium text-gray-800">{n.title}</p>
+                      <p className="font-medium text-card-foreground">{n.title}</p>
                       {!n.read && <div className="w-2.5 h-2.5 bg-primary rounded-full mt-1.5" />}
                     </div>
-                    <p className="text-sm text-gray-500 mt-0.5">{n.message}</p>
-                    <p className="text-xs text-gray-400 mt-2">{formatTime(n.createdAt)}</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">{n.message}</p>
+                    <p className="text-xs text-muted-foreground/70 mt-2">{formatTime(n.createdAt)}</p>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-white rounded-xl border">
-            <Bell size={40} className="mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500">ಯಾವುದೇ ಅಧಿಸೂಚನೆಗಳಿಲ್ಲ</p>
-            <p className="text-sm text-gray-400 mt-1">No notifications yet.</p>
+          <div className="text-center py-16 bg-card rounded-xl border border-border">
+            <Bell size={40} className="mx-auto text-muted-foreground/50 mb-4" />
+            <p className="text-muted-foreground">ಯಾವುದೇ ಅಧಿಸೂಚನೆಗಳಿಲ್ಲ</p>
+            <p className="text-sm text-muted-foreground/70 mt-1">No notifications yet.</p>
           </div>
         )}
       </div>
