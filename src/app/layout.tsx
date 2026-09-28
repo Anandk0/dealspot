@@ -13,8 +13,15 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Deal Spot - ಡೀಲ್ ಸ್ಪಾಟ್",
+  title: "Dealspot Connect - ಡೀಲ್ ಸ್ಪಾಟ್",
   description: "Rural Marketplace for Karnataka Villages",
+  icons: {
+    icon: [
+      { url: "/logo.png", type: "image/png" },
+    ],
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
