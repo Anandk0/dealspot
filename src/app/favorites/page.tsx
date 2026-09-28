@@ -33,18 +33,18 @@ export default function FavoritesPage() {
       <div className="max-w-4xl mx-auto p-6">
         <div className="flex items-center gap-2 mb-6">
           <Heart size={20} className="text-red-400" />
-          <h1 className="text-xl font-bold text-gray-800">ಇಷ್ಟಪಟ್ಟಿ (Favorites)</h1>
+          <h1 className="text-xl font-bold text-foreground">ಇಷ್ಟಪಟ್ಟಿ (Favorites)</h1>
         </div>
 
         {loading ? (
           <div className="space-y-3">
             {[1,2].map(i => (
-              <div key={i} className="bg-white rounded-xl p-4 border animate-pulse">
+              <div key={i} className="bg-card rounded-xl p-4 border border-border animate-pulse">
                 <div className="flex gap-4">
-                  <div className="w-20 h-20 bg-gray-200 rounded-xl" />
+                  <div className="w-20 h-20 bg-muted rounded-xl" />
                   <div className="flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
-                    <div className="h-5 bg-gray-200 rounded w-1/3" />
+                    <div className="h-4 bg-muted rounded w-1/2 mb-2" />
+                    <div className="h-5 bg-muted rounded w-1/3" />
                   </div>
                 </div>
               </div>
@@ -53,10 +53,10 @@ export default function FavoritesPage() {
         ) : favorites.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {favorites.map((item) => (
-              <div key={item.id} className="bg-white rounded-xl p-4 shadow-sm border hover:shadow-md transition">
+              <div key={item.id} className="bg-card rounded-xl p-4 shadow-sm border border-border hover:shadow-md transition">
                 <div className="flex gap-4">
                   <Link href={`/category/${item.category}/${item.id}`} className="flex gap-4 flex-1">
-                    <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden shrink-0">
+                    <div className="w-20 h-20 bg-muted rounded-xl flex items-center justify-center overflow-hidden shrink-0">
                       {item.images?.length > 0 ? (
                         <img src={item.images[0]} alt="" className="w-full h-full object-cover" />
                       ) : (
@@ -64,18 +64,18 @@ export default function FavoritesPage() {
                       )}
                     </div>
                     <div>
-                      <p className="font-medium text-gray-800">{item.title}</p>
+                      <p className="font-medium text-card-foreground">{item.title}</p>
                       <p className="text-lg font-bold text-primary mt-1">
                         {item.price ? `₹${item.price.toLocaleString()}` : item.rateInfo || ""}
                       </p>
                       {item.location && (
-                        <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                           <MapPin size={11} /> {item.location}
                         </div>
                       )}
                     </div>
                   </Link>
-                  <button onClick={() => removeFavorite(item.id)} className="self-start p-2 text-red-400 hover:bg-red-50 rounded-lg">
+                  <button onClick={() => removeFavorite(item.id)} className="self-start p-2 text-red-400 hover:bg-red-500/10 rounded-lg">
                     <Trash2 size={16} />
                   </button>
                 </div>
@@ -83,10 +83,10 @@ export default function FavoritesPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-white rounded-xl border">
-            <Heart size={48} className="mx-auto text-gray-200 mb-3" />
-            <p className="text-gray-500">ಇನ್ನೂ ಯಾವುದೇ ಇಷ್ಟಪಟ್ಟಿ ಇಲ್ಲ</p>
-            <p className="text-sm text-gray-400">No favorites yet</p>
+          <div className="text-center py-16 bg-card rounded-xl border border-border">
+            <Heart size={48} className="mx-auto text-muted-foreground/40 mb-3" />
+            <p className="text-muted-foreground">ಇನ್ನೂ ಯಾವುದೇ ಇಷ್ಟಪಟ್ಟಿ ಇಲ್ಲ</p>
+            <p className="text-sm text-muted-foreground/70">No favorites yet</p>
           </div>
         )}
       </div>
