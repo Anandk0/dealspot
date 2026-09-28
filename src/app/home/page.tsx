@@ -329,9 +329,9 @@ export default function HomePage() {
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground flex-wrap">
             <Link href="/about" className="hover:text-primary">About Us</Link>
             <span>•</span>
-            <Link href="/help" className="hover:text-primary">Terms & Conditions</Link>
+            <Link href="/terms" className="hover:text-primary">Terms & Conditions</Link>
             <span>•</span>
-            <Link href="/help" className="hover:text-primary">Privacy Policy</Link>
+            <Link href="/privacy" className="hover:text-primary">Privacy Policy</Link>
           </div>
 
           <p className="text-center text-[10px] text-muted-foreground">
