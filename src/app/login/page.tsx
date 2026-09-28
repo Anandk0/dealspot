@@ -178,31 +178,39 @@ export default function LoginPage() {
           <div className="space-y-4">
             <div className="text-center">
               <MailCheck className="mx-auto text-primary mb-2" size={36} />
-              <p className="text-sm text-muted-foreground">
-                {form.email} ಗೆ ಕಳುಹಿಸಿದ 6-ಅಂಕಿಯ OTP ನಮೂದಿಸಿ
+              <p className="text-sm font-medium text-foreground">OTP ನಮೂದಿಸಿ (Enter OTP)</p>
+              <p className="text-xs text-muted-foreground mt-1 break-all px-2">
+                {form.email}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                ಗೆ ಕಳುಹಿಸಿದ 6-ಅಂಕಿಯ ಕೋಡ್ (6-digit code sent)
               </p>
             </div>
-            <Input
+
+            <input
               name="otp"
               type="text"
               inputMode="numeric"
+              autoComplete="one-time-code"
               value={otp}
               onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
               placeholder="000000"
-              className="h-12 text-center text-2xl tracking-[0.5em] font-bold"
               maxLength={6}
+              className="w-full h-14 rounded-xl border border-input bg-background text-center text-3xl font-bold tracking-[0.4em] text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/40 placeholder:tracking-[0.4em]"
             />
+
             <Button
               onClick={handleVerifyOtp}
               disabled={otpVerifying || loading}
-              className="w-full h-11 bg-primary text-base"
+              className="w-full h-11 bg-primary text-sm sm:text-base"
             >
               {(otpVerifying || loading) ? (
-                <><Loader2 size={16} className="mr-2 animate-spin" /> ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</>
+                <><Loader2 size={16} className="mr-2 animate-spin shrink-0" /> ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</>
               ) : (
-                "ಪರಿಶೀಲಿಸಿ & ನೋಂದಾಯಿಸಿ (Verify & Register)"
+                <span className="truncate">ಪರಿಶೀಲಿಸಿ (Verify &amp; Register)</span>
               )}
             </Button>
+
             <button
               onClick={handleSendOtp}
               disabled={otpSending}
