@@ -198,12 +198,18 @@ export default function ContactUnlockModal({ listingId }: Props) {
       <Button
         onClick={handleFreeUnlock}
         disabled={loading}
-        className="w-full bg-primary hover:bg-primary/90"
+        className="w-full bg-primary hover:bg-primary/90 h-auto py-2.5 whitespace-normal"
       >
         {loading ? (
-          <><Loader2 size={16} className="mr-2 animate-spin" /> ಲೋಡ್ ಆಗುತ್ತಿದೆ...</>
+          <><Loader2 size={16} className="mr-2 shrink-0 animate-spin" /> ಲೋಡ್ ಆಗುತ್ತಿದೆ...</>
         ) : (
-          <><Lock size={16} className="mr-2" /> ಉಚಿತವಾಗಿ ಅನ್‌ಲಾಕ್ ಮಾಡಿ (Unlock for Free)</>
+          <span className="flex items-center justify-center gap-2 leading-tight">
+            <Lock size={16} className="shrink-0" />
+            <span className="flex flex-col items-center">
+              <span>ಉಚಿತವಾಗಿ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</span>
+              <span className="text-xs font-normal opacity-90">Unlock for Free</span>
+            </span>
+          </span>
         )}
       </Button>
     );
