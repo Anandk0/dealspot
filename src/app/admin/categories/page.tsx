@@ -149,7 +149,7 @@ export default function AdminCategoriesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-gray-400" size={28} />
+        <Loader2 className="animate-spin text-muted-foreground" size={28} />
       </div>
     );
   }
@@ -159,8 +159,8 @@ export default function AdminCategoriesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Categories</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{categories.length} top-level categories</p>
+          <h1 className="text-2xl font-bold text-foreground">Categories</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{categories.length} top-level categories</p>
         </div>
         <Button onClick={openCreateParent} className="flex items-center gap-2">
           <Plus size={16} /> New Category
@@ -168,22 +168,22 @@ export default function AdminCategoriesPage() {
       </div>
 
       {/* Category Tree */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
         {categories.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-muted-foreground/70">
             <Tag size={40} className="mx-auto mb-3 opacity-30" />
             <p>No categories yet. Create your first one!</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-border">
             {categories.map((cat) => (
               <div key={cat.id}>
                 {/* Parent Row */}
-                <div className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 group">
+                <div className="flex items-center gap-3 px-4 py-3 hover:bg-muted group">
                   {/* Expand toggle */}
                   <button
                     onClick={() => toggleExpand(cat.id)}
-                    className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-700 shrink-0"
+                    className="w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-foreground shrink-0"
                   >
                     {cat.subcategories?.length > 0
                       ? expanded.has(cat.id) ? <ChevronDown size={16} /> : <ChevronRight size={16} />
@@ -196,8 +196,8 @@ export default function AdminCategoriesPage() {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-gray-800 text-sm">{cat.name}</span>
-                      <span className="text-xs text-gray-400">{cat.nameEn}</span>
+                      <span className="font-semibold text-foreground text-sm">{cat.name}</span>
+                      <span className="text-xs text-muted-foreground">{cat.nameEn}</span>
                       {!cat.active && (
                         <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">Inactive</span>
                       )}
@@ -232,7 +232,7 @@ export default function AdminCategoriesPage() {
                     <button
                       onClick={() => openEdit(cat)}
                       title="Edit"
-                      className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition"
+                      className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition"
                     >
                       <Pencil size={15} />
                     </button>
@@ -249,14 +249,14 @@ export default function AdminCategoriesPage() {
 
                 {/* Subcategories */}
                 {expanded.has(cat.id) && cat.subcategories?.length > 0 && (
-                  <div className="bg-gray-50 border-t border-gray-100">
+                  <div className="bg-muted border-t border-border">
                     {cat.subcategories.map((sub) => (
-                      <div key={sub.id} className="flex items-center gap-3 px-4 py-2.5 pl-14 hover:bg-gray-100 group border-b border-gray-100 last:border-0">
+                      <div key={sub.id} className="flex items-center gap-3 px-4 py-2.5 pl-14 hover:bg-muted/70 group border-b border-border last:border-0">
                         <span className="text-lg w-6 text-center shrink-0">{sub.icon || "📄"}</span>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-medium text-gray-700 text-sm">{sub.name}</span>
-                            <span className="text-xs text-gray-400">{sub.nameEn}</span>
+                            <span className="font-medium text-foreground text-sm">{sub.name}</span>
+                            <span className="text-xs text-muted-foreground">{sub.nameEn}</span>
                             {!sub.active && (
                               <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">Inactive</span>
                             )}
@@ -276,7 +276,7 @@ export default function AdminCategoriesPage() {
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                           <button
                             onClick={() => openEdit(sub)}
-                            className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-200 transition"
+                            className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted/70 transition"
                           >
                             <Pencil size={14} />
                           </button>
@@ -301,13 +301,13 @@ export default function AdminCategoriesPage() {
       {/* Form Modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="bg-card rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h2 className="font-bold text-gray-800 text-lg">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+              <h2 className="font-bold text-foreground text-lg">
                 {editingId ? "Edit Category" : form.parentId ? "Add Subcategory" : "New Category"}
               </h2>
-              <button onClick={closeForm} className="p-2 rounded-lg hover:bg-gray-100">
+              <button onClick={closeForm} className="p-2 rounded-lg hover:bg-muted">
                 <X size={18} />
               </button>
             </div>
@@ -317,14 +317,14 @@ export default function AdminCategoriesPage() {
               {/* Parent selector (only when creating) */}
               {!editingId && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Type</label>
+                  <label className="text-sm font-medium text-foreground mb-1 block">Type</label>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setForm(f => ({ ...f, parentId: null }))}
                       className={`flex-1 py-2 rounded-lg border text-sm font-medium transition ${
                         form.parentId === null
                           ? "border-primary bg-primary/5 text-primary"
-                          : "border-gray-200 text-gray-500 hover:bg-gray-50"
+                          : "border-border text-muted-foreground hover:bg-muted"
                       }`}
                     >
                       Parent Category
@@ -337,7 +337,7 @@ export default function AdminCategoriesPage() {
                       className={`flex-1 py-2 rounded-lg border text-sm font-medium transition ${
                         form.parentId !== null
                           ? "border-primary bg-primary/5 text-primary"
-                          : "border-gray-200 text-gray-500 hover:bg-gray-50"
+                          : "border-border text-muted-foreground hover:bg-muted"
                       }`}
                     >
                       Subcategory
@@ -349,11 +349,11 @@ export default function AdminCategoriesPage() {
               {/* Parent dropdown (shown when subcategory selected) */}
               {form.parentId !== null && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Parent Category *</label>
+                  <label className="text-sm font-medium text-foreground mb-1 block">Parent Category *</label>
                   <select
                     value={form.parentId ?? ""}
                     onChange={(e) => setForm(f => ({ ...f, parentId: Number(e.target.value) }))}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                   >
                     {topLevelCategories.map(p => (
                       <option key={p.id} value={p.id}>{p.icon} {p.name} ({p.nameEn})</option>
@@ -364,7 +364,7 @@ export default function AdminCategoriesPage() {
 
               {/* Name (Kannada) */}
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Name (Kannada) *</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">Name (Kannada) *</label>
                 <Input
                   value={form.name}
                   onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
@@ -374,7 +374,7 @@ export default function AdminCategoriesPage() {
 
               {/* Name (English) */}
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Name (English) *</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">Name (English) *</label>
                 <Input
                   value={form.nameEn}
                   onChange={(e) => setForm(f => ({ ...f, nameEn: e.target.value }))}
@@ -384,8 +384,8 @@ export default function AdminCategoriesPage() {
 
               {/* Slug */}
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">
-                  Slug <span className="text-gray-400 font-normal">(auto-generated if blank)</span>
+                <label className="text-sm font-medium text-foreground mb-1 block">
+                  Slug <span className="text-muted-foreground/70 font-normal">(auto-generated if blank)</span>
                 </label>
                 <Input
                   value={form.slug}
@@ -398,7 +398,7 @@ export default function AdminCategoriesPage() {
               {/* Icon + Sort Order in row */}
               <div className="flex gap-3">
                 <div className="flex-1">
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Icon (emoji)</label>
+                  <label className="text-sm font-medium text-foreground mb-1 block">Icon (emoji)</label>
                   <Input
                     value={form.icon}
                     onChange={(e) => setForm(f => ({ ...f, icon: e.target.value }))}
@@ -407,7 +407,7 @@ export default function AdminCategoriesPage() {
                   />
                 </div>
                 <div className="w-28">
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Sort Order</label>
+                  <label className="text-sm font-medium text-foreground mb-1 block">Sort Order</label>
                   <Input
                     type="number"
                     value={form.sortOrder}
@@ -419,7 +419,7 @@ export default function AdminCategoriesPage() {
 
               {/* Color picker */}
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Color</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">Color</label>
                 <div className="flex flex-wrap gap-2">
                   {COLORS.map(color => (
                     <button
@@ -438,11 +438,11 @@ export default function AdminCategoriesPage() {
 
               {/* Moderation Level */}
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Moderation Level</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">Moderation Level</label>
                 <select
                   value={form.moderationLevel}
                   onChange={(e) => setForm(f => ({ ...f, moderationLevel: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                 >
                   {MODERATION_LEVELS.map(level => (
                     <option key={level} value={level}>{level}</option>
@@ -458,7 +458,7 @@ export default function AdminCategoriesPage() {
                 >
                   <span className={`block w-4 h-4 bg-white rounded-full shadow transition-transform mx-1 ${form.active ? "translate-x-4" : "translate-x-0"}`} />
                 </button>
-                <span className="text-sm text-gray-700">{form.active ? "Active" : "Inactive"}</span>
+                <span className="text-sm text-foreground">{form.active ? "Active" : "Inactive"}</span>
               </div>
 
               {/* Free contact toggle */}
@@ -470,14 +470,14 @@ export default function AdminCategoriesPage() {
                   <span className={`block w-4 h-4 bg-white rounded-full shadow transition-transform mx-1 ${form.isFree ? "translate-x-4" : "translate-x-0"}`} />
                 </button>
                 <div>
-                  <span className="text-sm text-gray-700">{form.isFree ? "Free Contact" : "Paid Contact"}</span>
-                  <p className="text-[11px] text-gray-400">{form.isFree ? "Contact shown for free, no payment" : "Users pay to unlock contact"}</p>
+                  <span className="text-sm text-foreground">{form.isFree ? "Free Contact" : "Paid Contact"}</span>
+                  <p className="text-[11px] text-muted-foreground/70">{form.isFree ? "Contact shown for free, no payment" : "Users pay to unlock contact"}</p>
                 </div>
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border">
               <Button variant="outline" onClick={closeForm} disabled={saving}>Cancel</Button>
               <Button onClick={handleSave} disabled={saving} className="min-w-[90px]">
                 {saving ? <Loader2 size={16} className="animate-spin" /> : editingId ? "Update" : "Create"}
