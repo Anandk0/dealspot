@@ -66,9 +66,9 @@ export default function ItemDetailPage() {
     return (
       <AppLayout>
         <div className="max-w-6xl mx-auto p-6 animate-pulse">
-          <div className="h-80 bg-gray-200 rounded-2xl mb-6" />
-          <div className="h-8 bg-gray-200 rounded w-1/2 mb-3" />
-          <div className="h-6 bg-gray-200 rounded w-1/4" />
+          <div className="h-80 bg-muted rounded-2xl mb-6" />
+          <div className="h-8 bg-muted rounded w-1/2 mb-3" />
+          <div className="h-6 bg-muted rounded w-1/4" />
         </div>
       </AppLayout>
     );
@@ -79,7 +79,7 @@ export default function ItemDetailPage() {
       <AppLayout>
         <div className="max-w-6xl mx-auto p-6 text-center py-20">
           <p className="text-5xl mb-4">😔</p>
-          <p className="text-gray-500 text-lg">ಜಾಹೀರಾತು ಕಂಡುಬಂದಿಲ್ಲ (Listing not found)</p>
+          <p className="text-muted-foreground text-lg">ಜಾಹೀರಾತು ಕಂಡುಬಂದಿಲ್ಲ (Listing not found)</p>
           <Link href={`/category/${categoryId}`} className="text-primary mt-4 inline-block hover:underline">
             ← ಹಿಂದೆ ಹೋಗಿ
           </Link>
@@ -106,18 +106,18 @@ export default function ItemDetailPage() {
     <AppLayout>
       <div className="max-w-6xl mx-auto p-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
           <Link href="/home" className="hover:text-primary">ಹೋಮ್</Link>
           <span>/</span>
           <Link href={`/category/${categoryId}`} className="hover:text-primary">{categoryId.replace(/-/g, " ")}</Link>
           <span>/</span>
-          <span className="text-gray-800">{item.title}</span>
+          <span className="text-foreground">{item.title}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left - Images */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="w-full h-80 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden">
+            <div className="w-full h-80 bg-muted rounded-2xl flex items-center justify-center overflow-hidden">
               {item.images && item.images.length > 0 ? (
                 <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover" />
               ) : (
@@ -129,19 +129,19 @@ export default function ItemDetailPage() {
             {item.images && item.images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto">
                 {item.images.slice(1).map((img, i) => (
-                  <img key={i} src={img} alt="" className="w-24 h-24 rounded-lg object-cover border" />
+                  <img key={i} src={img} alt="" className="w-24 h-24 rounded-lg object-cover border border-border" />
                 ))}
               </div>
             )}
 
             {/* Details */}
             {details.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <h3 className="text-base font-semibold text-gray-700 mb-4">ವಿವರಗಳು (Details)</h3>
+              <div className="bg-card rounded-2xl p-6 shadow-sm border border-border">
+                <h3 className="text-base font-semibold text-foreground mb-4">ವಿವರಗಳು (Details)</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {details.map((d, i) => (
-                    <div key={i} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm text-gray-600">{d}</span>
+                    <div key={i} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                      <span className="text-sm text-card-foreground">{d}</span>
                     </div>
                   ))}
                 </div>
@@ -150,16 +150,16 @@ export default function ItemDetailPage() {
 
             {/* Description */}
             {item.description && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <h3 className="text-base font-semibold text-gray-700 mb-2">ವಿವರಣೆ (Description)</h3>
-                <p className="text-sm text-gray-600 whitespace-pre-line">{item.description}</p>
+              <div className="bg-card rounded-2xl p-6 shadow-sm border border-border">
+                <h3 className="text-base font-semibold text-foreground mb-2">ವಿವರಣೆ (Description)</h3>
+                <p className="text-sm text-card-foreground whitespace-pre-line">{item.description}</p>
               </div>
             )}
 
             {/* Map placeholder for land */}
             {categoryId === "land" && (
-              <div className="bg-gray-100 rounded-2xl h-64 flex items-center justify-center border">
-                <div className="text-center text-gray-400">
+              <div className="bg-muted rounded-2xl h-64 flex items-center justify-center border border-border">
+                <div className="text-center text-muted-foreground">
                   <MapPin size={40} className="mx-auto mb-2" />
                   <p className="text-sm">ನಕ್ಷೆ (Map Placeholder)</p>
                 </div>
@@ -170,22 +170,22 @@ export default function ItemDetailPage() {
           {/* Right - Sidebar */}
           <div className="space-y-4">
             {/* Price Card */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div className="bg-card rounded-2xl p-6 shadow-sm border border-border">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h1 className="text-xl font-bold text-gray-800">{item.title}</h1>
-                  {item.titleEn && <p className="text-sm text-gray-500">{item.titleEn}</p>}
+                  <h1 className="text-xl font-bold text-foreground">{item.title}</h1>
+                  {item.titleEn && <p className="text-sm text-muted-foreground">{item.titleEn}</p>}
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={toggleFavorite}
                     disabled={favLoading}
-                    className="p-2 rounded-full hover:bg-gray-100 transition disabled:opacity-50"
+                    className="p-2 rounded-full hover:bg-muted transition disabled:opacity-50"
                     aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
                   >
                     <Heart
                       size={20}
-                      className={isFavorited ? "text-red-500 fill-red-500" : "text-gray-400"}
+                      className={isFavorited ? "text-red-500 fill-red-500" : "text-muted-foreground"}
                     />
                   </button>
                   <button
@@ -197,9 +197,9 @@ export default function ItemDetailPage() {
                         toast.success("ಲಿಂಕ್ ಕಾಪಿ ಆಗಿದೆ!");
                       }
                     }}
-                    className="p-2 rounded-full hover:bg-gray-100"
+                    className="p-2 rounded-full hover:bg-muted"
                   >
-                    <Share2 size={20} className="text-gray-400" />
+                    <Share2 size={20} className="text-muted-foreground" />
                   </button>
                 </div>
               </div>
@@ -207,22 +207,22 @@ export default function ItemDetailPage() {
                 {item.price ? `₹${item.price.toLocaleString()}${item.priceUnit ? '/' + item.priceUnit : ''}` : item.rateInfo || ""}
               </p>
               {item.location && (
-                <div className="flex items-center gap-1 text-sm text-gray-500 mt-2">
+                <div className="flex items-center gap-1 text-sm text-muted-foreground mt-2">
                   <MapPin size={14} />
                   <span>{item.location}</span>
                 </div>
               )}
-              <p className="text-xs text-gray-400 mt-2">👁 {item.viewCount} ವೀಕ್ಷಣೆ</p>
+              <p className="text-xs text-muted-foreground mt-2">👁 {item.viewCount} ವೀಕ್ಷಣೆ</p>
             </div>
 
             {/* Seller Card */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">ಮಾರಾಟಗಾರ (Seller)</h3>
+            <div className="bg-card rounded-2xl p-6 shadow-sm border border-border">
+              <h3 className="text-sm font-semibold text-foreground mb-3">ಮಾರಾಟಗಾರ (Seller)</h3>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-xl">👤</div>
                 <div>
                   <p className="font-medium">{item.sellerName || "Seller"}</p>
-                  <p className="text-xs text-gray-500">{item.sellerLocation || item.location}</p>
+                  <p className="text-xs text-muted-foreground">{item.sellerLocation || item.location}</p>
                 </div>
               </div>
               <ContactUnlockModal listingId={item.id} />
