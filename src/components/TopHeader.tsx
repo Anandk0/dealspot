@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Bell, User, Menu, X, Home, Search, PlusCircle, Heart, Settings, LogOut } from "lucide-react";
+import { Bell, User, Menu, X, Home, Search, PlusCircle, Heart, Settings, LogOut, FileCheck, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useLang } from "@/lib/lang-context";
+import { hasMinimumRole } from "@/lib/useAdminGuard";
 import { api } from "@/lib/api";
 import ThemeToggle from "./ThemeToggle";
 
@@ -18,12 +19,19 @@ const menuItems = [
   { href: "/settings", icon: Settings, label: "ಸೆಟ್ಟಿಂಗ್ಸ್", labelEn: "Settings" },
 ];
 
+// Extra items shown to staff (CHECKER and above).
+const staffMenuItems = [
+  { href: "/admin/moderation", icon: FileCheck, label: "ಪರಿಶೀಲನೆ", labelEn: "Moderation" },
+  { href: "/admin/banners", icon: ImageIcon, label: "ಬ್ಯಾನರ್‌ಗಳು", labelEn: "Banners" },
+];
+
 export default function TopHeader() {
   const { user, isLoggedIn, logout } = useAuth();
   const { lang, setLang } = useLang();
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const isStaff = hasMinimumRole(user?.role, "CHECKER");
 
   // Close menu on route change
   useEffect(() => {
@@ -169,11 +177,41 @@ export default function TopHeader() {
                 </div>
                 <div>
                   <span className="text-sm block">{lang === "en" ? item.labelEn : item.label}</span>
-                  <span className="text-[10px] text-gray-400">{lang === "en" ? item.label : item.labelEn}</span>
+                  <span className="text-[10px] text-muted-foreground/70">{lang === "en" ? item.label : item.labelEn}</span>
                 </div>
               </Link>
             );
           })}
+
+          {isStaff && (
+            <>
+              <div className="px-4 pt-3 pb-1 mt-1 border-t border-border">
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">
+                  {lang === "en" ? "Staff" : "ಸಿಬ್ಬಂದಿ"}
+                </span>
+              </div>
+              {staffMenuItems.map((item) => {
+                const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-colors ${
+                      isActive
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                    }`}
+                  >
+                    <item.icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
+                    <div>
+                      <span className="text-sm block">{lang === "en" ? item.labelEn : item.label}</span>
+                      <span className="text-[10px] text-muted-foreground/70">{lang === "en" ? item.label : item.labelEn}</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </>
+          )}
         </nav>
 
         {/* Drawer Footer */}
