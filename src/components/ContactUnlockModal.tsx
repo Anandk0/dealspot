@@ -46,6 +46,8 @@ export default function ContactUnlockModal({ listingId }: Props) {
   const { isLoggedIn, user } = useAuth();
   const [unlocked, setUnlocked] = useState(false);
   const [isFree, setIsFree] = useState(false);
+  // For free listings we hold the phone but only reveal it after the user clicks.
+  const [freeUnlocked, setFreeUnlocked] = useState(false);
   const [phone, setPhone] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -59,8 +61,13 @@ export default function ContactUnlockModal({ listingId }: Props) {
     }
     api.checkUnlock(listingId)
       .then((res) => {
-        if (res.free) setIsFree(true);
-        if (res.unlocked) {
+        if (res.free) {
+          // Free listing: keep the phone in state but DON'T reveal it yet —
+          // the user must click "Unlock for Free" first.
+          setIsFree(true);
+          setPhone(res.phone || null);
+        } else if (res.unlocked) {
+          // Paid listing already unlocked earlier: show it directly.
           setUnlocked(true);
           setPhone(res.phone || null);
         }
@@ -143,17 +150,17 @@ export default function ContactUnlockModal({ listingId }: Props) {
 
   const priceDisplay = price ? `₹${price}` : "...";
 
-  // If already unlocked (paid) or free category, show contact directly
-  if (unlocked && phone) {
+  // Show the contact once it's revealed: paid-and-unlocked, or free-and-clicked.
+  if ((unlocked || (isFree && freeUnlocked)) && phone) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+      <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-xl p-4 text-center">
         <CheckCircle2 className="mx-auto mb-2 text-green-500" size={28} />
-        <p className="text-sm text-green-700 font-medium mb-2">
+        <p className="text-sm text-green-700 dark:text-green-400 font-medium mb-2">
           {isFree ? "ಉಚಿತ ಕಾಂಟ್ಯಾಕ್ಟ್ (Free Contact)" : "ಕಾಂಟ್ಯಾಕ್ಟ್ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ"}
         </p>
-        <p className="text-xl font-bold text-green-800">{phone}</p>
+        <p className="text-xl font-bold text-green-800 dark:text-green-300">{phone}</p>
         <a href={`tel:${phone}`} className="mt-2 inline-block">
-          <Button variant="outline" size="sm" className="border-green-300 text-green-700">
+          <Button variant="outline" size="sm" className="border-green-300 dark:border-green-800 text-green-700 dark:text-green-400">
             <Phone size={14} className="mr-1" /> ಕರೆ ಮಾಡಿ
           </Button>
         </a>
@@ -165,6 +172,39 @@ export default function ContactUnlockModal({ listingId }: Props) {
     return (
       <Button disabled className="w-full">
         <Loader2 size={16} className="mr-2 animate-spin" /> ಲೋಡ್ ಆಗುತ್ತಿದೆ...
+      </Button>
+    );
+  }
+
+  // Free listing that hasn't been revealed yet — show an "Unlock for Free" button.
+  if (isFree) {
+    const handleFreeUnlock = () => {
+      if (phone) {
+        setFreeUnlocked(true);
+        return;
+      }
+      // Fallback: if the phone wasn't returned on check, fetch it now.
+      setLoading(true);
+      api.checkUnlock(listingId)
+        .then((res) => {
+          setPhone(res.phone || null);
+          setFreeUnlocked(true);
+        })
+        .catch(() => toast.error("ಸಂಪರ್ಕ ಪಡೆಯಲು ವಿಫಲವಾಗಿದೆ (Failed to load contact)"))
+        .finally(() => setLoading(false));
+    };
+
+    return (
+      <Button
+        onClick={handleFreeUnlock}
+        disabled={loading}
+        className="w-full bg-primary hover:bg-primary/90"
+      >
+        {loading ? (
+          <><Loader2 size={16} className="mr-2 animate-spin" /> ಲೋಡ್ ಆಗುತ್ತಿದೆ...</>
+        ) : (
+          <><Lock size={16} className="mr-2" /> ಉಚಿತವಾಗಿ ಅನ್‌ಲಾಕ್ ಮಾಡಿ (Unlock for Free)</>
+        )}
       </Button>
     );
   }
@@ -183,12 +223,12 @@ export default function ContactUnlockModal({ listingId }: Props) {
           </DialogTitle>
         </DialogHeader>
         <div className="text-center space-y-4 py-4">
-          <p className="text-gray-600 text-sm">
+          <p className="text-muted-foreground text-sm">
             ಮಾಲೀಕರ ಫೋನ್ ನಂಬರ್ ನೋಡಲು {priceDisplay} ಪಾವತಿಸಿ
           </p>
-          <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="bg-muted p-4 rounded-lg">
             <p className="text-2xl font-bold text-primary">{priceDisplay}</p>
-            <p className="text-xs text-gray-500">ಒಂದು ಕಾಂಟ್ಯಾಕ್ಟ್ ಅನ್‌ಲಾಕ್ (UPI / Card / Net Banking)</p>
+            <p className="text-xs text-muted-foreground">ಒಂದು ಕಾಂಟ್ಯಾಕ್ಟ್ ಅನ್‌ಲಾಕ್ (UPI / Card / Net Banking)</p>
           </div>
           <Button
             onClick={handleUnlock}
@@ -201,7 +241,7 @@ export default function ContactUnlockModal({ listingId }: Props) {
               `${priceDisplay} ಪಾವತಿಸಿ (Pay ${priceDisplay})`
             )}
           </Button>
-          <p className="text-[10px] text-gray-400">Powered by Razorpay • Secure Payment</p>
+          <p className="text-[10px] text-muted-foreground">Powered by Razorpay • Secure Payment</p>
         </div>
       </DialogContent>
     </Dialog>
