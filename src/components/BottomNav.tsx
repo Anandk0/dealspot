@@ -2,6 +2,7 @@
 import { Home, Search, Heart, User, PlusCircle, Bell, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLang } from "@/lib/lang-context";
 
 const navItems = [
   { href: "/home", icon: Home, label: "ಹೋಮ್", labelEn: "Home" },
@@ -15,6 +16,7 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { lang } = useLang();
 
   return (
     <aside className="hidden lg:flex flex-col w-64 min-h-screen border-r border-border bg-background fixed left-0 top-[57px] bottom-0 z-30 pt-4">
@@ -33,8 +35,8 @@ export default function Sidebar() {
             >
               <item.icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
               <div>
-                <span className="text-sm block">{item.label}</span>
-                <span className="text-[10px] text-gray-400">{item.labelEn}</span>
+                <span className="text-sm block">{lang === "en" ? item.labelEn : item.label}</span>
+                <span className="text-[10px] text-gray-400">{lang === "en" ? item.label : item.labelEn}</span>
               </div>
             </Link>
           );

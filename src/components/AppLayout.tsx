@@ -6,20 +6,22 @@ import Sidebar from "./BottomNav";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { useLang } from "@/lib/lang-context";
 import { Home, Search, PlusCircle, Heart, User } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
 const mobileNavItems = [
-  { href: "/home", icon: Home, label: "ಮುಖಪುಟ" },
-  { href: "/favorites", icon: Heart, label: "ಇಷ್ಟಪಟ್ಟಿ" },
-  { href: "/create", icon: PlusCircle, label: "ಪೋಸ್ಟ್" },
-  { href: "/search", icon: Search, label: "ಹುಡುಕು" },
-  { href: "/profile", icon: User, label: "ಪ್ರೊಫೈಲ್" },
+  { href: "/home", icon: Home, label: "ಮುಖಪುಟ", labelEn: "Home" },
+  { href: "/favorites", icon: Heart, label: "ಇಷ್ಟಪಟ್ಟಿ", labelEn: "Favorites" },
+  { href: "/create", icon: PlusCircle, label: "ಪೋಸ್ಟ್", labelEn: "Post" },
+  { href: "/search", icon: Search, label: "ಹುಡುಕು", labelEn: "Search" },
+  { href: "/profile", icon: User, label: "ಪ್ರೊಫೈಲ್", labelEn: "Profile" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { isLoggedIn, isLoading } = useAuth();
+  const { lang } = useLang();
   const router = useRouter();
 
   useEffect(() => {
@@ -63,7 +65,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               }`}
             >
               <item.icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
-              <span className="text-[10px]">{item.label}</span>
+              <span className="text-[10px]">{lang === "en" ? item.labelEn : item.label}</span>
             </Link>
           );
         })}

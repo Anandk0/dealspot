@@ -103,6 +103,7 @@ export default function TopHeader() {
               )}
             </Link>
 
+
             <Link href="/profile" className="p-1 text-gray-600 hover:text-primary transition">
               <div className="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center">
                 <User size={14} className="text-primary" />
@@ -167,8 +168,8 @@ export default function TopHeader() {
                   )}
                 </div>
                 <div>
-                  <span className="text-sm block">{item.label}</span>
-                  <span className="text-[10px] text-gray-400">{item.labelEn}</span>
+                  <span className="text-sm block">{lang === "en" ? item.labelEn : item.label}</span>
+                  <span className="text-[10px] text-gray-400">{lang === "en" ? item.label : item.labelEn}</span>
                 </div>
               </Link>
             );
@@ -184,8 +185,8 @@ export default function TopHeader() {
             >
               <LogOut size={20} />
               <div>
-                <span className="text-sm block">ಲಾಗ್ ಔಟ್</span>
-                <span className="text-[10px] text-gray-400">Logout</span>
+                <span className="text-sm block">{lang === "en" ? "Logout" : "ಲಾಗ್ ಔಟ್"}</span>
+                <span className="text-[10px] text-gray-400">{lang === "en" ? "ಲಾಗ್ ಔಟ್" : "Logout"}</span>
               </div>
             </button>
           </div>

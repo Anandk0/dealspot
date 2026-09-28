@@ -4,11 +4,15 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { useCategories } from "@/lib/useCategories";
+import { useLang } from "@/lib/lang-context";
 import { CategoryItem } from "@/lib/categories";
 
 export default function CreatePage() {
   const router = useRouter();
   const { topLevel, getSubcats } = useCategories();
+  const { lang } = useLang();
+  const cname = (c: { name: string; nameEn: string }) => (lang === "en" ? c.nameEn : c.name);
+  const csub = (c: { name: string; nameEn: string }) => (lang === "en" ? c.name : c.nameEn);
   const [selectedParent, setSelectedParent] = useState<CategoryItem | null>(null);
 
   const subcategories = selectedParent ? getSubcats(selectedParent.id) : [];
@@ -45,13 +49,13 @@ export default function CreatePage() {
           <div>
             <h1 className="text-xl font-bold text-foreground">
               {selectedParent
-                ? `${selectedParent.icon} ${selectedParent.name}`
-                : "ಹೊಸ ಜಾಹೀರಾತು ಹಾಕಿ (Post New Ad)"}
+                ? `${selectedParent.icon} ${cname(selectedParent)}`
+                : (lang === "en" ? "Post New Ad" : "ಹೊಸ ಜಾಹೀರಾತು ಹಾಕಿ")}
             </h1>
             <p className="text-sm text-muted-foreground">
               {selectedParent
-                ? "ಉಪ ವಿಭಾಗ ಆಯ್ಕೆಮಾಡಿ (Select a subcategory)"
-                : "ವಿಭಾಗ ಆಯ್ಕೆಮಾಡಿ (Select a category to get started)"}
+                ? (lang === "en" ? "Select a subcategory" : "ಉಪ ವಿಭಾಗ ಆಯ್ಕೆಮಾಡಿ")
+                : (lang === "en" ? "Select a category to get started" : "ವಿಭಾಗ ಆಯ್ಕೆಮಾಡಿ")}
             </p>
           </div>
         </div>
@@ -60,10 +64,10 @@ export default function CreatePage() {
         {selectedParent && (
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4">
             <button onClick={() => setSelectedParent(null)} className="hover:text-primary">
-              ಎಲ್ಲಾ ವಿಭಾಗಗಳು
+              {lang === "en" ? "All categories" : "ಎಲ್ಲಾ ವಿಭಾಗಗಳು"}
             </button>
             <span>/</span>
-            <span className="text-foreground font-medium">{selectedParent.name}</span>
+            <span className="text-foreground font-medium">{cname(selectedParent)}</span>
           </div>
         )}
 
@@ -82,10 +86,10 @@ export default function CreatePage() {
                     {cat.icon}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors truncate">{cat.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{cat.nameEn}</p>
+                    <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors truncate">{cname(cat)}</p>
+                    <p className="text-xs text-muted-foreground truncate">{csub(cat)}</p>
                     {subs.length > 0 && (
-                      <p className="text-[10px] text-primary/70 mt-0.5">{subs.length} subcategories →</p>
+                      <p className="text-[10px] text-primary/70 mt-0.5">{subs.length} {lang === "en" ? "subcategories" : "ಉಪ ವಿಭಾಗಗಳು"} →</p>
                     )}
                   </div>
                   <ArrowRight size={16} className="text-muted-foreground/40 group-hover:text-primary shrink-0 transition-colors" />
@@ -108,8 +112,8 @@ export default function CreatePage() {
                   {sub.icon}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors truncate">{sub.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">{sub.nameEn}</p>
+                  <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors truncate">{cname(sub)}</p>
+                  <p className="text-xs text-muted-foreground truncate">{csub(sub)}</p>
                 </div>
                 <ArrowRight size={16} className="text-muted-foreground/40 group-hover:text-primary shrink-0 transition-colors" />
               </button>
@@ -124,8 +128,8 @@ export default function CreatePage() {
                 {selectedParent.icon}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">ಇತರ / Other</p>
-                <p className="text-xs text-muted-foreground">Post under {selectedParent.nameEn}</p>
+                <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">{lang === "en" ? "Other" : "ಇತರ"}</p>
+                <p className="text-xs text-muted-foreground">{lang === "en" ? "Post under" : "ಇಲ್ಲಿ ಪೋಸ್ಟ್ ಮಾಡಿ"} {cname(selectedParent)}</p>
               </div>
               <ArrowRight size={16} className="text-muted-foreground/40 group-hover:text-primary shrink-0 transition-colors" />
             </button>

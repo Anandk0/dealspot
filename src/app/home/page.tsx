@@ -151,7 +151,7 @@ export default function HomePage() {
         <Link href="/search" className="block -mt-1">
           <div className="flex items-center gap-2.5 sm:gap-3 bg-card rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 shadow-md border border-border hover:border-primary/50 transition-all">
             <Search size={18} className="text-primary shrink-0" />
-            <span className="flex-1 text-xs sm:text-sm text-muted-foreground truncate">ದನಕರು, ಕುರಿ, ಮೇವು ಹುಡುಕಿ ...</span>
+            <span className="flex-1 text-xs sm:text-sm text-muted-foreground truncate">{lang === "en" ? "Search cattle, sheep, feed ..." : "ದನಕರು, ಕುರಿ, ಮೇವು ಹುಡುಕಿ ..."}</span>
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
               <Mic size={15} className="text-primary" />
             </div>
@@ -160,7 +160,7 @@ export default function HomePage() {
 
         {/* Section heading */}
         <div className="flex items-center justify-between">
-          <h2 className="text-base sm:text-lg font-bold text-foreground">ವಿಭಾಗಗಳು <span className="text-xs sm:text-sm font-normal text-muted-foreground">Categories</span></h2>
+          <h2 className="text-base sm:text-lg font-bold text-foreground">{lang === "en" ? "Categories" : "ವಿಭಾಗಗಳು"} <span className="text-xs sm:text-sm font-normal text-muted-foreground">{lang === "en" ? "ವಿಭಾಗಗಳು" : "Categories"}</span></h2>
         </div>
 
         {/* Categories Grid - premium responsive cards */}
@@ -206,7 +206,7 @@ export default function HomePage() {
             <div>
               <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-1.5 sm:gap-2">
                 <TrendingUp size={16} className="text-primary sm:w-[18px] sm:h-[18px]" />
-                ಇತ್ತೀಚಿನ ಜಾಹೀರಾತು <span className="text-[11px] sm:text-xs font-normal text-muted-foreground">Recent Ads</span>
+                {lang === "en" ? "Recent Ads" : "ಇತ್ತೀಚಿನ ಜಾಹೀರಾತು"} <span className="text-[11px] sm:text-xs font-normal text-muted-foreground">{lang === "en" ? "ಇತ್ತೀಚಿನ ಜಾಹೀರಾತು" : "Recent Ads"}</span>
               </h2>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -230,7 +230,7 @@ export default function HomePage() {
                 </div>
               )}
               <Link href="/search" className="text-xs text-primary font-semibold flex items-center gap-0.5 sm:gap-1 hover:underline ml-0.5 sm:ml-1">
-                ಎಲ್ಲಾ ನೋಡಿ <ArrowRight size={11} className="sm:w-3 sm:h-3" />
+                {lang === "en" ? "See all" : "ಎಲ್ಲಾ ನೋಡಿ"} <ArrowRight size={11} className="sm:w-3 sm:h-3" />
               </Link>
             </div>
           </div>
@@ -295,9 +295,9 @@ export default function HomePage() {
           ) : (
             <div className="text-center py-12 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl border border-dashed border-primary/20">
               <p className="text-4xl mb-2">🌾</p>
-              <p className="text-sm text-muted-foreground">ಇನ್ನೂ ಯಾವುದೇ ಜಾಹೀರಾತುಗಳಿಲ್ಲ</p>
+              <p className="text-sm text-muted-foreground">{lang === "en" ? "No listings yet" : "ಇನ್ನೂ ಯಾವುದೇ ಜಾಹೀರಾತುಗಳಿಲ್ಲ"}</p>
               <Link href="/create" className="inline-flex items-center gap-1 mt-3 bg-primary text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-primary/90">
-                <Plus size={14} /> ಹೊಸ ಜಾಹೀರಾತು ಹಾಕಿ
+                <Plus size={14} /> {lang === "en" ? "Post a new ad" : "ಹೊಸ ಜಾಹೀರಾತು ಹಾಕಿ"}
               </Link>
             </div>
           )}
@@ -305,10 +305,10 @@ export default function HomePage() {
 
         {/* CTA Banner */}
         <section className="rounded-2xl bg-gradient-to-r from-primary to-emerald-600 p-5 text-white shadow-lg">
-          <h3 className="font-bold text-lg">ನಿಮ್ಮ ಉತ್ಪನ್ನ ಮಾರಾಟ ಮಾಡಿ</h3>
+          <h3 className="font-bold text-lg">{lang === "en" ? "Sell your products" : "ನಿಮ್ಮ ಉತ್ಪನ್ನ ಮಾರಾಟ ಮಾಡಿ"}</h3>
           <p className="text-white/85 text-sm mt-0.5">Post your ad free and reach thousands of buyers</p>
           <Link href="/create" className="inline-flex items-center gap-1 mt-3 bg-white text-primary text-sm font-semibold px-4 py-2 rounded-full hover:bg-white/90 transition">
-            <Plus size={16} /> ಜಾಹೀರಾತು ಹಾಕಿ
+            <Plus size={16} /> {lang === "en" ? "Post an ad" : "ಜಾಹೀರಾತು ಹಾಕಿ"}
           </Link>
         </section>
 
