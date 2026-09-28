@@ -118,7 +118,7 @@ export default function AuditPage() {
   if (guardLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-gray-400" size={32} />
+        <Loader2 className="animate-spin text-muted-foreground" size={32} />
       </div>
     );
   }
@@ -131,21 +131,21 @@ export default function AuditPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Audit Logs</h1>
-          <p className="text-sm text-gray-500">{totalElements} total entries</p>
+          <h1 className="text-2xl font-bold text-foreground">Audit Logs</h1>
+          <p className="text-sm text-muted-foreground">{totalElements} total entries</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-4 mb-4">
         <div className="flex items-center gap-2 mb-3">
-          <Filter size={16} className="text-gray-500" />
-          <span className="text-sm font-medium text-gray-700">Filters</span>
+          <Filter size={16} className="text-muted-foreground" />
+          <span className="text-sm font-medium text-foreground">Filters</span>
         </div>
         <div className="flex flex-wrap items-end gap-3">
           {/* Action type filter */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500">Action Type</label>
+            <label className="text-xs text-muted-foreground">Action Type</label>
             <Select value={actionFilter} onValueChange={(val) => setActionFilter(val ?? "ALL")}>
               <SelectTrigger className="w-[180px] h-9">
                 <SelectValue placeholder="All actions" />
@@ -162,7 +162,7 @@ export default function AuditPage() {
 
           {/* Date range filters */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 flex items-center gap-1">
+            <label className="text-xs text-muted-foreground flex items-center gap-1">
               <Calendar size={12} /> From
             </label>
             <Input
@@ -173,7 +173,7 @@ export default function AuditPage() {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 flex items-center gap-1">
+            <label className="text-xs text-muted-foreground flex items-center gap-1">
               <Calendar size={12} /> To
             </label>
             <Input
@@ -194,30 +194,30 @@ export default function AuditPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-gray-400" size={28} />
+            <Loader2 className="animate-spin text-muted-foreground" size={28} />
           </div>
         ) : logs.length === 0 ? (
-          <div className="flex items-center justify-center py-20 text-gray-500">
+          <div className="flex items-center justify-center py-20 text-muted-foreground">
             No audit logs found
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b">
+            <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="text-left px-5 py-3 text-gray-600 font-medium">Timestamp</th>
-                <th className="text-left px-5 py-3 text-gray-600 font-medium">Actor</th>
-                <th className="text-left px-5 py-3 text-gray-600 font-medium">Action</th>
-                <th className="text-left px-5 py-3 text-gray-600 font-medium">Target</th>
-                <th className="text-left px-5 py-3 text-gray-600 font-medium">Details</th>
+                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Timestamp</th>
+                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Actor</th>
+                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Action</th>
+                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Target</th>
+                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Details</th>
               </tr>
             </thead>
             <tbody>
               {logs.map((log) => (
-                <tr key={log.id} className="border-b last:border-0 hover:bg-gray-50">
-                  <td className="px-5 py-3 text-gray-500 text-xs whitespace-nowrap">
+                <tr key={log.id} className="border-b border-border last:border-0 hover:bg-muted">
+                  <td className="px-5 py-3 text-muted-foreground text-xs whitespace-nowrap">
                     {formatTimestamp(log.createdAt)}
                   </td>
                   <td className="px-5 py-3 font-medium">
@@ -231,13 +231,13 @@ export default function AuditPage() {
                       {log.action}
                     </Badge>
                   </td>
-                  <td className="px-5 py-3 text-gray-600">
+                  <td className="px-5 py-3 text-muted-foreground">
                     {log.targetType} #{log.targetId}
                   </td>
-                  <td className="px-5 py-3 text-gray-500 text-xs max-w-[200px]">
+                  <td className="px-5 py-3 text-muted-foreground text-xs max-w-[200px]">
                     {log.details ? (
                       <span
-                        className="cursor-pointer hover:text-gray-700"
+                        className="cursor-pointer hover:text-foreground"
                         onClick={() => toggleDetails(log.id)}
                         title={expandedId === log.id ? "Click to collapse" : "Click to expand"}
                       >
@@ -252,7 +252,7 @@ export default function AuditPage() {
                         )}
                       </span>
                     ) : (
-                      <span className="text-gray-300">—</span>
+                      <span className="text-muted-foreground/70">—</span>
                     )}
                   </td>
                 </tr>
@@ -265,7 +265,7 @@ export default function AuditPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Page {page + 1} of {totalPages}
           </p>
           <div className="flex gap-2">

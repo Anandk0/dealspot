@@ -163,7 +163,7 @@ export default function UsersPage() {
   if (guardLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-gray-400" size={32} />
+        <Loader2 className="animate-spin text-muted-foreground" size={32} />
       </div>
     );
   }
@@ -176,15 +176,15 @@ export default function UsersPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
-          <p className="text-sm text-gray-500">{totalElements} total users</p>
+          <h1 className="text-2xl font-bold text-foreground">User Management</h1>
+          <p className="text-sm text-muted-foreground">{totalElements} total users</p>
         </div>
       </div>
 
       {/* Search */}
       <div className="flex gap-2 mb-4">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
           <Input
             placeholder="Search by name or phone..."
             value={searchInput}
@@ -199,44 +199,44 @@ export default function UsersPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-gray-400" size={28} />
+            <Loader2 className="animate-spin text-muted-foreground" size={28} />
           </div>
         ) : users.length === 0 ? (
-          <div className="flex items-center justify-center py-20 text-gray-500">
+          <div className="flex items-center justify-center py-20 text-muted-foreground">
             No users found
           </div>
         ) : (
           <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[700px]">
-            <thead className="bg-gray-50 border-b">
+            <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="text-left px-5 py-3 text-gray-600 font-medium">Name</th>
-                <th className="text-left px-5 py-3 text-gray-600 font-medium">Phone</th>
-                <th className="text-left px-5 py-3 text-gray-600 font-medium">Role</th>
-                <th className="text-left px-5 py-3 text-gray-600 font-medium">Status</th>
-                <th className="text-left px-5 py-3 text-gray-600 font-medium">Listings</th>
-                <th className="text-left px-5 py-3 text-gray-600 font-medium">Joined</th>
-                <th className="text-left px-5 py-3 text-gray-600 font-medium">Actions</th>
+                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Name</th>
+                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Phone</th>
+                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Role</th>
+                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Status</th>
+                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Listings</th>
+                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Joined</th>
+                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="border-b last:border-0 hover:bg-gray-50">
+                <tr key={u.id} className="border-b border-border last:border-0 hover:bg-muted">
                   <td className="px-5 py-3">
                     <div>
                       <span className="font-medium">{u.name}</span>
                       {u.location && (
-                        <span className="text-xs text-gray-400 ml-2">{u.location}</span>
+                        <span className="text-xs text-muted-foreground ml-2">{u.location}</span>
                       )}
                     </div>
                     {u.email && (
-                      <span className="text-xs text-gray-400">{u.email}</span>
+                      <span className="text-xs text-muted-foreground">{u.email}</span>
                     )}
                   </td>
-                  <td className="px-5 py-3 text-gray-600">{u.phone}</td>
+                  <td className="px-5 py-3 text-muted-foreground">{u.phone}</td>
                   <td className="px-5 py-3">
                     <Badge variant="secondary" className={`text-xs ${getRoleBadgeClass(u.role)}`}>
                       {u.role}
@@ -247,7 +247,7 @@ export default function UsersPage() {
                       <div>
                         <span className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded">Banned</span>
                         {u.banReason && (
-                          <p className="text-xs text-gray-400 mt-1 max-w-[120px] truncate" title={u.banReason}>
+                          <p className="text-xs text-muted-foreground mt-1 max-w-[120px] truncate" title={u.banReason}>
                             {u.banReason}
                           </p>
                         )}
@@ -256,8 +256,8 @@ export default function UsersPage() {
                       <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">Active</span>
                     )}
                   </td>
-                  <td className="px-5 py-3 text-gray-600">{u.listingCount ?? 0}</td>
-                  <td className="px-5 py-3 text-gray-500">
+                  <td className="px-5 py-3 text-muted-foreground">{u.listingCount ?? 0}</td>
+                  <td className="px-5 py-3 text-muted-foreground">
                     {new Date(u.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-5 py-3">
@@ -304,7 +304,7 @@ export default function UsersPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Page {page + 1} of {totalPages}
           </p>
           <div className="flex gap-2">
@@ -338,7 +338,7 @@ export default function UsersPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
+            <label className="text-sm font-medium text-foreground mb-2 block">
               Reason for ban
             </label>
             <Input
@@ -376,7 +376,7 @@ export default function UsersPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
+            <label className="text-sm font-medium text-foreground mb-2 block">
               New Role
             </label>
             <Select value={newRole} onValueChange={(val) => setNewRole(val ?? "")}>

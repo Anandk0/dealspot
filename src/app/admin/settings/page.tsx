@@ -75,16 +75,16 @@ export default function SettingsPage() {
   return (
     <div>
       <div className="flex items-center gap-2 mb-6">
-        <Settings className="h-6 w-6 text-gray-700" />
-        <h1 className="text-2xl font-bold text-gray-800">Platform Settings</h1>
+        <Settings className="h-6 w-6 text-foreground" />
+        <h1 className="text-2xl font-bold text-foreground">Platform Settings</h1>
       </div>
 
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 max-w-2xl space-y-6">
+      <div className="bg-card rounded-xl p-6 shadow-sm border border-border max-w-2xl space-y-6">
         {/* Contact Unlock Price */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <IndianRupee className="h-4 w-4 text-gray-500" />
-            <label className="text-sm font-medium text-gray-700">
+            <IndianRupee className="h-4 w-4 text-muted-foreground" />
+            <label className="text-sm font-medium text-foreground">
               Contact Unlock Price (in paise)
             </label>
           </div>
@@ -98,7 +98,7 @@ export default function SettingsPage() {
             className="h-11"
             placeholder="e.g., 5000"
           />
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted-foreground">
             {settings.contact_unlock_price
               ? `${settings.contact_unlock_price} paise = ₹${priceInRupees}`
               : "Enter price in paise (100 paise = ₹1)"}
@@ -108,8 +108,8 @@ export default function SettingsPage() {
         {/* Max Images per Listing */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <Image className="h-4 w-4 text-gray-500" />
-            <label className="text-sm font-medium text-gray-700">
+            <Image className="h-4 w-4 text-muted-foreground" />
+            <label className="text-sm font-medium text-foreground">
               Max Images per Listing
             </label>
           </div>
@@ -124,7 +124,7 @@ export default function SettingsPage() {
             className="h-11"
             placeholder="e.g., 5"
           />
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted-foreground">
             Maximum number of images a user can upload per listing
           </p>
         </div>
@@ -132,8 +132,8 @@ export default function SettingsPage() {
         {/* Listing Expiry Days */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-gray-500" />
-            <label className="text-sm font-medium text-gray-700">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <label className="text-sm font-medium text-foreground">
               Listing Expiry (days)
             </label>
           </div>
@@ -147,7 +147,7 @@ export default function SettingsPage() {
             className="h-11"
             placeholder="e.g., 30"
           />
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted-foreground">
             Number of days after which active listings automatically expire
           </p>
         </div>
@@ -155,8 +155,8 @@ export default function SettingsPage() {
         {/* Maintenance Mode */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-gray-500" />
-            <label className="text-sm font-medium text-gray-700">
+            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+            <label className="text-sm font-medium text-foreground">
               Maintenance Mode
             </label>
           </div>
@@ -170,15 +170,15 @@ export default function SettingsPage() {
                   maintenance_mode: e.target.checked ? "true" : "false",
                 })
               }
-              className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+              className="h-5 w-5 rounded border-border text-primary focus:ring-primary cursor-pointer"
             />
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-muted-foreground">
               {settings.maintenance_mode === "true"
                 ? "Enabled — site shows maintenance page to users"
                 : "Disabled — site is accessible to all users"}
             </span>
           </label>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted-foreground">
             When enabled, regular users will see a maintenance page instead of the site
           </p>
         </div>

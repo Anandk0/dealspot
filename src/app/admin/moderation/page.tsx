@@ -150,7 +150,7 @@ export default function ModerationPage() {
   if (guardLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-gray-400" size={32} />
+        <Loader2 className="animate-spin text-muted-foreground" size={32} />
       </div>
     );
   }
@@ -164,8 +164,8 @@ export default function ModerationPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div>
-          <h1 className="text-lg sm:text-2xl font-bold text-gray-800">Moderation Queue</h1>
-          <p className="text-xs sm:text-sm text-gray-500">
+          <h1 className="text-lg sm:text-2xl font-bold text-foreground">Moderation Queue</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {queue ? `${queue.totalElements} listings pending review` : "Loading..."}
           </p>
         </div>
@@ -174,36 +174,36 @@ export default function ModerationPage() {
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
-          <div className="bg-white rounded-xl p-2.5 sm:p-4 shadow-sm border border-gray-100">
+          <div className="bg-card rounded-xl p-2.5 sm:p-4 shadow-sm border border-border">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-3">
               <div className="p-1.5 sm:p-2 bg-yellow-100 rounded-lg">
                 <Clock className="text-yellow-600 w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <p className="text-lg sm:text-2xl font-bold text-gray-800 leading-none">{stats.pendingCount}</p>
-                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Pending</p>
+                <p className="text-lg sm:text-2xl font-bold text-foreground leading-none">{stats.pendingCount}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">Pending</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl p-2.5 sm:p-4 shadow-sm border border-gray-100">
+          <div className="bg-card rounded-xl p-2.5 sm:p-4 shadow-sm border border-border">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-3">
               <div className="p-1.5 sm:p-2 bg-green-100 rounded-lg">
                 <CheckCircle2 className="text-green-600 w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <p className="text-lg sm:text-2xl font-bold text-gray-800 leading-none">{stats.approvedToday}</p>
-                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Approved Today</p>
+                <p className="text-lg sm:text-2xl font-bold text-foreground leading-none">{stats.approvedToday}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">Approved Today</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl p-2.5 sm:p-4 shadow-sm border border-gray-100">
+          <div className="bg-card rounded-xl p-2.5 sm:p-4 shadow-sm border border-border">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-3">
               <div className="p-1.5 sm:p-2 bg-red-100 rounded-lg">
                 <XCircle className="text-red-600 w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <p className="text-lg sm:text-2xl font-bold text-gray-800 leading-none">{stats.rejectedToday}</p>
-                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Rejected Today</p>
+                <p className="text-lg sm:text-2xl font-bold text-foreground leading-none">{stats.rejectedToday}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">Rejected Today</p>
               </div>
             </div>
           </div>
@@ -213,12 +213,12 @@ export default function ModerationPage() {
       {/* Queue Content */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="animate-spin text-gray-400" size={32} />
+          <Loader2 className="animate-spin text-muted-foreground" size={32} />
         </div>
       ) : !queue || queue.content.length === 0 ? (
-        <div className="bg-white rounded-xl p-8 sm:p-12 text-center shadow-sm border">
+        <div className="bg-card rounded-xl p-8 sm:p-12 text-center shadow-sm border border-border">
           <CheckCircle2 size={44} className="mx-auto text-green-400 mb-3" />
-          <p className="text-sm sm:text-base text-gray-500">All caught up! No pending listings.</p>
+          <p className="text-sm sm:text-base text-muted-foreground">All caught up! No pending listings.</p>
         </div>
       ) : (
         <>
@@ -226,7 +226,7 @@ export default function ModerationPage() {
             {queue.content.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-xl p-4 lg:p-5 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start gap-3 sm:gap-4"
+                className="bg-card rounded-xl p-4 lg:p-5 shadow-sm border border-border flex flex-col sm:flex-row items-start gap-3 sm:gap-4"
               >
                 {/* Thumbnail */}
                 {item.images && item.images.length > 0 ? (
@@ -236,21 +236,21 @@ export default function ModerationPage() {
                     className="w-full sm:w-16 h-32 sm:h-16 rounded-lg object-cover flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-full sm:w-16 h-32 sm:h-16 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-gray-400 text-xs">No img</span>
+                  <div className="w-full sm:w-16 h-32 sm:h-16 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                    <span className="text-muted-foreground text-xs">No img</span>
                   </div>
                 )}
 
                 {/* Info */}
                 <div className="flex-1 min-w-0 w-full">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="font-semibold text-gray-800 truncate">{item.title}</p>
+                    <p className="font-semibold text-foreground truncate">{item.title}</p>
                     {getStatusBadge(item.status)}
                     <Badge variant="outline" className="text-xs">
                       {item.category}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 flex-wrap">
+                  <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground flex-wrap">
                     {item.sellerName && <span>By {item.sellerName}</span>}
                     {item.location && <span>• {item.location}</span>}
                     {item.price != null && <span>• {formatPrice(item.price)}</span>}
@@ -298,7 +298,7 @@ export default function ModerationPage() {
           {/* Pagination */}
           {queue.totalPages > 1 && (
             <div className="flex items-center justify-between mt-6">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Page {queue.number + 1} of {queue.totalPages} ({queue.totalElements} total)
               </p>
               <div className="flex gap-2">

@@ -91,7 +91,7 @@ export default function RevenuePage() {
   if (guardLoading || !isAuthorized) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-gray-500">Loading...</p>
+        <p className="text-muted-foreground">Loading...</p>
       </div>
     );
   }
@@ -106,20 +106,20 @@ export default function RevenuePage() {
     <div>
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-        <h1 className="text-2xl font-bold text-gray-800">Revenue & Analytics</h1>
+        <h1 className="text-2xl font-bold text-foreground">Revenue & Analytics</h1>
         <div className="flex items-center gap-2 flex-wrap">
           <input
             type="date"
             value={dateRange.from}
             onChange={(e) => setDateRange((d) => ({ ...d, from: e.target.value }))}
-            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+            className="border border-border rounded-lg px-3 py-1.5 text-sm"
           />
-          <span className="text-gray-400 text-sm">to</span>
+          <span className="text-muted-foreground text-sm">to</span>
           <input
             type="date"
             value={dateRange.to}
             onChange={(e) => setDateRange((d) => ({ ...d, to: e.target.value }))}
-            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+            className="border border-border rounded-lg px-3 py-1.5 text-sm"
           />
           <Button size="sm" variant="outline" onClick={loadData} disabled={loading}>
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
@@ -133,21 +133,21 @@ export default function RevenuePage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+        <div className="bg-card rounded-xl p-5 shadow-sm border border-border">
           <div className="flex items-center gap-2 mb-2">
             <IndianRupee size={16} className="text-green-600" />
-            <span className="text-xs text-gray-500">Total Revenue</span>
+            <span className="text-xs text-muted-foreground">Total Revenue</span>
           </div>
-          <p className="text-2xl font-bold text-gray-800">
+          <p className="text-2xl font-bold text-foreground">
             {loading ? "—" : formatCurrency(revenueStats?.totalRevenue || 0)}
           </p>
         </div>
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+        <div className="bg-card rounded-xl p-5 shadow-sm border border-border">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp size={16} className="text-blue-600" />
-            <span className="text-xs text-gray-500">Daily Average</span>
+            <span className="text-xs text-muted-foreground">Daily Average</span>
           </div>
-          <p className="text-2xl font-bold text-gray-800">
+          <p className="text-2xl font-bold text-foreground">
             {loading || !revenueStats?.dailyRevenue?.length
               ? "—"
               : formatCurrency(
@@ -158,32 +158,32 @@ export default function RevenuePage() {
                 )}
           </p>
         </div>
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+        <div className="bg-card rounded-xl p-5 shadow-sm border border-border">
           <div className="flex items-center gap-2 mb-2">
             <CreditCard size={16} className="text-purple-600" />
-            <span className="text-xs text-gray-500">Refunded</span>
+            <span className="text-xs text-muted-foreground">Refunded</span>
           </div>
-          <p className="text-2xl font-bold text-gray-800">
+          <p className="text-2xl font-bold text-foreground">
             {loading ? "—" : revenueStats?.refundedPayments ?? 0}
           </p>
         </div>
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+        <div className="bg-card rounded-xl p-5 shadow-sm border border-border">
           <div className="flex items-center gap-2 mb-2">
             <AlertCircle size={16} className="text-red-500" />
-            <span className="text-xs text-gray-500">Failed</span>
+            <span className="text-xs text-muted-foreground">Failed</span>
           </div>
-          <p className="text-2xl font-bold text-gray-800">
+          <p className="text-2xl font-bold text-foreground">
             {loading ? "—" : revenueStats?.failedPayments ?? 0}
           </p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-gray-100 rounded-lg p-1 w-fit">
+      <div className="flex gap-1 mb-6 bg-muted rounded-lg p-1 w-fit">
         <button
           onClick={() => setActiveTab("overview")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-            activeTab === "overview" ? "bg-white shadow-sm text-gray-800" : "text-gray-500 hover:text-gray-700"
+            activeTab === "overview" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
         >
           Overview
@@ -191,7 +191,7 @@ export default function RevenuePage() {
         <button
           onClick={() => setActiveTab("transactions")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-            activeTab === "transactions" ? "bg-white shadow-sm text-gray-800" : "text-gray-500 hover:text-gray-700"
+            activeTab === "transactions" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
         >
           Transactions
@@ -201,12 +201,12 @@ export default function RevenuePage() {
       {activeTab === "overview" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Daily Revenue Bar Chart */}
-          <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-            <h3 className="font-semibold text-gray-700 mb-4">Daily Revenue</h3>
+          <div className="lg:col-span-2 bg-card rounded-xl shadow-sm border border-border p-5">
+            <h3 className="font-semibold text-foreground mb-4">Daily Revenue</h3>
             {loading ? (
-              <div className="h-48 flex items-center justify-center text-gray-400">Loading...</div>
+              <div className="h-48 flex items-center justify-center text-muted-foreground">Loading...</div>
             ) : !revenueStats?.dailyRevenue?.length ? (
-              <div className="h-48 flex items-center justify-center text-gray-400">No data for selected range</div>
+              <div className="h-48 flex items-center justify-center text-muted-foreground">No data for selected range</div>
             ) : (
               <div className="flex items-end gap-1 h-48 overflow-x-auto pb-2">
                 {revenueStats.dailyRevenue.map((day) => {
@@ -223,7 +223,7 @@ export default function RevenuePage() {
                           {formatCurrency(day.amount)}
                         </div>
                       </div>
-                      <span className="text-[9px] text-gray-400 mt-1 rotate-[-45deg] origin-top-left whitespace-nowrap">
+                      <span className="text-[9px] text-muted-foreground mt-1 rotate-[-45deg] origin-top-left whitespace-nowrap">
                         {day.date.slice(5)}
                       </span>
                     </div>
@@ -234,12 +234,12 @@ export default function RevenuePage() {
           </div>
 
           {/* Category Breakdown Donut */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-            <h3 className="font-semibold text-gray-700 mb-4">Category Breakdown</h3>
+          <div className="bg-card rounded-xl shadow-sm border border-border p-5">
+            <h3 className="font-semibold text-foreground mb-4">Category Breakdown</h3>
             {loading ? (
-              <div className="h-48 flex items-center justify-center text-gray-400">Loading...</div>
+              <div className="h-48 flex items-center justify-center text-muted-foreground">Loading...</div>
             ) : !revenueStats?.categoryBreakdown?.length ? (
-              <div className="h-48 flex items-center justify-center text-gray-400">No data</div>
+              <div className="h-48 flex items-center justify-center text-muted-foreground">No data</div>
             ) : (
               <div>
                 {/* Donut chart using conic-gradient */}
@@ -259,8 +259,8 @@ export default function RevenuePage() {
                       })(),
                     }}
                   >
-                    <div className="absolute inset-4 bg-white rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-gray-700">{formatCurrency(totalCategoryAmount)}</span>
+                    <div className="absolute inset-4 bg-card rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-foreground">{formatCurrency(totalCategoryAmount)}</span>
                     </div>
                   </div>
                 </div>
@@ -273,11 +273,11 @@ export default function RevenuePage() {
                           className="w-3 h-3 rounded-full flex-shrink-0"
                           style={{ backgroundColor: CATEGORY_COLORS[i % CATEGORY_COLORS.length] }}
                         />
-                        <span className="text-gray-600 truncate max-w-[120px]">{cat.category}</span>
+                        <span className="text-muted-foreground truncate max-w-[120px]">{cat.category}</span>
                       </div>
                       <div className="text-right">
-                        <span className="font-medium text-gray-800">{formatCurrency(cat.amount)}</span>
-                        <span className="text-gray-400 text-xs ml-1">({cat.count})</span>
+                        <span className="font-medium text-foreground">{formatCurrency(cat.amount)}</span>
+                        <span className="text-muted-foreground text-xs ml-1">({cat.count})</span>
                       </div>
                     </div>
                   ))}
@@ -289,46 +289,46 @@ export default function RevenuePage() {
       )}
 
       {activeTab === "transactions" && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-5 py-4 border-b flex items-center justify-between">
-            <h3 className="font-semibold text-gray-700">Transaction History</h3>
+        <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+            <h3 className="font-semibold text-foreground">Transaction History</h3>
             {transactions && (
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-muted-foreground">
                 {transactions.totalElements} total transactions
               </span>
             )}
           </div>
 
           {loading ? (
-            <div className="p-8 text-center text-gray-400">Loading transactions...</div>
+            <div className="p-8 text-center text-muted-foreground">Loading transactions...</div>
           ) : !transactions?.content?.length ? (
-            <div className="p-8 text-center text-gray-400">No transactions found for the selected date range.</div>
+            <div className="p-8 text-center text-muted-foreground">No transactions found for the selected date range.</div>
           ) : (
             <>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-muted border-b border-border">
                     <tr>
-                      <th className="text-left px-5 py-3 text-gray-600 font-medium">ID</th>
-                      <th className="text-left px-5 py-3 text-gray-600 font-medium">User</th>
-                      <th className="text-left px-5 py-3 text-gray-600 font-medium">Listing</th>
-                      <th className="text-left px-5 py-3 text-gray-600 font-medium">Amount</th>
-                      <th className="text-left px-5 py-3 text-gray-600 font-medium">Status</th>
-                      <th className="text-left px-5 py-3 text-gray-600 font-medium">Purpose</th>
-                      <th className="text-left px-5 py-3 text-gray-600 font-medium">Date</th>
+                      <th className="text-left px-5 py-3 text-muted-foreground font-medium">ID</th>
+                      <th className="text-left px-5 py-3 text-muted-foreground font-medium">User</th>
+                      <th className="text-left px-5 py-3 text-muted-foreground font-medium">Listing</th>
+                      <th className="text-left px-5 py-3 text-muted-foreground font-medium">Amount</th>
+                      <th className="text-left px-5 py-3 text-muted-foreground font-medium">Status</th>
+                      <th className="text-left px-5 py-3 text-muted-foreground font-medium">Purpose</th>
+                      <th className="text-left px-5 py-3 text-muted-foreground font-medium">Date</th>
                     </tr>
                   </thead>
                   <tbody>
                     {transactions.content.map((tx) => (
-                      <tr key={tx.id} className="border-b last:border-0 hover:bg-gray-50">
-                        <td className="px-5 py-3 font-mono text-xs text-gray-500">#{tx.id}</td>
+                      <tr key={tx.id} className="border-b border-border last:border-0 hover:bg-muted">
+                        <td className="px-5 py-3 font-mono text-xs text-muted-foreground">#{tx.id}</td>
                         <td className="px-5 py-3">
                           <div>
-                            <span className="text-gray-800">{tx.userName}</span>
-                            <span className="text-xs text-gray-400 ml-1">#{tx.userId}</span>
+                            <span className="text-foreground">{tx.userName}</span>
+                            <span className="text-xs text-muted-foreground ml-1">#{tx.userId}</span>
                           </div>
                         </td>
-                        <td className="px-5 py-3 text-gray-600 max-w-[200px] truncate">{tx.listingTitle}</td>
+                        <td className="px-5 py-3 text-muted-foreground max-w-[200px] truncate">{tx.listingTitle}</td>
                         <td className="px-5 py-3 font-semibold">{formatCurrency(tx.amount)}</td>
                         <td className="px-5 py-3">
                           <span
@@ -345,8 +345,8 @@ export default function RevenuePage() {
                             {tx.status}
                           </span>
                         </td>
-                        <td className="px-5 py-3 text-gray-500 text-xs">{tx.purpose}</td>
-                        <td className="px-5 py-3 text-gray-500 text-xs whitespace-nowrap">
+                        <td className="px-5 py-3 text-muted-foreground text-xs">{tx.purpose}</td>
+                        <td className="px-5 py-3 text-muted-foreground text-xs whitespace-nowrap">
                           {tx.paidAt
                             ? new Date(tx.paidAt).toLocaleDateString("en-IN", {
                                 day: "2-digit",
@@ -367,8 +367,8 @@ export default function RevenuePage() {
 
               {/* Pagination */}
               {transactions.totalPages > 1 && (
-                <div className="px-5 py-3 border-t flex items-center justify-between">
-                  <span className="text-xs text-gray-500">
+                <div className="px-5 py-3 border-t border-border flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">
                     Page {transactions.number + 1} of {transactions.totalPages}
                   </span>
                   <div className="flex gap-2">

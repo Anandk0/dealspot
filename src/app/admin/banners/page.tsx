@@ -109,7 +109,7 @@ export default function BannersPage() {
   if (guardLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-gray-400" size={32} />
+        <Loader2 className="animate-spin text-muted-foreground" size={32} />
       </div>
     );
   }
@@ -120,8 +120,8 @@ export default function BannersPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Banners & Promotions</h1>
-          <p className="text-sm text-gray-500">Manage home page banners</p>
+          <h1 className="text-2xl font-bold text-foreground">Banners & Promotions</h1>
+          <p className="text-sm text-muted-foreground">Manage home page banners</p>
         </div>
         <Button className="bg-primary" onClick={() => setCreateDialogOpen(true)}>
           <Plus size={16} className="mr-2" /> New Banner
@@ -130,18 +130,18 @@ export default function BannersPage() {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-gray-400" size={32} />
+          <Loader2 className="animate-spin text-muted-foreground" size={32} />
         </div>
       ) : banners.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
-          <Image size={48} className="mx-auto mb-3 text-gray-300" />
+        <div className="text-center py-20 text-muted-foreground">
+          <Image size={48} className="mx-auto mb-3 text-muted-foreground/70" />
           <p className="text-lg font-medium">No banners yet</p>
           <p className="text-sm">Create your first banner to display on the home page.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {banners.map((banner) => (
-            <div key={banner.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
+            <div key={banner.id} className="bg-card rounded-xl overflow-hidden shadow-sm border border-border">
               <div
                 className={`p-6 text-white ${
                   banner.color
@@ -167,7 +167,7 @@ export default function BannersPage() {
                     {banner.active ? "Active" : "Inactive"}
                   </Badge>
                   {banner.startDate && (
-                    <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
                       <Calendar size={10} />
                       {new Date(banner.startDate).toLocaleDateString()} – {banner.endDate ? new Date(banner.endDate).toLocaleDateString() : "∞"}
                     </span>
@@ -179,7 +179,7 @@ export default function BannersPage() {
                       href={banner.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-muted-foreground hover:text-foreground"
                     >
                       <LinkIcon size={14} />
                     </a>
@@ -208,7 +208,7 @@ export default function BannersPage() {
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div>
-              <label className="text-sm font-medium text-gray-700">Title *</label>
+              <label className="text-sm font-medium text-foreground">Title *</label>
               <Input
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
@@ -216,7 +216,7 @@ export default function BannersPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Subtitle</label>
+              <label className="text-sm font-medium text-foreground">Subtitle</label>
               <Input
                 value={formSubtitle}
                 onChange={(e) => setFormSubtitle(e.target.value)}
@@ -224,7 +224,7 @@ export default function BannersPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Banner Image</label>
+              <label className="text-sm font-medium text-foreground">Banner Image</label>
               <Input
                 type="file"
                 accept="image/*"
@@ -232,11 +232,11 @@ export default function BannersPage() {
                 className="cursor-pointer"
               />
               {formImage && (
-                <p className="text-xs text-gray-500 mt-1">{formImage.name}</p>
+                <p className="text-xs text-muted-foreground mt-1">{formImage.name}</p>
               )}
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Link URL</label>
+              <label className="text-sm font-medium text-foreground">Link URL</label>
               <Input
                 value={formLink}
                 onChange={(e) => setFormLink(e.target.value)}
@@ -244,7 +244,7 @@ export default function BannersPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Color (Tailwind gradient classes)</label>
+              <label className="text-sm font-medium text-foreground">Color (Tailwind gradient classes)</label>
               <Input
                 value={formColor}
                 onChange={(e) => setFormColor(e.target.value)}
@@ -253,7 +253,7 @@ export default function BannersPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">Start Date</label>
+                <label className="text-sm font-medium text-foreground">Start Date</label>
                 <Input
                   type="date"
                   value={formStartDate}
@@ -261,7 +261,7 @@ export default function BannersPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">End Date</label>
+                <label className="text-sm font-medium text-foreground">End Date</label>
                 <Input
                   type="date"
                   value={formEndDate}
