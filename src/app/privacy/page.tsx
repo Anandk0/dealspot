@@ -33,6 +33,12 @@ export default function PrivacyPolicyPage() {
                 <li>Basic activity, like which listings you view or save to favourites.</li>
                 <li>Payment records when you unlock a seller&apos;s contact details.</li>
               </ul>
+              <p>
+                Some things are picked up automatically when you use the app, like
+                your device type, browser, rough IP-based location, and app version.
+                If something crashes, we may also receive a basic error report. This
+                helps us fix bugs and keep the app running well.
+              </p>
             </section>
 
             <section className="space-y-2">
@@ -84,11 +90,31 @@ export default function PrivacyPolicyPage() {
             </section>
 
             <section className="space-y-2">
+              <h2 className="text-base font-semibold text-foreground">When we might share data with authorities</h2>
+              <p>
+                We&apos;d only ever hand over your information if the law requires
+                it — for example, a valid legal request — or if we need to protect
+                the safety of our users or look into fraud or misuse on the platform.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-base font-semibold text-foreground">How long we keep it</h2>
+              <p>
+                We hold on to your information while your account is active. If you
+                delete your account, we remove your personal details and listings,
+                though we may keep a limited record for a short while where the law
+                asks us to — for instance, payment records.
+              </p>
+            </section>
+
+            <section className="space-y-2">
               <h2 className="text-base font-semibold text-foreground">Your choices</h2>
               <ul className="list-disc pl-5 space-y-1 text-foreground/80">
                 <li>You can edit your profile details any time from your account.</li>
                 <li>You can delete any listing you&apos;ve posted.</li>
                 <li>You can delete your account entirely — this removes your listings and personal details from the platform.</li>
+                <li>You can turn off promotional notices and still use the app normally.</li>
               </ul>
             </section>
 

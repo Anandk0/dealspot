@@ -99,6 +99,46 @@ export default function TermsPage() {
             </section>
 
             <section className="space-y-2">
+              <h2 className="text-base font-semibold text-foreground">Our name and content</h2>
+              <p>
+                The Dealspot Connect name, logo, design, and the app itself belong
+                to us. Please don&apos;t copy, rebrand, or reuse any part of the
+                platform without our permission. The listings and photos you post
+                stay yours — but by posting them you allow us to display them
+                inside the app so buyers can find you.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-base font-semibold text-foreground">If something goes wrong because of you</h2>
+              <p>
+                If your use of Dealspot — or something you post — causes a problem
+                that leads to a claim or cost against us, you agree to cover us for
+                it. In plain terms: you&apos;re responsible for what you do on the
+                platform.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-base font-semibold text-foreground">Ending your access</h2>
+              <p>
+                You can stop using Dealspot and delete your account any time. We
+                may also suspend or close an account if the rules here are broken
+                or we spot misuse — sometimes without warning if the situation is
+                serious.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-base font-semibold text-foreground">Which laws apply</h2>
+              <p>
+                These terms follow the laws of India. If a dispute ever comes up
+                that can&apos;t be sorted out directly, it will be handled by the
+                courts in Karnataka, India.
+              </p>
+            </section>
+
+            <section className="space-y-2">
               <h2 className="text-base font-semibold text-foreground">Changes</h2>
               <p>
                 We may update these terms as the platform grows. If we make a big
