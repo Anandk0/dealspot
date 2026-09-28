@@ -1,10 +1,11 @@
 "use client";
 import { Phone, Mail, MessageCircle } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
-import { toast } from "sonner";
 
-const SUPPORT_PHONE = process.env.NEXT_PUBLIC_SUPPORT_PHONE || "—";
-const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "—";
+const SUPPORT_PHONE = "+91 87227 27151";
+const SUPPORT_PHONE_DIAL = "+918722727151";
+const SUPPORT_WHATSAPP = "918722727151";
+const SUPPORT_EMAIL = "dealspotconnect.official@gmail.com";
 const UNLOCK_PRICE_PAISE = Number(process.env.NEXT_PUBLIC_UNLOCK_PRICE_PAISE) || 0;
 const UNLOCK_PRICE_DISPLAY = UNLOCK_PRICE_PAISE > 0 ? `₹${UNLOCK_PRICE_PAISE / 100}` : "—";
 
@@ -42,7 +43,7 @@ export default function HelpPage() {
             <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-sm border border-border">
               <h3 className="font-semibold text-base mb-4 text-foreground">ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ</h3>
               <div className="space-y-3">
-                <a href={`tel:${SUPPORT_PHONE}`} className="flex items-center gap-3 w-full text-left p-3 rounded-xl hover:bg-muted/50 transition">
+                <a href={`tel:${SUPPORT_PHONE_DIAL}`} className="flex items-center gap-3 w-full text-left p-3 rounded-xl hover:bg-muted/50 transition">
                   <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                     <Phone size={16} className="text-primary" />
                   </div>
@@ -60,7 +61,7 @@ export default function HelpPage() {
                     <p className="text-xs text-muted-foreground">ಇಮೇಲ್</p>
                   </div>
                 </a>
-                <button onClick={() => toast.info("WhatsApp ಚಾಟ್ ತೆರೆಯಲಾಗುತ್ತಿದೆ...")} className="flex items-center gap-3 w-full text-left p-3 rounded-xl hover:bg-muted/50 transition">
+                <a href={`https://wa.me/${SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 w-full text-left p-3 rounded-xl hover:bg-muted/50 transition">
                   <div className="w-10 h-10 bg-green-50 dark:bg-green-950/40 rounded-full flex items-center justify-center shrink-0">
                     <MessageCircle size={16} className="text-green-500" />
                   </div>
@@ -68,7 +69,7 @@ export default function HelpPage() {
                     <p className="text-sm font-medium text-foreground truncate">WhatsApp ಸಹಾಯ</p>
                     <p className="text-xs text-muted-foreground">ಚಾಟ್</p>
                   </div>
-                </button>
+                </a>
               </div>
             </div>
           </div>
