@@ -6,6 +6,7 @@ import AppLayout from "@/components/AppLayout";
 import { topLevelCategories } from "@/lib/categories";
 import { useCategories } from "@/lib/useCategories";
 import { useLang } from "@/lib/lang-context";
+import { useLocation } from "@/lib/location-context";
 import { api, ListingData, BannerResponse } from "@/lib/api";
 
 const categoryImages: Record<string, string> = {
@@ -45,12 +46,15 @@ const defaultBanners: BannerSlide[] = [
 
 export default function HomePage() {
   const [recentListings, setRecentListings] = useState<ListingData[]>([]);
+  const [nearbyListings, setNearbyListings] = useState<ListingData[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [banners, setBanners] = useState<BannerSlide[]>(defaultBanners);
   const recentSliderRef = useRef<HTMLDivElement>(null);
+  const nearbySliderRef = useRef<HTMLDivElement>(null);
   const { topLevel: apiTopLevel } = useCategories();
   const { lang } = useLang();
+  const { district, districtKn, openPrompt } = useLocation();
 
   // Use API categories if loaded, otherwise fall back to hardcoded
   const displayCategories = apiTopLevel.length > 0 ? apiTopLevel : topLevelCategories;
@@ -67,12 +71,33 @@ export default function HomePage() {
     }
   };
 
+  const scrollNearby = (direction: "left" | "right") => {
+    if (nearbySliderRef.current) {
+      const scrollAmount = 260;
+      nearbySliderRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
   useEffect(() => {
     api.getRecentListings()
       .then(setRecentListings)
       .catch(() => setRecentListings([]))
       .finally(() => setLoading(false));
   }, []);
+
+  // Location-based recommendations: refetch whenever the chosen district changes.
+  useEffect(() => {
+    if (!district) {
+      setNearbyListings([]);
+      return;
+    }
+    api.getNearbyListings(district, 0, 12)
+      .then((res) => setNearbyListings(res.content))
+      .catch(() => setNearbyListings([]));
+  }, [district]);
 
   useEffect(() => {
     api.getActiveBanners()
@@ -199,6 +224,90 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+
+        {/* Near You - location-based recommendations */}
+        {district && nearbyListings.length > 0 && (
+          <section className="relative w-full min-w-0 overflow-hidden">
+            <div className="flex items-center justify-between mb-2.5 sm:mb-3">
+              <div>
+                <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-1.5 sm:gap-2">
+                  <MapPin size={16} className="text-primary sm:w-[18px] sm:h-[18px]" />
+                  {lang === "en" ? "Near You" : "ನಿಮ್ಮ ಹತ್ತಿರ"}
+                  <button
+                    onClick={openPrompt}
+                    className="text-[11px] sm:text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full hover:bg-primary/20 transition"
+                  >
+                    {(lang === "en" ? district : districtKn || district)} ▾
+                  </button>
+                </h2>
+              </div>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                {nearbyListings.length > 2 && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => scrollNearby("left")}
+                      className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-card border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition shadow-xs"
+                      aria-label="Previous"
+                    >
+                      <ChevronLeft size={14} className="sm:w-4 sm:h-4" />
+                    </button>
+                    <button
+                      onClick={() => scrollNearby("right")}
+                      className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-card border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition shadow-xs"
+                      aria-label="Next"
+                    >
+                      <ChevronRight size={14} className="sm:w-4 sm:h-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div
+              ref={nearbySliderRef}
+              className="flex gap-3 sm:gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-3 px-0.5 w-full min-w-0 touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {nearbyListings.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/category/${item.category}/${item.id}`}
+                  className="w-[170px] sm:w-[230px] md:w-[250px] shrink-0 snap-start bg-card rounded-2xl overflow-hidden shadow-sm sm:shadow-md border border-border hover:shadow-lg hover:-translate-y-0.5 sm:hover:-translate-y-1 transition-all duration-300 group flex flex-col"
+                >
+                  <div className="relative w-full h-26 sm:h-34 md:h-36 bg-muted overflow-hidden">
+                    {item.images && item.images.length > 0 ? (
+                      <img
+                        src={item.images[0]}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-2xl sm:text-3xl bg-muted">🌾</div>
+                    )}
+                    <span className="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 bg-black/60 backdrop-blur-xs text-white text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-md capitalize max-w-[85%] truncate">
+                      {item.category.replace(/-/g, " ")}
+                    </span>
+                  </div>
+                  <div className="p-2.5 sm:p-3 flex-1 flex flex-col justify-between">
+                    <div>
+                      <p className="text-xs sm:text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                        {item.title}
+                      </p>
+                      <p className="text-sm sm:text-base md:text-lg font-bold text-primary mt-0.5 sm:mt-1">
+                        {item.price ? `₹${item.price.toLocaleString()}${item.priceUnit ? '/' + item.priceUnit : ''}` : item.rateInfo || ""}
+                      </p>
+                    </div>
+                    {item.location && (
+                      <p className="text-[10px] sm:text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1 truncate">
+                        <MapPin size={10} className="shrink-0 text-primary/70 sm:w-3 sm:h-3" /> {item.location}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Recent Listings - Sliding Carousel */}
         <section className="relative w-full min-w-0 overflow-hidden">

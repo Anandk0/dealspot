@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import TopHeader from "./TopHeader";
 import Sidebar from "./BottomNav";
+import LocationPrompt from "./LocationPrompt";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
@@ -44,6 +45,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background w-full overflow-x-hidden" suppressHydrationWarning>
+      <LocationPrompt />
       <TopHeader />
       <div className="flex pt-0 w-full min-w-0 overflow-x-hidden">
         <Sidebar />

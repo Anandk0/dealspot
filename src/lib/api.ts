@@ -245,6 +245,25 @@ class ApiClient {
     return this.request<ListingData[]>("/api/listings/recent");
   }
 
+  // Listings in the given district (location-based recommendations).
+  async getNearbyListings(district: string, page = 0, size = 20) {
+    const params = new URLSearchParams({ district, page: String(page), size: String(size) });
+    return this.request<PagedResponse<ListingData>>(`/api/listings/nearby?${params}`);
+  }
+
+  // ─── Location / Districts ───────────────────────────────
+  async getDistricts() {
+    return this.request<DistrictOption[]>("/api/districts");
+  }
+
+  // Persist the signed-in user's preferred district (used to prioritize recommendations).
+  async setMyDistrict(district: string) {
+    return this.request<{ message: string; district: string }>("/api/users/me/district", {
+      method: "PUT",
+      body: JSON.stringify({ district }),
+    });
+  }
+
   async getMyListings(page = 0, size = 20) {
     return this.request<PagedResponse<ListingData>>(
       `/api/listings/my?page=${page}&size=${size}`
@@ -536,6 +555,13 @@ export interface AuthResponseData {
   userId: number;
   name: string;
   phone: string;
+}
+
+export interface DistrictOption {
+  id: string;      // slug of English name, e.g. "bengaluru-urban"
+  name: string;    // Kannada name
+  nameEn: string;  // English name
+  icon: string;    // emoji
 }
 
 export interface ListingData {
