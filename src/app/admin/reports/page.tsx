@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Loader2, Flag, ExternalLink } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Flag, ExternalLink, Check } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +37,8 @@ export default function ReportsPage() {
   const [pageSize] = useState(20);
   const [loading, setLoading] = useState(true);
 
+  const [resolving, setResolving] = useState<number | null>(null);
+
   const fetchReports = useCallback(async () => {
     setLoading(true);
     try {
@@ -50,6 +52,21 @@ export default function ReportsPage() {
       setLoading(false);
     }
   }, [page, pageSize]);
+
+  const handleResolve = async (reportId: number) => {
+    setResolving(reportId);
+    try {
+      await api.adminResolveReport(reportId);
+      toast.success("Report resolved");
+      // Drop it from the current view immediately.
+      setReports((prev) => prev.filter((r) => r.id !== reportId));
+      setTotalElements((n) => Math.max(0, n - 1));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to resolve report");
+    } finally {
+      setResolving(null);
+    }
+  };
 
   useEffect(() => {
     if (isAuthorized) {
@@ -122,16 +139,28 @@ export default function ReportsPage() {
                     )}
                   </td>
                   <td className="px-5 py-3">
-                    {r.targetType === "LISTING" ? (
-                      <Link
-                        href={`/admin/reports/${r.targetId}`}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                    <div className="flex items-center gap-3">
+                      {r.targetType === "LISTING" && (
+                        <Link
+                          href={`/admin/reports/${r.targetId}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                        >
+                          Review <ExternalLink size={12} />
+                        </Link>
+                      )}
+                      <button
+                        onClick={() => handleResolve(r.id)}
+                        disabled={resolving === r.id}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-green-600 hover:underline disabled:opacity-50"
                       >
-                        Review <ExternalLink size={12} />
-                      </Link>
-                    ) : (
-                      <span className="text-xs text-muted-foreground/70">—</span>
-                    )}
+                        {resolving === r.id ? (
+                          <Loader2 size={12} className="animate-spin" />
+                        ) : (
+                          <Check size={12} />
+                        )}
+                        Resolve
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

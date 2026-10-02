@@ -493,6 +493,11 @@ class ApiClient {
     return this.request<UserModerationOverview>(`/api/admin/listings/${listingId}/owner-overview`);
   }
 
+  // Mark a report resolved (removes it from the pending queue).
+  async adminResolveReport(reportId: number) {
+    return this.request<{ message: string }>(`/api/admin/reports/${reportId}/resolve`, { method: "PUT" });
+  }
+
   async adminModerationStats() {
     return this.request<ModerationStats>("/api/admin/moderation/stats");
   }
