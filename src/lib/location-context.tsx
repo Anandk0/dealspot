@@ -6,16 +6,26 @@ import { useAuth } from "./auth-context";
 const STORAGE_KEY = "dealspot_district";       // English name
 const STORAGE_KEY_KN = "dealspot_district_kn"; // Kannada name
 const DISMISS_KEY = "dealspot_district_prompt_dismissed";
+const COORDS_KEY = "dealspot_coords";          // JSON { lat, lng }
+
+export interface Coords {
+  lat: number;
+  lng: number;
+}
 
 interface LocationContextType {
   /** English district name, e.g. "Mysuru". null until chosen. */
   district: string | null;
   /** Kannada district name, e.g. "ಮೈಸೂರು". */
   districtKn: string | null;
+  /** The buyer's own GPS coordinates, if they granted location. Used for km distance. */
+  coords: Coords | null;
   /** True when we have no district yet and the user hasn't dismissed the prompt. */
   needsPrompt: boolean;
   /** Save a chosen district (persists locally + to the profile when logged in). */
   setDistrict: (nameEn: string, nameKn?: string) => void;
+  /** Save the buyer's GPS coordinates (persisted locally). */
+  setCoords: (coords: Coords) => void;
   /** Dismiss the first-run prompt without choosing. */
   dismissPrompt: () => void;
   /** Re-open the prompt (e.g. from a header button). */
@@ -25,8 +35,10 @@ interface LocationContextType {
 const LocationContext = createContext<LocationContextType>({
   district: null,
   districtKn: null,
+  coords: null,
   needsPrompt: false,
   setDistrict: () => {},
+  setCoords: () => {},
   dismissPrompt: () => {},
   openPrompt: () => {},
 });
@@ -35,6 +47,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   const { user, isLoggedIn } = useAuth();
   const [district, setDistrictState] = useState<string | null>(null);
   const [districtKn, setDistrictKn] = useState<string | null>(null);
+  const [coords, setCoordsState] = useState<Coords | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
@@ -46,6 +59,13 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       if (saved) {
         setDistrictState(saved);
         setDistrictKn(savedKn);
+      }
+      const savedCoords = localStorage.getItem(COORDS_KEY);
+      if (savedCoords) {
+        const parsed = JSON.parse(savedCoords);
+        if (typeof parsed?.lat === "number" && typeof parsed?.lng === "number") {
+          setCoordsState(parsed);
+        }
       }
       if (localStorage.getItem(DISMISS_KEY) === "1") {
         setDismissed(true);
@@ -91,6 +111,15 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     [isLoggedIn]
   );
 
+  const setCoords = useCallback((c: Coords) => {
+    setCoordsState(c);
+    try {
+      localStorage.setItem(COORDS_KEY, JSON.stringify(c));
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const dismissPrompt = useCallback(() => {
     setDismissed(true);
     try {
@@ -113,7 +142,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
 
   return (
     <LocationContext.Provider
-      value={{ district, districtKn, needsPrompt, setDistrict, dismissPrompt, openPrompt }}
+      value={{ district, districtKn, coords, needsPrompt, setDistrict, setCoords, dismissPrompt, openPrompt }}
     >
       {children}
     </LocationContext.Provider>

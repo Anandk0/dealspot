@@ -574,6 +574,8 @@ export interface ListingData {
   priceUnit?: string;
   location?: string;
   district?: string;
+  latitude?: number;
+  longitude?: number;
   status: string;
   images: string[];
   viewCount: number;

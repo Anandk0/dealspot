@@ -6,6 +6,8 @@ import AppLayout from "@/components/AppLayout";
 import ContactUnlockModal from "@/components/ContactUnlockModal";
 import { api, ListingData } from "@/lib/api";
 import { getCategoryIcon } from "@/lib/categories";
+import { useLocation } from "@/lib/location-context";
+import { haversineKm, formatDistance } from "@/lib/distance";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 
@@ -14,6 +16,7 @@ export default function ItemDetailPage() {
   const categoryId = params.id as string;
   const itemId = params.itemId as string;
 
+  const { coords } = useLocation();
   const [item, setItem] = useState<ListingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isFavorited, setIsFavorited] = useState(false);
@@ -210,6 +213,12 @@ export default function ItemDetailPage() {
                 <div className="flex items-center gap-1 text-sm text-muted-foreground mt-2">
                   <MapPin size={14} />
                   <span>{item.location}</span>
+                </div>
+              )}
+              {coords && item.latitude != null && item.longitude != null && (
+                <div className="inline-flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full mt-2">
+                  <MapPin size={12} />
+                  {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))} ನಿಮ್ಮಿಂದ (away)
                 </div>
               )}
               <p className="text-xs text-muted-foreground mt-2">👁 {item.viewCount} ವೀಕ್ಷಣೆ</p>

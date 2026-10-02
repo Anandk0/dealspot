@@ -7,6 +7,7 @@ import { topLevelCategories } from "@/lib/categories";
 import { useCategories } from "@/lib/useCategories";
 import { useLang } from "@/lib/lang-context";
 import { useLocation } from "@/lib/location-context";
+import { haversineKm, formatDistance } from "@/lib/distance";
 import { api, ListingData, BannerResponse } from "@/lib/api";
 
 const categoryImages: Record<string, string> = {
@@ -54,7 +55,7 @@ export default function HomePage() {
   const nearbySliderRef = useRef<HTMLDivElement>(null);
   const { topLevel: apiTopLevel } = useCategories();
   const { lang } = useLang();
-  const { district, districtKn, openPrompt } = useLocation();
+  const { district, districtKn, coords, openPrompt } = useLocation();
 
   // Use API categories if loaded, otherwise fall back to hardcoded
   const displayCategories = apiTopLevel.length > 0 ? apiTopLevel : topLevelCategories;
@@ -297,11 +298,19 @@ export default function HomePage() {
                         {item.price ? `₹${item.price.toLocaleString()}${item.priceUnit ? '/' + item.priceUnit : ''}` : item.rateInfo || ""}
                       </p>
                     </div>
-                    {item.location && (
-                      <p className="text-[10px] sm:text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1 truncate">
-                        <MapPin size={10} className="shrink-0 text-primary/70 sm:w-3 sm:h-3" /> {item.location}
-                      </p>
-                    )}
+                    <div className="mt-1.5 space-y-1">
+                      {coords && item.latitude != null && item.longitude != null && (
+                        <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
+                          <MapPin size={9} className="shrink-0" />
+                          {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))}
+                        </span>
+                      )}
+                      {item.location && (
+                        <p className="text-[10px] sm:text-[11px] text-muted-foreground flex items-center gap-1 truncate">
+                          <MapPin size={10} className="shrink-0 text-primary/70 sm:w-3 sm:h-3" /> {item.location}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </Link>
               ))}

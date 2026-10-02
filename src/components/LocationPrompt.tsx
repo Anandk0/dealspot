@@ -9,7 +9,7 @@ import { useLang } from "@/lib/lang-context";
 import { toast } from "sonner";
 
 export default function LocationPrompt() {
-  const { needsPrompt, setDistrict, dismissPrompt } = useLocation();
+  const { needsPrompt, setDistrict, setCoords, dismissPrompt } = useLocation();
   const { t } = useLang();
   const [districts, setDistricts] = useState<DistrictOption[]>([]);
   const [query, setQuery] = useState("");
@@ -46,6 +46,8 @@ export default function LocationPrompt() {
       async (pos) => {
         try {
           const { latitude, longitude } = pos.coords;
+          // Save the buyer's own coordinates for km-distance calculations.
+          setCoords({ lat: latitude, lng: longitude });
           const res = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
             { headers: { "Accept-Language": "en" } }

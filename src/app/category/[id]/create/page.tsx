@@ -1,12 +1,13 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
-import { Camera, Plus, X, Loader2 } from "lucide-react";
+import { Camera, Plus, X, Loader2, MapPin, LocateFixed, Check } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useCategories } from "@/lib/useCategories";
+import { useLocation } from "@/lib/location-context";
 import { api } from "@/lib/api";
 import AppLayout from "@/components/AppLayout";
 import AgentRegistration from "@/components/AgentRegistration";
@@ -23,10 +24,13 @@ export default function CreateListingPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── All hooks must be before any early return ──
+  const { setCoords: setBuyerCoords } = useLocation();
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [pinning, setPinning] = useState(false);
 
   // Early returns AFTER all hooks
   if (categoryId === "agents" || categoryId === "agent") {
@@ -73,6 +77,29 @@ export default function CreateListingPage() {
 
   const handleChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
+  };
+
+  const pinLocation = () => {
+    if (!("geolocation" in navigator)) {
+      toast.error("ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಲೊಕೇಶನ್ ಲಭ್ಯವಿಲ್ಲ (Location not available)");
+      return;
+    }
+    setPinning(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setCoords(c);
+        // Also remember the poster's own coords for their own distance view.
+        setBuyerCoords(c);
+        setPinning(false);
+        toast.success("ಲೊಕೇಶನ್ ಪಿನ್ ಮಾಡಲಾಗಿದೆ (Location pinned)");
+      },
+      () => {
+        setPinning(false);
+        toast.error("ಲೊಕೇಶನ್ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ (Permission denied)");
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
   };
 
   const getFields = (): { key: string; label: string }[] => {
@@ -190,6 +217,8 @@ export default function CreateListingPage() {
         description: formData.description?.trim() || "",
         location: formData.location?.trim() || "",
         district: formData.district?.trim() || "",
+        latitude: coords?.lat ?? null,
+        longitude: coords?.lng ?? null,
         price: parsedPrice && !isNaN(parsedPrice) ? parsedPrice : null,
         priceUnit: formData.priceUnit?.trim() || "",
         breed: formData.breed?.trim() || null,
@@ -293,6 +322,35 @@ export default function CreateListingPage() {
                   />
                 </div>
               ))}
+            </div>
+
+            {/* Pin location for distance */}
+            <div>
+              <label className="text-xs sm:text-sm font-medium text-foreground mb-1.5 block">
+                ನಿಖರ ಲೊಕೇಶನ್ (Exact Location) <span className="text-muted-foreground font-normal">— {`ಐಚ್ಛಿಕ (optional)`}</span>
+              </label>
+              <button
+                type="button"
+                onClick={pinLocation}
+                disabled={pinning}
+                className={`flex items-center gap-2 w-full sm:w-auto px-4 h-10 sm:h-11 rounded-xl border text-sm transition ${
+                  coords
+                    ? "border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400"
+                    : "border-border bg-background text-foreground hover:border-primary/50"
+                }`}
+              >
+                {pinning ? (
+                  <><Loader2 size={16} className="animate-spin" /> ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...</>
+                ) : coords ? (
+                  <><Check size={16} /> ಲೊಕೇಶನ್ ಪಿನ್ ಆಗಿದೆ (Location pinned)</>
+                ) : (
+                  <><LocateFixed size={16} /> ನನ್ನ ಲೊಕೇಶನ್ ಪಿನ್ ಮಾಡಿ (Pin my location)</>
+                )}
+              </button>
+              <p className="text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1">
+                <MapPin size={11} className="shrink-0" />
+                ಇದು ಖರೀದಿದಾರರಿಗೆ ದೂರ (km) ತೋರಿಸುತ್ತದೆ — This shows buyers the distance in km.
+              </p>
             </div>
 
             {/* Description */}
