@@ -488,6 +488,11 @@ class ApiClient {
     return this.request<PagedResponse<ReportResponse>>(`/api/admin/reports?page=${page}&size=${size}`);
   }
 
+  // Moderator drill-down for a reported listing: its owner + their reported/all ads.
+  async adminGetOwnerOverview(listingId: number) {
+    return this.request<UserModerationOverview>(`/api/admin/listings/${listingId}/owner-overview`);
+  }
+
   async adminModerationStats() {
     return this.request<ModerationStats>("/api/admin/moderation/stats");
   }
@@ -595,6 +600,33 @@ export interface ReportResponse {
   description?: string;
   status: string;
   createdAt: string;
+}
+
+export interface OwnerInfo {
+  id: number;
+  name: string;
+  phone: string;
+  email?: string;
+  location?: string;
+  district?: string;
+  role: string;
+  banned: boolean;
+  banReason?: string;
+  createdAt: string;
+  totalListings: number;
+  activeListings: number;
+}
+
+export interface ReportedListingItem {
+  listing: ListingData;
+  reportCount: number;
+  reasons: string[];
+}
+
+export interface UserModerationOverview {
+  owner: OwnerInfo;
+  reportedListings: ReportedListingItem[];
+  allListings: ListingData[];
 }
 
 export interface ListingData {

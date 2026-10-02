@@ -124,10 +124,10 @@ export default function ReportsPage() {
                   <td className="px-5 py-3">
                     {r.targetType === "LISTING" ? (
                       <Link
-                        href={`/category/view/${r.targetId}`}
+                        href={`/admin/reports/${r.targetId}`}
                         className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
                       >
-                        View / Take Down <ExternalLink size={12} />
+                        Review <ExternalLink size={12} />
                       </Link>
                     ) : (
                       <span className="text-xs text-muted-foreground/70">—</span>
