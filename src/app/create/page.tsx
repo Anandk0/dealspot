@@ -108,8 +108,12 @@ export default function CreatePage() {
                 onClick={() => handleSubSelect(sub)}
                 className="flex items-center gap-3.5 p-4 rounded-2xl border border-border bg-card shadow-sm hover:shadow-md hover:border-primary/40 hover:-translate-y-0.5 transition-all group text-left w-full"
               >
-                <div className={`w-12 h-12 rounded-xl ${sub.color || selectedParent.color} flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform`}>
-                  {sub.icon}
+                <div className={`w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform ${sub.image ? "" : sub.color || selectedParent.color}`}>
+                  {sub.image ? (
+                    <img src={sub.image} alt={sub.nameEn} className="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    sub.icon
+                  )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors truncate">{cname(sub)}</p>
