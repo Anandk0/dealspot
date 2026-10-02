@@ -162,9 +162,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12 bg-gradient-to-b from-green-50 to-white dark:from-background dark:to-background" suppressHydrationWarning>
-      {/* Language toggle */}
-      <div className="w-full max-w-sm flex justify-end mb-3">
+    <div className="relative min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12 bg-gradient-to-b from-green-50 to-white dark:from-background dark:to-background" suppressHydrationWarning>
+      {/* Language toggle — fixed to top-right corner */}
+      <div className="absolute top-4 right-4 z-10">
         <div className="flex items-center gap-1 bg-card border border-border rounded-full p-0.5 shadow-sm">
           <button
             onClick={() => setLang("kn")}
