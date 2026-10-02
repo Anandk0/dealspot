@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FileCheck, Users, IndianRupee, Image, Settings, ScrollText, LogOut, Menu, X, Tag } from "lucide-react";
+import { LayoutDashboard, FileCheck, Users, IndianRupee, Image, Settings, ScrollText, LogOut, Menu, X, Tag, Flag } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { useAdminGuard, hasMinimumRole, type AdminRole } from "@/lib/useAdminGuard";
@@ -17,6 +17,7 @@ interface NavItem {
 const adminNav: NavItem[] = [
   { href: "/admin", icon: LayoutDashboard, label: "Dashboard", minimumRole: "ADMIN" },
   { href: "/admin/moderation", icon: FileCheck, label: "Moderation", minimumRole: "CHECKER" },
+  { href: "/admin/reports", icon: Flag, label: "Reports", minimumRole: "CHECKER" },
   { href: "/admin/users", icon: Users, label: "Users", minimumRole: "ADMIN" },
   { href: "/admin/revenue", icon: IndianRupee, label: "Revenue", minimumRole: "ADMIN" },
   { href: "/admin/banners", icon: Image, label: "Banners", minimumRole: "CHECKER" },

@@ -474,6 +474,20 @@ class ApiClient {
     });
   }
 
+  // ─── Reports ────────────────────────────────────────────
+  // Any logged-in user can report a listing.
+  async reportListing(listingId: number, reason: string, description?: string) {
+    return this.request<ReportResponse>("/api/reports", {
+      method: "POST",
+      body: JSON.stringify({ targetType: "LISTING", targetId: listingId, reason, description }),
+    });
+  }
+
+  // Moderators view pending reports.
+  async adminGetReports(page = 0, size = 20) {
+    return this.request<PagedResponse<ReportResponse>>(`/api/admin/reports?page=${page}&size=${size}`);
+  }
+
   async adminModerationStats() {
     return this.request<ModerationStats>("/api/admin/moderation/stats");
   }
@@ -570,6 +584,17 @@ export interface DistrictOption {
   name: string;    // Kannada name
   nameEn: string;  // English name
   icon: string;    // emoji
+}
+
+export interface ReportResponse {
+  id: number;
+  reporterId: number;
+  targetType: string;
+  targetId: number;
+  reason: string;
+  description?: string;
+  status: string;
+  createdAt: string;
 }
 
 export interface ListingData {

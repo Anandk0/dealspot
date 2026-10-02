@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from "next/navigation";
-import { Share2, Heart, MapPin, ShieldAlert } from "lucide-react";
+import { Share2, Heart, MapPin, ShieldAlert, Flag } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import ContactUnlockModal from "@/components/ContactUnlockModal";
@@ -67,6 +67,30 @@ export default function ItemDetailPage() {
       toast.error(err instanceof Error ? err.message : "Failed");
     } finally {
       setFavLoading(false);
+    }
+  };
+
+  const handleReport = async () => {
+    if (!item) return;
+    if (!api.getToken()) {
+      toast.error("ವರದಿ ಮಾಡಲು ಲಾಗಿನ್ ಮಾಡಿ (Please login to report)");
+      return;
+    }
+    const reason = window.prompt(
+      "ಈ ಜಾಹೀರಾತನ್ನು ವರದಿ ಮಾಡಲು ಕಾರಣ (Why are you reporting this ad?)\n\ne.g. Spam, Fraud, Inappropriate, Duplicate, Other"
+    );
+    if (reason == null) return;
+    if (!reason.trim()) {
+      toast.error("ಕಾರಣ ಅಗತ್ಯ (A reason is required)");
+      return;
+    }
+    try {
+      await api.reportListing(item.id, reason.trim());
+      toast.success("ವರದಿ ಸಲ್ಲಿಸಲಾಗಿದೆ, ಧನ್ಯವಾದಗಳು (Report submitted, thank you)");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to submit report";
+      // Backend blocks duplicate reports from the same user.
+      toast.error(msg.includes("already") ? "ನೀವು ಈಗಾಗಲೇ ವರದಿ ಮಾಡಿದ್ದೀರಿ (You already reported this)" : msg);
     }
   };
 
@@ -248,7 +272,15 @@ export default function ItemDetailPage() {
                   {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))} ನಿಮ್ಮಿಂದ (away)
                 </div>
               )}
-              <p className="text-xs text-muted-foreground mt-2">👁 {item.viewCount} ವೀಕ್ಷಣೆ</p>
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-muted-foreground">👁 {item.viewCount} ವೀಕ್ಷಣೆ</p>
+                <button
+                  onClick={handleReport}
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-red-500 transition"
+                >
+                  <Flag size={12} /> ವರದಿ ಮಾಡಿ (Report)
+                </button>
+              </div>
             </div>
 
             {/* Seller Card */}
