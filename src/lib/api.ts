@@ -466,6 +466,14 @@ class ApiClient {
     return this.request<PagedResponse<AuditLogEntry>>(`/api/admin/audit?${params}`);
   }
 
+  // Take down a live/flagged/pending listing (CHECKER and above).
+  async adminTakeDownListing(listingId: number, reason: string) {
+    return this.request<{ message: string }>(`/api/admin/listings/${listingId}/takedown`, {
+      method: "PUT",
+      body: JSON.stringify({ reason }),
+    });
+  }
+
   async adminModerationStats() {
     return this.request<ModerationStats>("/api/admin/moderation/stats");
   }

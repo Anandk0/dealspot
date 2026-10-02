@@ -1,12 +1,14 @@
 "use client";
 import { useParams } from "next/navigation";
-import { Share2, Heart, MapPin } from "lucide-react";
+import { Share2, Heart, MapPin, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import ContactUnlockModal from "@/components/ContactUnlockModal";
 import { api, ListingData } from "@/lib/api";
 import { getCategoryIcon } from "@/lib/categories";
 import { useLocation } from "@/lib/location-context";
+import { useAuth } from "@/lib/auth-context";
+import { hasMinimumRole } from "@/lib/useAdminGuard";
 import { haversineKm, formatDistance } from "@/lib/distance";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
@@ -17,8 +19,11 @@ export default function ItemDetailPage() {
   const itemId = params.itemId as string;
 
   const { coords } = useLocation();
+  const { user } = useAuth();
+  const isModerator = hasMinimumRole(user?.role, "CHECKER");
   const [item, setItem] = useState<ListingData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [takingDown, setTakingDown] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
 
@@ -62,6 +67,28 @@ export default function ItemDetailPage() {
       toast.error(err instanceof Error ? err.message : "Failed");
     } finally {
       setFavLoading(false);
+    }
+  };
+
+  const handleTakeDown = async () => {
+    if (!item) return;
+    const reason = window.prompt(
+      "ಈ ಜಾಹೀರಾತನ್ನು ತೆಗೆದುಹಾಕಲು ಕಾರಣ ನಮೂದಿಸಿ (Reason for taking down this listing):"
+    );
+    if (reason == null) return; // cancelled
+    if (!reason.trim()) {
+      toast.error("ಕಾರಣ ಅಗತ್ಯ (A reason is required)");
+      return;
+    }
+    setTakingDown(true);
+    try {
+      await api.adminTakeDownListing(item.id, reason.trim());
+      toast.success("ಜಾಹೀರಾತು ತೆಗೆದುಹಾಕಲಾಗಿದೆ (Listing taken down)");
+      setItem({ ...item, status: "REJECTED" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to take down listing");
+    } finally {
+      setTakingDown(false);
     }
   };
 
@@ -236,6 +263,29 @@ export default function ItemDetailPage() {
               </div>
               <ContactUnlockModal listingId={item.id} />
             </div>
+
+            {/* Moderator action — take down this listing */}
+            {isModerator && (
+              <div className="bg-card rounded-2xl p-4 shadow-sm border border-border">
+                <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+                  <ShieldAlert size={13} className="text-red-500" /> ಮಾಡರೇಟರ್ (Moderator)
+                </p>
+                {item.status === "REJECTED" ? (
+                  <p className="text-sm text-red-500 font-medium">
+                    ಈ ಜಾಹೀರಾತು ತೆಗೆದುಹಾಕಲಾಗಿದೆ (This listing has been removed)
+                  </p>
+                ) : (
+                  <button
+                    onClick={handleTakeDown}
+                    disabled={takingDown}
+                    className="flex items-center justify-center gap-2 w-full h-10 rounded-xl border border-red-300 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition text-sm font-medium disabled:opacity-50"
+                  >
+                    <ShieldAlert size={15} />
+                    {takingDown ? "ತೆಗೆದುಹಾಕಲಾಗುತ್ತಿದೆ..." : "ಜಾಹೀರಾತು ತೆಗೆದುಹಾಕಿ (Take Down)"}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
