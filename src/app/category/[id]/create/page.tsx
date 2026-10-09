@@ -11,6 +11,7 @@ import { useLocation } from "@/lib/location-context";
 import { api } from "@/lib/api";
 import AppLayout from "@/components/AppLayout";
 import AgentRegistration from "@/components/AgentRegistration";
+import PropertyForm from "@/components/PropertyForm";
 import { useRef, useState } from "react";
 
 export default function CreateListingPage() {
@@ -46,6 +47,42 @@ export default function CreateListingPage() {
       <AppLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="animate-spin text-primary" size={28} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Detailed property form for property categories (sales + rent) and their
+  // subcategories. Replaces the generic form for these.
+  const isProperty =
+    fieldCategoryId === "property-sales" ||
+    fieldCategoryId === "property-rent" ||
+    fieldCategoryId === "property";
+  if (isProperty) {
+    const rent = fieldCategoryId === "property-rent";
+    return (
+      <AppLayout>
+        <div className="max-w-3xl mx-auto px-4 py-4 sm:p-6 pb-28 lg:pb-8">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground mb-4 overflow-x-auto">
+            <Link href="/home" className="hover:text-primary shrink-0">ಹೋಮ್</Link>
+            <span>/</span>
+            {parentCategory && (
+              <>
+                <Link href={`/category/${parentCategory.id}`} className="hover:text-primary shrink-0">{parentCategory.nameEn}</Link>
+                <span>/</span>
+              </>
+            )}
+            <Link href={`/category/${categoryId}`} className="hover:text-primary shrink-0">{category?.nameEn}</Link>
+            <span>/</span>
+            <span className="text-foreground font-medium shrink-0">ಹೊಸ ಜಾಹೀರಾತು</span>
+          </div>
+          <h1 className="text-lg sm:text-xl font-bold text-foreground mb-1">
+            {rent ? "ಆಸ್ತಿ ಬಾಡಿಗೆ / ಲೀಸ್ (Property Rent / Lease)" : "ಆಸ್ತಿ ಮಾರಾಟ (Property Sale)"}
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-5">
+            {category?.name} • {category?.nameEn}
+          </p>
+          <PropertyForm categoryId={categoryId} rent={rent} />
         </div>
       </AppLayout>
     );

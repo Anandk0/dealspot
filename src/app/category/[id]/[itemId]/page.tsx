@@ -4,6 +4,7 @@ import { Share2, Heart, MapPin, ShieldAlert, Flag } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import ContactUnlockModal from "@/components/ContactUnlockModal";
+import PropertyDetails from "@/components/PropertyDetails";
 import { api, ListingData } from "@/lib/api";
 import { getCategoryIcon } from "@/lib/categories";
 import { useLocation } from "@/lib/location-context";
@@ -188,8 +189,13 @@ export default function ItemDetailPage() {
               </div>
             )}
 
-            {/* Details */}
-            {details.length > 0 && (
+            {/* Property structured details (sales + rent) */}
+            {item.details && (item.category.startsWith("property") || categoryId.startsWith("property")) && (
+              <PropertyDetails detailsJson={item.details} />
+            )}
+
+            {/* Generic details — hidden for property (handled above) */}
+            {details.length > 0 && !(item.category.startsWith("property") || categoryId.startsWith("property")) && (
               <div className="bg-card rounded-2xl p-6 shadow-sm border border-border">
                 <h3 className="text-base font-semibold text-foreground mb-4">ವಿವರಗಳು (Details)</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

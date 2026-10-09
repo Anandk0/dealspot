@@ -256,6 +256,11 @@ class ApiClient {
     return this.request<DistrictOption[]>("/api/districts");
   }
 
+  // Taluks for a district (pass English name or slug).
+  async getTaluks(district: string) {
+    return this.request<string[]>(`/api/districts/${encodeURIComponent(district)}/taluks`);
+  }
+
   // Persist the signed-in user's preferred district (used to prioritize recommendations).
   async setMyDistrict(district: string) {
     return this.request<{ message: string; district: string }>("/api/users/me/district", {
@@ -659,6 +664,7 @@ export interface ListingData {
   experience?: string;
   vehicleType?: string;
   rateInfo?: string;
+  details?: string; // JSON string of category-specific attributes (e.g. property)
   sellerId: number;
   sellerName?: string;
   sellerLocation?: string;
