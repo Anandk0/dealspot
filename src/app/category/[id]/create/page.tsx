@@ -52,14 +52,14 @@ export default function CreateListingPage() {
     );
   }
 
-  // Detailed property form for property categories (sales + rent) and their
-  // subcategories. Replaces the generic form for these.
+  // Detailed property form for property categories (sales + rent) and all their
+  // subcategories (property-sales-house, property-rent-shop, etc.). Match on the
+  // slug prefix so it works regardless of parent resolution.
   const isProperty =
-    fieldCategoryId === "property-sales" ||
-    fieldCategoryId === "property-rent" ||
-    fieldCategoryId === "property";
+    categoryId.startsWith("property") || fieldCategoryId.startsWith("property");
   if (isProperty) {
-    const rent = fieldCategoryId === "property-rent";
+    // Rent/lease if either the current slug or its parent is the rent family.
+    const rent = categoryId.includes("rent") || fieldCategoryId.includes("rent");
     return (
       <AppLayout>
         <div className="max-w-3xl mx-auto px-4 py-4 sm:p-6 pb-28 lg:pb-8">
