@@ -569,6 +569,14 @@ class ApiClient {
     return this.request<AdminCategoryResponse[]>("/api/admin/categories");
   }
 
+  // Upload a category/subcategory image, returns its hosted URL.
+  async adminUploadCategoryImage(formData: FormData) {
+    return this.request<{ imageUrl: string }>("/api/admin/categories/upload-image", {
+      method: "POST",
+      body: formData,
+    });
+  }
+
   async adminCreateCategory(data: CategoryRequestData) {
     return this.request<AdminCategoryResponse>("/api/admin/categories", {
       method: "POST",

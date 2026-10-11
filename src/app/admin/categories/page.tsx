@@ -42,6 +42,23 @@ export default function AdminCategoriesPage() {
   const [form, setForm] = useState<CategoryRequestData>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleImageUpload = async (file: File | null) => {
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const fd = new FormData();
+      fd.append("image", file);
+      const res = await api.adminUploadCategoryImage(fd);
+      setForm((f) => ({ ...f, imageUrl: res.imageUrl }));
+      toast.success("Image uploaded");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Image upload failed");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   useEffect(() => {
     fetchCategories();
@@ -85,6 +102,7 @@ export default function AdminCategoriesPage() {
       nameEn: cat.nameEn,
       slug: cat.slug,
       icon: cat.icon || "",
+      imageUrl: cat.imageUrl || "",
       color: cat.color || "bg-green-100",
       sortOrder: cat.sortOrder,
       active: cat.active,
@@ -415,6 +433,38 @@ export default function AdminCategoriesPage() {
                     placeholder="0"
                   />
                 </div>
+              </div>
+
+              {/* Image upload — shown on category/subcategory tiles instead of the emoji */}
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1 block">
+                  Image <span className="text-muted-foreground/70 font-normal">(optional — shown instead of the emoji)</span>
+                </label>
+                {form.imageUrl ? (
+                  <div className="relative inline-block mb-2">
+                    <img src={form.imageUrl} alt="" className="w-28 h-20 object-cover rounded-lg border border-border" />
+                    <button
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, imageUrl: "" }))}
+                      className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
+                      title="Remove image"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ) : null}
+                <Input
+                  type="file"
+                  accept="image/*"
+                  disabled={uploadingImage}
+                  onChange={(e) => handleImageUpload(e.target.files?.[0] || null)}
+                  className="cursor-pointer"
+                />
+                {uploadingImage && (
+                  <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                    <Loader2 size={12} className="animate-spin" /> Uploading...
+                  </p>
+                )}
               </div>
 
               {/* Color picker */}
