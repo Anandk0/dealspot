@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Plus, X, Loader2, LocateFixed, Check, MapPin } from "lucide-react";
+import { Loader2, LocateFixed, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +10,7 @@ import { api, type ListingData } from "@/lib/api";
 import { useLocation } from "@/lib/location-context";
 import { useLang } from "@/lib/lang-context";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
+import ImageEditor from "@/components/ImageEditor";
 
 /**
  * Detailed property form for property-sales and property-rent categories.
@@ -29,11 +30,10 @@ export default function PropertyForm({
   const router = useRouter();
   const { t } = useLang();
   const { setCoords: setBuyerCoords } = useLocation();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const isEdit = !!existing;
 
   const [images, setImages] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [pinning, setPinning] = useState(false);
@@ -78,6 +78,7 @@ export default function PropertyForm({
     }
     const docs = (d.documents as Record<string, string>) || {};
     const priv = (d.private as Record<string, unknown>) || {};
+    setExistingImages(existing.images || []);
     setLoc({
       pincode: existing.pincode || (d.pincode as string) || "",
       district: existing.district || "",
@@ -111,25 +112,6 @@ export default function PropertyForm({
       setCoords({ lat: Number(priv.mapLat), lng: Number(priv.mapLng) });
     }
   }, [existing]);
-
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (images.length + files.length > 5) {
-      toast.error(t("ಗರಿಷ್ಠ 5 ಫೋಟೋಗಳು ಮಾತ್ರ", "Max 5 photos"));
-      return;
-    }
-    setImages([...images, ...files]);
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (ev) => setPreviews((prev) => [...prev, ev.target?.result as string]);
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const removeImage = (i: number) => {
-    setImages(images.filter((_, idx) => idx !== i));
-    setPreviews(previews.filter((_, idx) => idx !== i));
-  };
 
   const pinLocation = () => {
     if (!("geolocation" in navigator)) {
@@ -217,6 +199,8 @@ export default function PropertyForm({
       };
 
       if (isEdit && existing) {
+        // Send the kept-image list so removals persist (and new files upload).
+        listingData.existingImages = existingImages;
         await api.updateListing(existing.id, listingData, images.length > 0 ? images : undefined);
         toast.success(t("ಜಾಹೀರಾತು ನವೀಕರಿಸಲಾಗಿದೆ!", "Listing updated!"));
         setTimeout(() => router.push("/profile/listings"), 1200);
@@ -236,23 +220,12 @@ export default function PropertyForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Photos */}
       <Section title={t("ಫೋಟೋಗಳು (ಗರಿಷ್ಠ 5)", "Photos (max 5)")}>
-        <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleImageSelect} className="hidden" />
-        <div className="flex gap-2.5 flex-wrap">
-          {previews.map((p, i) => (
-            <div key={i} className="relative w-20 h-20 sm:w-24 sm:h-24">
-              <img src={p} alt="" className="w-full h-full object-cover rounded-xl border border-border" />
-              <button type="button" onClick={() => removeImage(i)} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow">
-                <X size={12} />
-              </button>
-            </div>
-          ))}
-          {images.length < 5 && (
-            <button type="button" onClick={() => fileInputRef.current?.click()} className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition bg-muted/30">
-              {images.length === 0 ? <Camera size={22} /> : <Plus size={18} />}
-              <span className="text-[10px] mt-1">{images.length === 0 ? t("ಸೇರಿಸಿ", "Add") : t("ಇನ್ನಷ್ಟು", "More")}</span>
-            </button>
-          )}
-        </div>
+        <ImageEditor
+          existingUrls={existingImages}
+          newFiles={images}
+          onChangeExisting={setExistingImages}
+          onChangeNew={setImages}
+        />
       </Section>
 
       {/* 1. Basic Details */}

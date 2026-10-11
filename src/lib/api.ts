@@ -287,8 +287,10 @@ class ApiClient {
     });
   }
 
-  // Update an existing listing (owner only). New images are appended to the
-  // listing's existing images on the backend.
+  // Update an existing listing (owner only). If `data.existingImages` (a string
+  // URL array) is provided, the final images become existingImages + uploads
+  // and removed URLs are deleted on the backend; otherwise new images are just
+  // appended.
   async updateListing(id: number, data: Record<string, unknown>, images?: File[]) {
     const formData = new FormData();
     formData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));

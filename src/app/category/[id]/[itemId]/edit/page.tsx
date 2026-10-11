@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import PropertyForm from "@/components/PropertyForm";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
+import ImageEditor from "@/components/ImageEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -84,6 +85,8 @@ export default function EditListingPage() {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<Record<string, string>>({});
   const [loc, setLoc] = useState<LocationValue>({ pincode: "", district: "", taluk: "", area: "" });
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [newImages, setNewImages] = useState<File[]>([]);
 
   useEffect(() => {
     api.getListingById(itemId)
@@ -106,6 +109,7 @@ export default function EditListingPage() {
           taluk: data.taluk || "",
           area: data.location || "",
         });
+        setExistingImages(data.images || []);
       })
       .catch(() => setItem(null))
       .finally(() => setLoading(false));
@@ -141,8 +145,9 @@ export default function EditListingPage() {
         vehicleType: form.vehicleType?.trim() || null,
         experience: form.experience?.trim() || null,
         rateInfo: form.rateInfo?.trim() || null,
+        existingImages,
       };
-      await api.updateListing(item.id, data);
+      await api.updateListing(item.id, data, newImages.length > 0 ? newImages : undefined);
       toast.success(t("ಜಾಹೀರಾತು ನವೀಕರಿಸಲಾಗಿದೆ!", "Listing updated!"));
       setTimeout(() => router.push("/profile/listings"), 1000);
     } catch (err) {
@@ -211,6 +216,19 @@ export default function EditListingPage() {
                 ))}
             </div>
 
+            {/* Photos — view / remove existing + add new (max 5 total) */}
+            <div>
+              <label className="text-xs sm:text-sm font-medium text-foreground mb-2 block">
+                {t("ಫೋಟೋಗಳು (ಗರಿಷ್ಠ 5)", "Photos (max 5)")}
+              </label>
+              <ImageEditor
+                existingUrls={existingImages}
+                newFiles={newImages}
+                onChangeExisting={setExistingImages}
+                onChangeNew={setNewImages}
+              />
+            </div>
+
             {/* Connected location: Pincode → District → Taluk → Area */}
             <LocationFields value={loc} onChange={setLoc} />
             <div>
@@ -222,9 +240,6 @@ export default function EditListingPage() {
                 placeholder={t("ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ...", "Enter details...")}
               />
             </div>
-            <p className="text-xs text-muted-foreground">
-              {t("ಗಮನಿಸಿ: ಹೊಸ ಫೋಟೋ ಸೇರಿಸಲು ಜಾಹೀರಾತು ಪುಟದಿಂದ ಮಾಡಿ.", "Note: existing photos are kept. Image management stays on the listing.")}
-            </p>
             <div className="flex gap-3 pt-1">
               <Button type="submit" disabled={saving} className="bg-primary px-8 h-11 text-sm font-medium">
                 {saving ? <><Loader2 size={16} className="mr-2 animate-spin" /> {t("ಉಳಿಸಲಾಗುತ್ತಿದೆ...", "Saving...")}</> : t("ನವೀಕರಿಸಿ (Update)", "Update")}
