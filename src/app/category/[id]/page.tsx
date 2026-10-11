@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { getCategoryIcon } from "@/lib/categories";
 import { useCategories } from "@/lib/useCategories";
 import { useLang } from "@/lib/lang-context";
+import { useLocation } from "@/lib/location-context";
+import { haversineKm, formatDistance } from "@/lib/distance";
 import { api, ListingData } from "@/lib/api";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
@@ -17,6 +19,7 @@ export default function CategoryPage() {
 
   const { getCategory, getSubcats, getParent } = useCategories();
   const { lang } = useLang();
+  const { coords } = useLocation();
   const category = getCategory(id);
   const subcategories = getSubcats(id);
   const parentCategory = getParent(id);
@@ -208,11 +211,18 @@ export default function CategoryPage() {
                 className="bg-card rounded-2xl p-4 shadow-sm border border-border hover:shadow-md hover:border-primary/30 transition-all group"
               >
                 <div className="flex gap-3.5">
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-muted rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 bg-muted rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
                     {item.images && item.images.length > 0 ? (
                       <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-3xl sm:text-4xl">{getCategoryIcon(item.category)}</span>
+                    )}
+                    {/* Distance badge overlaid on the thumbnail */}
+                    {coords && item.latitude != null && item.longitude != null && (
+                      <span className="absolute bottom-0.5 left-0.5 inline-flex items-center gap-0.5 bg-primary text-white text-[8px] sm:text-[9px] font-semibold px-1 py-0.5 rounded-full shadow">
+                        <MapPin size={8} className="shrink-0" />
+                        {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))}
+                      </span>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">

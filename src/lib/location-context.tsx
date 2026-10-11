@@ -26,6 +26,8 @@ interface LocationContextType {
   setDistrict: (nameEn: string, nameKn?: string) => void;
   /** Save the buyer's GPS coordinates (persisted locally). */
   setCoords: (coords: Coords) => void;
+  /** Silently re-read GPS (only if permission already granted) to keep distance fresh. */
+  refreshCoords: () => void;
   /** Dismiss the first-run prompt without choosing. */
   dismissPrompt: () => void;
   /** Re-open the prompt (e.g. from a header button). */
@@ -39,6 +41,7 @@ const LocationContext = createContext<LocationContextType>({
   needsPrompt: false,
   setDistrict: () => {},
   setCoords: () => {},
+  refreshCoords: () => {},
   dismissPrompt: () => {},
   openPrompt: () => {},
 });
@@ -120,6 +123,57 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Silently re-read the device's GPS so distance is always current. Only runs
+  // when location permission is already granted — never shows a prompt. Called
+  // on every app load (and after login) so a cached, stale position is refreshed.
+  const refreshCoords = useCallback(() => {
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) return;
+
+    const read = () =>
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          setCoordsState(c);
+          try {
+            localStorage.setItem(COORDS_KEY, JSON.stringify(c));
+          } catch {
+            // ignore
+          }
+        },
+        () => {
+          /* denied or unavailable — keep whatever we have */
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
+
+    // Use the Permissions API when available to avoid triggering a prompt:
+    // only auto-read if permission is already granted.
+    const perms = (navigator as Navigator & { permissions?: Permissions }).permissions;
+    if (perms?.query) {
+      perms
+        .query({ name: "geolocation" as PermissionName })
+        .then((status) => {
+          if (status.state === "granted") read();
+        })
+        .catch(() => {
+          /* Permissions API unsupported — do nothing (avoid a surprise prompt) */
+        });
+    }
+    // If Permissions API is missing we skip the silent refresh to avoid an
+    // unexpected permission prompt; the user can still set it via the prompt.
+  }, []);
+
+  // Refresh coordinates on every app load so the shown distance is accurate.
+  useEffect(() => {
+    if (!hydrated) return;
+    refreshCoords();
+  }, [hydrated, refreshCoords]);
+
+  // Also refresh right after the user logs in.
+  useEffect(() => {
+    if (isLoggedIn) refreshCoords();
+  }, [isLoggedIn, refreshCoords]);
+
   const dismissPrompt = useCallback(() => {
     setDismissed(true);
     try {
@@ -142,7 +196,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
 
   return (
     <LocationContext.Provider
-      value={{ district, districtKn, coords, needsPrompt, setDistrict, setCoords, dismissPrompt, openPrompt }}
+      value={{ district, districtKn, coords, needsPrompt, setDistrict, setCoords, refreshCoords, dismissPrompt, openPrompt }}
     >
       {children}
     </LocationContext.Provider>

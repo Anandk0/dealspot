@@ -172,11 +172,18 @@ export default function ItemDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left - Images */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="w-full h-80 bg-muted rounded-2xl flex items-center justify-center overflow-hidden">
+            <div className="relative w-full h-80 bg-muted rounded-2xl flex items-center justify-center overflow-hidden">
               {item.images && item.images.length > 0 ? (
                 <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover" />
               ) : (
                 <span className="text-8xl">{getCategoryIcon(item.category)}</span>
+              )}
+              {/* Distance badge overlaid on the main image */}
+              {coords && item.latitude != null && item.longitude != null && (
+                <span className="absolute top-3 right-3 inline-flex items-center gap-1 bg-primary text-white text-sm font-semibold px-3 py-1.5 rounded-full shadow-lg">
+                  <MapPin size={14} />
+                  {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))}
+                </span>
               )}
             </div>
 
@@ -272,12 +279,7 @@ export default function ItemDetailPage() {
                   <span>{item.location}</span>
                 </div>
               )}
-              {coords && item.latitude != null && item.longitude != null && (
-                <div className="inline-flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full mt-2">
-                  <MapPin size={12} />
-                  {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))} ನಿಮ್ಮಿಂದ (away)
-                </div>
-              )}
+
               <div className="flex items-center justify-between mt-2">
                 <p className="text-xs text-muted-foreground">👁 {item.viewCount} ವೀಕ್ಷಣೆ</p>
                 <button

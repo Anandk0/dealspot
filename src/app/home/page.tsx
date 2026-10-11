@@ -288,6 +288,13 @@ export default function HomePage() {
                     <span className="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 bg-black/60 backdrop-blur-xs text-white text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-md capitalize max-w-[85%] truncate">
                       {item.category.replace(/-/g, " ")}
                     </span>
+                    {/* Distance badge overlaid on the image (top-right) */}
+                    {coords && item.latitude != null && item.longitude != null && (
+                      <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 inline-flex items-center gap-1 bg-primary text-white text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full shadow">
+                        <MapPin size={9} className="shrink-0" />
+                        {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))}
+                      </span>
+                    )}
                   </div>
                   <div className="p-2.5 sm:p-3 flex-1 flex flex-col justify-between">
                     <div>
@@ -298,19 +305,11 @@ export default function HomePage() {
                         {item.price ? `₹${item.price.toLocaleString()}${item.priceUnit ? '/' + item.priceUnit : ''}` : item.rateInfo || ""}
                       </p>
                     </div>
-                    <div className="mt-1.5 space-y-1">
-                      {coords && item.latitude != null && item.longitude != null && (
-                        <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
-                          <MapPin size={9} className="shrink-0" />
-                          {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))}
-                        </span>
-                      )}
-                      {item.location && (
-                        <p className="text-[10px] sm:text-[11px] text-muted-foreground flex items-center gap-1 truncate">
-                          <MapPin size={10} className="shrink-0 text-primary/70 sm:w-3 sm:h-3" /> {item.location}
-                        </p>
-                      )}
-                    </div>
+                    {item.location && (
+                      <p className="text-[10px] sm:text-[11px] text-muted-foreground flex items-center gap-1 truncate mt-1.5">
+                        <MapPin size={10} className="shrink-0 text-primary/70 sm:w-3 sm:h-3" /> {item.location}
+                      </p>
+                    )}
                   </div>
                 </Link>
               ))}
@@ -388,9 +387,16 @@ export default function HomePage() {
                     <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-primary text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full shadow-xs">
                       NEW
                     </span>
-                    <span className="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 bg-black/60 backdrop-blur-xs text-white text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-md capitalize max-w-[85%] truncate">
+                    <span className="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 bg-black/60 backdrop-blur-xs text-white text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-md capitalize max-w-[60%] truncate">
                       {item.category.replace(/-/g, " ")}
                     </span>
+                    {/* Distance badge overlaid on the image (bottom-right) */}
+                    {coords && item.latitude != null && item.longitude != null && (
+                      <span className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 inline-flex items-center gap-1 bg-primary text-white text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full shadow">
+                        <MapPin size={9} className="shrink-0" />
+                        {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))}
+                      </span>
+                    )}
                   </div>
                   <div className="p-2.5 sm:p-3 flex-1 flex flex-col justify-between">
                     <div>
