@@ -457,6 +457,14 @@ class ApiClient {
     });
   }
 
+  // Replace a banner's image (multipart). Other fields use adminUpdateBanner.
+  async adminUpdateBannerImage(id: number, formData: FormData) {
+    return this.request<BannerResponse>(`/api/admin/banners/${id}/image`, {
+      method: "POST",
+      body: formData,
+    });
+  }
+
   async adminDeleteBanner(id: number) {
     return this.request<{ message: string }>(`/api/admin/banners/${id}`, {
       method: "DELETE",

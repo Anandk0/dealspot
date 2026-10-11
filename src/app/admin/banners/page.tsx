@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Trash2, Loader2, Image, Link as LinkIcon, Calendar } from "lucide-react";
+import { Plus, Trash2, Loader2, Image, Link as LinkIcon, Calendar, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -25,13 +25,19 @@ export default function BannersPage() {
   const canDeleteBanner = (banner: BannerResponse) =>
     hasMinimumRole(user?.role, "ADMIN") || banner.createdById === user?.id;
 
+  // ADMIN/SUPER_ADMIN can edit banners.
+  const canEditBanner = hasMinimumRole(user?.role, "ADMIN");
+
   const [banners, setBanners] = useState<BannerResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<BannerResponse | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Create form state
+  // When set, the dialog is in edit mode for this banner; null = create mode.
+  const [editTarget, setEditTarget] = useState<BannerResponse | null>(null);
+
+  // Shared form state (create + edit)
   const [formTitle, setFormTitle] = useState("");
   const [formSubtitle, setFormSubtitle] = useState("");
   const [formImage, setFormImage] = useState<File | null>(null);
@@ -39,6 +45,7 @@ export default function BannersPage() {
   const [formColor, setFormColor] = useState("");
   const [formStartDate, setFormStartDate] = useState("");
   const [formEndDate, setFormEndDate] = useState("");
+  const [formActive, setFormActive] = useState(true);
 
   const fetchBanners = useCallback(async () => {
     try {
@@ -66,18 +73,34 @@ export default function BannersPage() {
     setFormColor("");
     setFormStartDate("");
     setFormEndDate("");
+    setFormActive(true);
+  };
+
+  const openCreate = () => {
+    setEditTarget(null);
+    resetForm();
+    setCreateDialogOpen(true);
+  };
+
+  const openEdit = (b: BannerResponse) => {
+    setEditTarget(b);
+    setFormTitle(b.title || "");
+    setFormSubtitle(b.subtitle || "");
+    setFormImage(null);
+    setFormLink(b.link || "");
+    setFormColor(b.color || "");
+    setFormStartDate(b.startDate ? b.startDate.slice(0, 10) : "");
+    setFormEndDate(b.endDate ? b.endDate.slice(0, 10) : "");
+    setFormActive(b.active);
+    setCreateDialogOpen(true);
   };
 
   const handleCreate = async () => {
-    if (!formTitle.trim()) {
-      toast.error("Banner title is required");
-      return;
-    }
-
+    // Title and subtitle are optional now — a banner can be image-only.
     try {
       setSubmitting(true);
       const formData = new FormData();
-      formData.append("title", formTitle.trim());
+      if (formTitle.trim()) formData.append("title", formTitle.trim());
       if (formSubtitle.trim()) formData.append("subtitle", formSubtitle.trim());
       if (formLink.trim()) formData.append("link", formLink.trim());
       if (formColor.trim()) formData.append("color", formColor.trim());
@@ -96,6 +119,42 @@ export default function BannersPage() {
       setSubmitting(false);
     }
   };
+
+  const handleUpdate = async () => {
+    if (!editTarget) return;
+    try {
+      setSubmitting(true);
+      // Update text fields via JSON PUT.
+      await api.adminUpdateBanner(editTarget.id, {
+        title: formTitle.trim(),
+        subtitle: formSubtitle.trim(),
+        link: formLink.trim(),
+        color: formColor.trim(),
+        active: formActive,
+        startDate: formStartDate ? `${formStartDate}T00:00:00` : undefined,
+        endDate: formEndDate ? `${formEndDate}T23:59:59` : undefined,
+      } as Record<string, unknown>);
+
+      // If a new image was chosen, upload it separately.
+      if (formImage) {
+        const fd = new FormData();
+        fd.append("image", formImage);
+        await api.adminUpdateBannerImage(editTarget.id, fd);
+      }
+
+      toast.success("Banner updated");
+      setCreateDialogOpen(false);
+      setEditTarget(null);
+      resetForm();
+      fetchBanners();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update banner");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleSubmitDialog = () => (editTarget ? handleUpdate() : handleCreate());
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
@@ -129,7 +188,7 @@ export default function BannersPage() {
           <h1 className="text-2xl font-bold text-foreground">Banners & Promotions</h1>
           <p className="text-sm text-muted-foreground">Manage home page banners</p>
         </div>
-        <Button className="bg-primary" onClick={() => setCreateDialogOpen(true)}>
+        <Button className="bg-primary" onClick={openCreate}>
           <Plus size={16} className="mr-2" /> New Banner
         </Button>
       </div>
@@ -190,6 +249,16 @@ export default function BannersPage() {
                       <LinkIcon size={14} />
                     </a>
                   )}
+                  {canEditBanner && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7"
+                      onClick={() => openEdit(banner)}
+                    >
+                      <Pencil size={12} className="mr-1" /> Edit
+                    </Button>
+                  )}
                   {canDeleteBanner(banner) && (
                     <Button
                       size="sm"
@@ -219,12 +288,14 @@ export default function BannersPage() {
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Create Banner</DialogTitle>
-            <DialogDescription>Add a new banner to the home page carousel.</DialogDescription>
+            <DialogTitle>{editTarget ? "Edit Banner" : "Create Banner"}</DialogTitle>
+            <DialogDescription>
+              {editTarget ? "Update this banner's details." : "Add a new banner to the home page carousel."}
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3 py-2">
+          <div className="space-y-3 py-2 max-h-[65vh] overflow-y-auto">
             <div>
-              <label className="text-sm font-medium text-foreground">Title *</label>
+              <label className="text-sm font-medium text-foreground">Title <span className="text-muted-foreground font-normal">(optional)</span></label>
               <Input
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
@@ -240,7 +311,12 @@ export default function BannersPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground">Banner Image</label>
+              <label className="text-sm font-medium text-foreground">
+                Banner Image {editTarget && <span className="text-muted-foreground font-normal">(choose a file to replace)</span>}
+              </label>
+              {editTarget?.imageUrl && !formImage && (
+                <img src={editTarget.imageUrl} alt="" className="w-full h-24 object-cover rounded-lg my-2 border border-border" />
+              )}
               <Input
                 type="file"
                 accept="image/*"
@@ -285,14 +361,25 @@ export default function BannersPage() {
                 />
               </div>
             </div>
+            {editTarget && (
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formActive}
+                  onChange={(e) => setFormActive(e.target.checked)}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-sm font-medium text-foreground">Active (shown on home page)</span>
+              </label>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateDialogOpen(false)} disabled={submitting}>
               Cancel
             </Button>
-            <Button onClick={handleCreate} disabled={submitting}>
+            <Button onClick={handleSubmitDialog} disabled={submitting}>
               {submitting && <Loader2 size={14} className="mr-2 animate-spin" />}
-              Create
+              {editTarget ? "Save Changes" : "Create"}
             </Button>
           </DialogFooter>
         </DialogContent>
