@@ -50,9 +50,12 @@ export default function HomePage() {
   const [nearbyListings, setNearbyListings] = useState<ListingData[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [bannerPaused, setBannerPaused] = useState(false);
   const [banners, setBanners] = useState<BannerSlide[]>(defaultBanners);
   const recentSliderRef = useRef<HTMLDivElement>(null);
   const nearbySliderRef = useRef<HTMLDivElement>(null);
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const touchStartX = useRef<number | null>(null);
   const { topLevel: apiTopLevel } = useCategories();
   const { lang } = useLang();
   const { district, districtKn, coords, openPrompt } = useLocation();
@@ -117,12 +120,42 @@ export default function HomePage() {
       .catch(() => {});
   }, []);
 
+  // Auto-slide, but pause when the user is interacting (hover / touch / after a
+  // manual nav) so they can hold on a slide.
   useEffect(() => {
+    if (bannerPaused || banners.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % banners.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, [banners.length]);
+  }, [banners.length, bannerPaused]);
+
+  const goToSlide = (i: number) => {
+    const n = banners.length;
+    if (n === 0) return;
+    setCurrentSlide(((i % n) + n) % n);
+  };
+
+  // Pause auto-advance briefly after a manual interaction, then resume.
+  const pauseThenResume = () => {
+    setBannerPaused(true);
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => setBannerPaused(false), 6000);
+  };
+
+  const onBannerTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    setBannerPaused(true);
+  };
+  const onBannerTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStartX.current;
+    touchStartX.current = null;
+    if (start != null) {
+      const dx = e.changedTouches[0].clientX - start;
+      if (Math.abs(dx) > 40) goToSlide(currentSlide + (dx < 0 ? 1 : -1));
+    }
+    pauseThenResume();
+  };
 
   return (
     <AppLayout>
@@ -130,7 +163,13 @@ export default function HomePage() {
 
         {/* Hero Banner - Card style with glow */}
         <section className="relative w-full min-w-0">
-          <div className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl ring-1 ring-black/5">
+          <div
+            className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl ring-1 ring-black/5"
+            onMouseEnter={() => setBannerPaused(true)}
+            onMouseLeave={() => setBannerPaused(false)}
+            onTouchStart={onBannerTouchStart}
+            onTouchEnd={onBannerTouchEnd}
+          >
             <div className="relative h-[160px] sm:h-[220px] md:h-[250px]">
               {banners.map((banner, i) => (
                 <div
@@ -156,6 +195,26 @@ export default function HomePage() {
                   </div>
                 </div>
               ))}
+
+              {/* Prev / next arrows */}
+              {banners.length > 1 && (
+                <>
+                  <button
+                    onClick={() => { goToSlide(currentSlide - 1); pauseThenResume(); }}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/35 hover:bg-black/55 text-white flex items-center justify-center transition z-10"
+                    aria-label="Previous banner"
+                  >
+                    <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
+                  </button>
+                  <button
+                    onClick={() => { goToSlide(currentSlide + 1); pauseThenResume(); }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/35 hover:bg-black/55 text-white flex items-center justify-center transition z-10"
+                    aria-label="Next banner"
+                  >
+                    <ChevronRight size={18} className="sm:w-5 sm:h-5" />
+                  </button>
+                </>
+              )}
             </div>
           </div>
           {/* Dots */}
@@ -163,7 +222,7 @@ export default function HomePage() {
             {banners.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setCurrentSlide(i)}
+                onClick={() => { goToSlide(i); pauseThenResume(); }}
                 className={`h-1.5 sm:h-2 rounded-full transition-all ${
                   i === currentSlide ? "bg-primary w-5 sm:w-6" : "bg-muted-foreground/30 w-1.5 sm:w-2"
                 }`}
