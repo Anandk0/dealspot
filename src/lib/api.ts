@@ -287,6 +287,20 @@ class ApiClient {
     });
   }
 
+  // Update an existing listing (owner only). New images are appended to the
+  // listing's existing images on the backend.
+  async updateListing(id: number, data: Record<string, unknown>, images?: File[]) {
+    const formData = new FormData();
+    formData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
+    if (images) {
+      images.forEach((img) => formData.append("images", img));
+    }
+    return this.request<ListingData>(`/api/listings/${id}`, {
+      method: "PUT",
+      body: formData,
+    });
+  }
+
   async deleteListing(id: number) {
     return this.request<{ message: string }>(`/api/listings/${id}`, {
       method: "DELETE",

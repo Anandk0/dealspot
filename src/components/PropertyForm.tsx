@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { api, type DistrictOption } from "@/lib/api";
+import { api, type DistrictOption, type ListingData } from "@/lib/api";
 import { useLocation } from "@/lib/location-context";
 import { useLang } from "@/lib/lang-context";
 
@@ -19,14 +19,17 @@ import { useLang } from "@/lib/lang-context";
 export default function PropertyForm({
   categoryId,
   rent,
+  existing,
 }: {
   categoryId: string;
   rent: boolean;
+  existing?: ListingData;
 }) {
   const router = useRouter();
   const { t } = useLang();
   const { setCoords: setBuyerCoords } = useLocation();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isEdit = !!existing;
 
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -70,6 +73,48 @@ export default function PropertyForm({
   useEffect(() => {
     api.getDistricts().then(setDistricts).catch(() => setDistricts([]));
   }, []);
+
+  // Pre-fill the form when editing an existing listing.
+  useEffect(() => {
+    if (!existing) return;
+    let d: Record<string, unknown> = {};
+    try {
+      d = existing.details ? JSON.parse(existing.details) : {};
+    } catch {
+      d = {};
+    }
+    const docs = (d.documents as Record<string, string>) || {};
+    const priv = (d.private as Record<string, unknown>) || {};
+    setF({
+      title: existing.title || "",
+      location: existing.location || "",
+      district: existing.district || "",
+      taluk: (d.taluk as string) || "",
+      propertyArea: (d.propertyArea as string) || existing.area || "",
+      price: existing.price != null ? String(existing.price) : "",
+      pricePerUnit: (d.pricePerUnit as string) || "",
+      negotiable: (d.negotiable as string) || "",
+      roadFacing: (d.roadFacing as string) || "",
+      roadType: (d.roadType as string) || "",
+      cornerProperty: (d.cornerProperty as string) || "",
+      water: (d.water as string) || "",
+      electricity: (d.electricity as string) || "",
+      borewell: (d.borewell as string) || "",
+      rtc: docs.rtc || "",
+      saleDeed: docs.saleDeed || "",
+      khata: docs.khata || "",
+      ec: docs.ec || "",
+      otherDocuments: docs.other || "",
+      ownerAgent: (priv.ownerAgent as string) || "",
+      mobile: (priv.mobile as string) || "",
+      whatsapp: (priv.whatsapp as string) || "",
+      preferredTime: (priv.preferredTime as string) || "",
+      description: existing.description || "",
+    });
+    if (priv.mapLat != null && priv.mapLng != null) {
+      setCoords({ lat: Number(priv.mapLat), lng: Number(priv.mapLng) });
+    }
+  }, [existing]);
 
   // Load taluks when district changes.
   useEffect(() => {
@@ -181,9 +226,15 @@ export default function PropertyForm({
         details: JSON.stringify(details),
       };
 
-      await api.createListing(listingData, images.length > 0 ? images : undefined);
-      toast.success(t("ಜಾಹೀರಾತು ಸಲ್ಲಿಸಲಾಗಿದೆ!", "Listing submitted!"));
-      setTimeout(() => router.push(`/category/${categoryId}`), 1200);
+      if (isEdit && existing) {
+        await api.updateListing(existing.id, listingData, images.length > 0 ? images : undefined);
+        toast.success(t("ಜಾಹೀರಾತು ನವೀಕರಿಸಲಾಗಿದೆ!", "Listing updated!"));
+        setTimeout(() => router.push("/profile/listings"), 1200);
+      } else {
+        await api.createListing(listingData, images.length > 0 ? images : undefined);
+        toast.success(t("ಜಾಹೀರಾತು ಸಲ್ಲಿಸಲಾಗಿದೆ!", "Listing submitted!"));
+        setTimeout(() => router.push(`/category/${categoryId}`), 1200);
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("ಸಲ್ಲಿಕೆ ವಿಫಲ", "Submission failed"));
     } finally {
@@ -312,7 +363,9 @@ export default function PropertyForm({
 
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
         <Button type="submit" disabled={loading} className="bg-primary w-full sm:w-auto px-8 h-11 text-sm font-medium">
-          {loading ? <><Loader2 size={16} className="mr-2 animate-spin" /> {t("ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...", "Submitting...")}</> : t("ಸಲ್ಲಿಸಿ (Submit Listing)", "Submit Listing")}
+          {loading
+            ? <><Loader2 size={16} className="mr-2 animate-spin" /> {isEdit ? t("ನವೀಕರಿಸಲಾಗುತ್ತಿದೆ...", "Updating...") : t("ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...", "Submitting...")}</>
+            : isEdit ? t("ನವೀಕರಿಸಿ (Update Listing)", "Update Listing") : t("ಸಲ್ಲಿಸಿ (Submit Listing)", "Submit Listing")}
         </Button>
       </div>
     </form>

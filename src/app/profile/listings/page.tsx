@@ -1,5 +1,5 @@
 "use client";
-import { Plus, Eye, Trash2, Loader2, MapPin } from "lucide-react";
+import { Plus, Eye, Trash2, Loader2, MapPin, Pencil } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -112,18 +112,27 @@ export default function MyListingsPage() {
                           </p>
                         </div>
 
-                        {/* Delete button */}
-                        <button
-                          onClick={() => setConfirmId(item.id)}
-                          disabled={isDeleting}
-                          className="p-2 rounded-xl text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors shrink-0"
-                          aria-label="Delete listing"
-                        >
-                          {isDeleting
-                            ? <Loader2 size={16} className="animate-spin" />
-                            : <Trash2 size={16} />
-                          }
-                        </button>
+                        {/* Edit + Delete buttons */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          <Link
+                            href={`/category/${item.category}/${item.id}/edit`}
+                            className="p-2 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                            aria-label="Edit listing"
+                          >
+                            <Pencil size={16} />
+                          </Link>
+                          <button
+                            onClick={() => setConfirmId(item.id)}
+                            disabled={isDeleting}
+                            className="p-2 rounded-xl text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                            aria-label="Delete listing"
+                          >
+                            {isDeleting
+                              ? <Loader2 size={16} className="animate-spin" />
+                              : <Trash2 size={16} />
+                            }
+                          </button>
+                        </div>
                       </div>
 
                       <div className="flex items-center gap-3 mt-2 flex-wrap">
