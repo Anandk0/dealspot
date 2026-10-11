@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Loader2, Settings, IndianRupee, Image, Calendar, AlertTriangle } from "lucide-react";
+import { Loader2, Settings, IndianRupee, Image, Calendar, AlertTriangle, Handshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ export default function SettingsPage() {
     max_images_per_listing: "",
     listing_expiry_days: "",
     maintenance_mode: "false",
+    referral_system_enabled: "true",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -28,6 +29,7 @@ export default function SettingsPage() {
         max_images_per_listing: data.max_images_per_listing || "",
         listing_expiry_days: data.listing_expiry_days || "",
         maintenance_mode: data.maintenance_mode || "false",
+        referral_system_enabled: data.referral_system_enabled || "true",
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to load settings";
@@ -180,6 +182,38 @@ export default function SettingsPage() {
           </label>
           <p className="text-xs text-muted-foreground">
             When enabled, regular users will see a maintenance page instead of the site
+          </p>
+        </div>
+
+        {/* Agent / Referral System */}
+        <div className="space-y-1.5 border-t border-border pt-6">
+          <div className="flex items-center gap-2">
+            <Handshake className="h-4 w-4 text-muted-foreground" />
+            <label className="text-sm font-medium text-foreground">
+              Agent / Referral System
+            </label>
+          </div>
+          <label className="flex items-center gap-3 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={settings.referral_system_enabled === "true"}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  referral_system_enabled: e.target.checked ? "true" : "false",
+                })
+              }
+              className="h-5 w-5 rounded border-border text-primary focus:ring-primary cursor-pointer"
+            />
+            <span className="text-sm text-muted-foreground">
+              {settings.referral_system_enabled === "true"
+                ? "Enabled — the Agents section and registration are visible to users"
+                : "Disabled — the entire agent system is hidden from users"}
+            </span>
+          </label>
+          <p className="text-xs text-muted-foreground">
+            Master switch for the whole agent system. When off, the Agents category,
+            the post-ad option, and the agent registration page are all hidden across the app.
           </p>
         </div>
 

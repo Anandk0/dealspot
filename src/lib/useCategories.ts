@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { api, CategoryPublicResponse } from "./api";
 import { categories as hardcodedCategories, CategoryItem } from "./categories";
+import { useAgentSystem } from "./useAgentSystem";
 
 /**
  * Maps an API CategoryPublicResponse to the frontend CategoryItem shape.
@@ -33,6 +34,7 @@ interface UseCategoriesResult {
 export function useCategories(): UseCategoriesResult {
   const [apiCategories, setApiCategories] = useState<(CategoryItem & { subcategories?: CategoryItem[] })[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const { enabled: agentSystemEnabled } = useAgentSystem();
 
   useEffect(() => {
     api.getCategories()
@@ -43,7 +45,10 @@ export function useCategories(): UseCategoriesResult {
 
   // If API loaded, use it — otherwise fall back to hardcoded
   const source = apiCategories ?? hardcodedCategories;
-  const topLevel = source.filter((c) => !c.parentId);
+  // Hide the Agents category when the agent/referral system is disabled.
+  const topLevel = source
+    .filter((c) => !c.parentId)
+    .filter((c) => agentSystemEnabled || (c.id !== "agents" && c.id !== "agent"));
 
   const getSubcats = (slug: string): CategoryItem[] => {
     if (apiCategories) {

@@ -6,6 +6,7 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { getCategoryIcon } from "@/lib/categories";
 import { useCategories } from "@/lib/useCategories";
+import { useAgentSystem } from "@/lib/useAgentSystem";
 import { useLang } from "@/lib/lang-context";
 import { useLocation } from "@/lib/location-context";
 import { haversineKm, formatDistance } from "@/lib/distance";
@@ -18,6 +19,7 @@ export default function CategoryPage() {
   const id = params.id as string;
 
   const { getCategory, getSubcats, getParent } = useCategories();
+  const { enabled: agentSystemEnabled } = useAgentSystem();
   const { lang } = useLang();
   const { coords } = useLocation();
   const category = getCategory(id);
@@ -86,6 +88,29 @@ export default function CategoryPage() {
   };
 
   const isAgentCategory = id === "agents" || id === "agent";
+
+  // If the whole agent/referral system is disabled by admin, block the agents
+  // category even via a direct URL.
+  if (isAgentCategory && !agentSystemEnabled) {
+    return (
+      <AppLayout>
+        <div className="max-w-xl mx-auto px-4 py-20 text-center">
+          <p className="text-5xl mb-4">🤝</p>
+          <h1 className="text-lg font-bold text-foreground">
+            {lang === "en" ? "Agents are currently unavailable" : "ಏಜೆಂಟ್ ಸೇವೆ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ"}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            {lang === "en"
+              ? "This feature has been turned off. Please check back later."
+              : "ಈ ವೈಶಿಷ್ಟ್ಯವನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ. ದಯವಿಟ್ಟು ನಂತರ ಪರಿಶೀಲಿಸಿ."}
+          </p>
+          <Link href="/home" className="inline-block mt-5">
+            <Button variant="outline">{lang === "en" ? "Back to Home" : "ಮುಖಪುಟಕ್ಕೆ"}</Button>
+          </Link>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>

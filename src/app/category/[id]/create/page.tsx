@@ -13,6 +13,7 @@ import AppLayout from "@/components/AppLayout";
 import AgentRegistration from "@/components/AgentRegistration";
 import PropertyForm from "@/components/PropertyForm";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
+import { useAgentSystem } from "@/lib/useAgentSystem";
 import { useRef, useState } from "react";
 
 export default function CreateListingPage() {
@@ -26,6 +27,7 @@ export default function CreateListingPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── All hooks must be before any early return ──
+  const { enabled: agentSystemEnabled } = useAgentSystem();
   const { setCoords: setBuyerCoords } = useLocation();
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -37,6 +39,22 @@ export default function CreateListingPage() {
 
   // Early returns AFTER all hooks
   if (categoryId === "agents" || categoryId === "agent") {
+    if (!agentSystemEnabled) {
+      return (
+        <AppLayout>
+          <div className="max-w-xl mx-auto px-4 py-20 text-center">
+            <p className="text-5xl mb-4">🤝</p>
+            <h1 className="text-lg font-bold text-foreground">ಏಜೆಂಟ್ ಸೇವೆ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ (Agents unavailable)</h1>
+            <p className="text-sm text-muted-foreground mt-2">
+              ಈ ವೈಶಿಷ್ಟ್ಯವನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ. (This feature has been turned off.)
+            </p>
+            <Link href="/home" className="inline-block mt-5">
+              <Button variant="outline">ಮುಖಪುಟಕ್ಕೆ (Back to Home)</Button>
+            </Link>
+          </div>
+        </AppLayout>
+      );
+    }
     return (
       <AppLayout>
         <AgentRegistration />

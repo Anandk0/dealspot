@@ -428,6 +428,11 @@ class ApiClient {
     return this.request<Record<string, string>>("/api/admin/settings");
   }
 
+  // Public client config flags (no auth). Currently just the agent/referral toggle.
+  async getPublicConfig() {
+    return this.request<{ referralSystemEnabled: boolean }>("/api/config");
+  }
+
   async adminUpdateSettings(settings: Record<string, string>) {
     return this.request<{ message: string }>("/api/admin/settings", { method: "PUT", body: JSON.stringify(settings) });
   }
