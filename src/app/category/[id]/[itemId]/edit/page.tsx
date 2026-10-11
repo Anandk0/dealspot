@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import PropertyForm from "@/components/PropertyForm";
+import LocationFields, { type LocationValue } from "@/components/LocationFields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -82,6 +83,7 @@ export default function EditListingPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<Record<string, string>>({});
+  const [loc, setLoc] = useState<LocationValue>({ pincode: "", district: "", taluk: "", area: "" });
 
   useEffect(() => {
     api.getListingById(itemId)
@@ -96,9 +98,13 @@ export default function EditListingPage() {
           vehicleType: data.vehicleType || "",
           experience: data.experience || "",
           rateInfo: data.rateInfo || "",
-          location: data.location || "",
-          district: data.district || "",
           description: data.description || "",
+        });
+        setLoc({
+          pincode: data.pincode || "",
+          district: data.district || "",
+          taluk: data.taluk || "",
+          area: data.location || "",
         });
       })
       .catch(() => setItem(null))
@@ -124,8 +130,10 @@ export default function EditListingPage() {
         title: form.title.trim(),
         category: item.category,
         description: form.description?.trim() || "",
-        location: form.location?.trim() || "",
-        district: form.district?.trim() || "",
+        location: loc.area?.trim() || "",
+        district: loc.district || "",
+        taluk: loc.taluk || null,
+        pincode: loc.pincode || null,
         price: parsed && !isNaN(parsed) ? parsed : null,
         condition: form.condition?.trim() || null,
         breed: form.breed?.trim() || null,
@@ -187,19 +195,24 @@ export default function EditListingPage() {
         ) : (
           <form onSubmit={handleSave} className="bg-card rounded-2xl p-4 sm:p-6 border border-border space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {genericFields(item.category).map((field) => (
-                <div key={field.key}>
-                  <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{field.label}</label>
-                  <Input
-                    value={form[field.key] || ""}
-                    onChange={(e) => handleChange(field.key, e.target.value)}
-                    placeholder={field.label}
-                    className="h-10 sm:h-11"
-                    type={field.key === "price" ? "number" : "text"}
-                  />
-                </div>
-              ))}
+              {genericFields(item.category)
+                .filter((field) => !["district", "location", "area"].includes(field.key))
+                .map((field) => (
+                  <div key={field.key}>
+                    <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{field.label}</label>
+                    <Input
+                      value={form[field.key] || ""}
+                      onChange={(e) => handleChange(field.key, e.target.value)}
+                      placeholder={field.label}
+                      className="h-10 sm:h-11"
+                      type={field.key === "price" ? "number" : "text"}
+                    />
+                  </div>
+                ))}
             </div>
+
+            {/* Connected location: Pincode → District → Taluk → Area */}
+            <LocationFields value={loc} onChange={setLoc} />
             <div>
               <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{t("ವಿವರಣೆ (Description)", "Description")}</label>
               <Textarea

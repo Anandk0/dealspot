@@ -679,6 +679,8 @@ export interface ListingData {
   priceUnit?: string;
   location?: string;
   district?: string;
+  taluk?: string;
+  pincode?: string;
   latitude?: number;
   longitude?: number;
   status: string;

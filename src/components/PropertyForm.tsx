@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { api, type DistrictOption, type ListingData } from "@/lib/api";
+import { api, type ListingData } from "@/lib/api";
 import { useLocation } from "@/lib/location-context";
 import { useLang } from "@/lib/lang-context";
+import LocationFields, { type LocationValue } from "@/components/LocationFields";
 
 /**
  * Detailed property form for property-sales and property-rent categories.
@@ -37,15 +38,11 @@ export default function PropertyForm({
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [pinning, setPinning] = useState(false);
 
-  const [districts, setDistricts] = useState<DistrictOption[]>([]);
-  const [taluks, setTaluks] = useState<string[]>([]);
+  const [loc, setLoc] = useState<LocationValue>({ pincode: "", district: "", taluk: "", area: "" });
 
   // Form state
   const [f, setF] = useState({
     title: "",
-    location: "",
-    district: "",
-    taluk: "",
     propertyArea: "",
     price: "",
     pricePerUnit: "",
@@ -70,10 +67,6 @@ export default function PropertyForm({
 
   const set = (k: keyof typeof f, v: string) => setF((prev) => ({ ...prev, [k]: v }));
 
-  useEffect(() => {
-    api.getDistricts().then(setDistricts).catch(() => setDistricts([]));
-  }, []);
-
   // Pre-fill the form when editing an existing listing.
   useEffect(() => {
     if (!existing) return;
@@ -85,11 +78,14 @@ export default function PropertyForm({
     }
     const docs = (d.documents as Record<string, string>) || {};
     const priv = (d.private as Record<string, unknown>) || {};
+    setLoc({
+      pincode: existing.pincode || (d.pincode as string) || "",
+      district: existing.district || "",
+      taluk: existing.taluk || (d.taluk as string) || "",
+      area: existing.location || "",
+    });
     setF({
       title: existing.title || "",
-      location: existing.location || "",
-      district: existing.district || "",
-      taluk: (d.taluk as string) || "",
       propertyArea: (d.propertyArea as string) || existing.area || "",
       price: existing.price != null ? String(existing.price) : "",
       pricePerUnit: (d.pricePerUnit as string) || "",
@@ -115,15 +111,6 @@ export default function PropertyForm({
       setCoords({ lat: Number(priv.mapLat), lng: Number(priv.mapLng) });
     }
   }, [existing]);
-
-  // Load taluks when district changes.
-  useEffect(() => {
-    if (!f.district) {
-      setTaluks([]);
-      return;
-    }
-    api.getTaluks(f.district).then(setTaluks).catch(() => setTaluks([]));
-  }, [f.district]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -186,7 +173,8 @@ export default function PropertyForm({
       // details JSON: public attributes + a private block (contact + exact map)
       // that the backend hides until the viewer unlocks the listing.
       const details = {
-        taluk: f.taluk || null,
+        taluk: loc.taluk || null,
+        pincode: loc.pincode || null,
         propertyArea: f.propertyArea || null,
         pricePerUnit: f.pricePerUnit || null,
         negotiable: f.negotiable || null,
@@ -217,8 +205,10 @@ export default function PropertyForm({
         title: f.title.trim(),
         category: categoryId,
         description: f.description.trim() || "",
-        location: f.location.trim() || "",
-        district: f.district || "",
+        location: loc.area.trim() || "",
+        district: loc.district || "",
+        taluk: loc.taluk || null,
+        pincode: loc.pincode || null,
         area: f.propertyArea.trim() || null,
         price: parsedPrice && !isNaN(parsedPrice) ? parsedPrice : null,
         // We do NOT store exact lat/lng on the top-level columns (those show the
@@ -268,23 +258,8 @@ export default function PropertyForm({
       {/* 1. Basic Details */}
       <Section title={t("1. ಮೂಲ ವಿವರಗಳು", "1. Basic Details")}>
         <TextField label={t("ಆಸ್ತಿ ಶೀರ್ಷಿಕೆ (Property Title)", "Property Title")} value={f.title} onChange={(v) => set("title", v)} required />
+        <LocationFields value={loc} onChange={setLoc} />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <TextField label={t("ಸ್ಥಳ / ಗ್ರಾಮ (Location / Village)", "Location / Village")} value={f.location} onChange={(v) => set("location", v)} />
-          <SelectField
-            label={t("ಜಿಲ್ಲೆ (District)", "District")}
-            value={f.district}
-            onChange={(v) => { set("district", v); set("taluk", ""); }}
-            options={districts.map((d) => ({ value: d.nameEn, label: `${d.name} (${d.nameEn})` }))}
-            placeholder={t("ಆಯ್ಕೆಮಾಡಿ", "Select")}
-          />
-          <SelectField
-            label={t("ತಾಲೂಕು (Taluk)", "Taluk")}
-            value={f.taluk}
-            onChange={(v) => set("taluk", v)}
-            options={taluks.map((tk) => ({ value: tk, label: tk }))}
-            placeholder={f.district ? t("ಆಯ್ಕೆಮಾಡಿ", "Select") : t("ಮೊದಲು ಜಿಲ್ಲೆ ಆಯ್ಕೆಮಾಡಿ", "Select district first")}
-            disabled={!f.district}
-          />
           <TextField label={t("ಆಸ್ತಿ ವಿಸ್ತೀರ್ಣ (Property Area)", "Property Area")} value={f.propertyArea} onChange={(v) => set("propertyArea", v)} placeholder={t("ಉದಾ: 2400 sq.ft / 1 acre", "e.g. 2400 sq.ft / 1 acre")} />
           <TextField label={t("ನಿರೀಕ್ಷಿತ ಬೆಲೆ (Expected Price ₹)", "Expected Price ₹")} value={f.price} onChange={(v) => set("price", v)} type="number" />
           <TextField label={t("ಪ್ರತಿ Sq.ft / Acre ಬೆಲೆ", "Price per Sq.ft / Acre")} value={f.pricePerUnit} onChange={(v) => set("pricePerUnit", v)} />

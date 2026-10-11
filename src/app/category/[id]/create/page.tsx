@@ -12,6 +12,7 @@ import { api } from "@/lib/api";
 import AppLayout from "@/components/AppLayout";
 import AgentRegistration from "@/components/AgentRegistration";
 import PropertyForm from "@/components/PropertyForm";
+import LocationFields, { type LocationValue } from "@/components/LocationFields";
 import { useRef, useState } from "react";
 
 export default function CreateListingPage() {
@@ -30,6 +31,7 @@ export default function CreateListingPage() {
   const [previews, setPreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [loc, setLoc] = useState<LocationValue>({ pincode: "", district: "", taluk: "", area: "" });
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [pinning, setPinning] = useState(false);
 
@@ -248,12 +250,17 @@ export default function CreateListingPage() {
       const rawPrice = formData.price ? String(formData.price).replace(/[^0-9.]/g, "") : "";
       const parsedPrice = rawPrice ? parseFloat(rawPrice) : null;
 
+      // Compose a human-readable location string from the connected fields.
+      const locationStr = [loc.area, loc.taluk].filter(Boolean).join(", ");
+
       const listingData: Record<string, unknown> = {
         title: (formData.title || formData[titleField] || "").trim(),
         category: categoryId,
         description: formData.description?.trim() || "",
-        location: formData.location?.trim() || "",
-        district: formData.district?.trim() || "",
+        location: locationStr || formData.location?.trim() || "",
+        district: loc.district || formData.district?.trim() || "",
+        taluk: loc.taluk || null,
+        pincode: loc.pincode || null,
         latitude: coords?.lat ?? null,
         longitude: coords?.lng ?? null,
         price: parsedPrice && !isNaN(parsedPrice) ? parsedPrice : null,
@@ -262,7 +269,7 @@ export default function CreateListingPage() {
         age: formData.age?.trim() || null,
         condition: formData.condition?.trim() || null,
         hp: formData.hp?.trim() || null,
-        area: formData.area?.trim() || null,
+        area: loc.area?.trim() || formData.area?.trim() || null,
         skill: formData.skill?.trim() || null,
         experience: formData.experience?.trim() || null,
         vehicleType: formData.vehicleType?.trim() || null,
@@ -345,21 +352,26 @@ export default function CreateListingPage() {
               </div>
             </div>
 
-            {/* Dynamic Fields */}
+            {/* Dynamic Fields (location/district/area handled by LocationFields below) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {getFields().map((field) => (
-                <div key={field.key}>
-                  <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{field.label}</label>
-                  <Input
-                    value={formData[field.key] || ""}
-                    onChange={(e) => handleChange(field.key, e.target.value)}
-                    placeholder={field.label}
-                    className="h-10 sm:h-11"
-                    type={field.key === "price" ? "number" : "text"}
-                  />
-                </div>
-              ))}
+              {getFields()
+                .filter((field) => !["district", "location", "area"].includes(field.key))
+                .map((field) => (
+                  <div key={field.key}>
+                    <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{field.label}</label>
+                    <Input
+                      value={formData[field.key] || ""}
+                      onChange={(e) => handleChange(field.key, e.target.value)}
+                      placeholder={field.label}
+                      className="h-10 sm:h-11"
+                      type={field.key === "price" ? "number" : "text"}
+                    />
+                  </div>
+                ))}
             </div>
+
+            {/* Connected location: Pincode → District → Taluk → Area */}
+            <LocationFields value={loc} onChange={setLoc} />
 
             {/* Pin location for distance */}
             <div>
