@@ -5,6 +5,7 @@ import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import ContactUnlockModal from "@/components/ContactUnlockModal";
 import PropertyDetails from "@/components/PropertyDetails";
+import ImageGallery from "@/components/ImageGallery";
 import { api, ListingData } from "@/lib/api";
 import { getCategoryIcon } from "@/lib/categories";
 import { useLocation } from "@/lib/location-context";
@@ -172,29 +173,19 @@ export default function ItemDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left - Images */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="relative w-full h-80 bg-muted rounded-2xl flex items-center justify-center overflow-hidden">
-              {item.images && item.images.length > 0 ? (
-                <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-8xl">{getCategoryIcon(item.category)}</span>
-              )}
-              {/* Distance badge overlaid on the main image */}
-              {coords && item.latitude != null && item.longitude != null && (
-                <span className="absolute top-3 right-3 inline-flex items-center gap-1 bg-primary text-white text-sm font-semibold px-3 py-1.5 rounded-full shadow-lg">
-                  <MapPin size={14} />
-                  {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))}
-                </span>
-              )}
-            </div>
-
-            {/* More images */}
-            {item.images && item.images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto">
-                {item.images.slice(1).map((img, i) => (
-                  <img key={i} src={img} alt="" className="w-24 h-24 rounded-lg object-cover border border-border" />
-                ))}
-              </div>
-            )}
+            <ImageGallery
+              images={item.images || []}
+              alt={item.title}
+              fallback={getCategoryIcon(item.category)}
+              overlay={
+                coords && item.latitude != null && item.longitude != null ? (
+                  <span className="absolute top-3 right-3 inline-flex items-center gap-1 bg-primary text-white text-sm font-semibold px-3 py-1.5 rounded-full shadow-lg pointer-events-none">
+                    <MapPin size={14} />
+                    {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))}
+                  </span>
+                ) : null
+              }
+            />
 
             {/* Property structured details (sales + rent) */}
             {item.details && (item.category.startsWith("property") || categoryId.startsWith("property")) && (
