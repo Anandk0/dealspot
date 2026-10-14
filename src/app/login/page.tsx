@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useLang } from "@/lib/lang-context";
 import { Loader2, MailCheck } from "lucide-react";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 // Registration steps: form → otp → done
 type RegStep = "form" | "otp";
@@ -18,6 +19,9 @@ export default function LoginPage() {
   const { lang, setLang, t } = useLang();
   const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
+  // Password/phone auth is the secondary option, collapsed by default so
+  // Google remains the primary call to action.
+  const [showPasswordAuth, setShowPasswordAuth] = useState(false);
   const [form, setForm] = useState({
     phone: "",
     password: "",
@@ -132,6 +136,22 @@ export default function LoginPage() {
     }
   };
 
+  // ── Google sign-in / sign-up ──
+  const handleGoogle = async (idToken: string) => {
+    setLoading(true);
+    try {
+      const res = await api.loginWithGoogle(idToken);
+      login(res);
+      toast.success(t("ಯಶಸ್ವಿ!", "Signed in!"));
+      // New Google users with no phone yet → onboarding; otherwise home.
+      router.push(res.needsOnboarding ? "/onboarding" : "/home");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : t("Google ಸೈನ್ ಇನ್ ವಿಫಲ", "Google sign-in failed"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // ── Login ──
   const handleLogin = async () => {
     if (!form.phone || !form.password) {
@@ -162,7 +182,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12 bg-gradient-to-b from-green-50 to-white dark:from-background dark:to-background" suppressHydrationWarning>
+    <div className="relative min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12 overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-green-50 dark:from-background dark:via-background dark:to-background" suppressHydrationWarning>
+      {/* Soft decorative blobs */}
+      <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-emerald-400/10 blur-3xl" />
+
       {/* Language toggle — fixed to top-right corner */}
       <div className="absolute top-4 right-4 z-10">
         <div className="flex items-center gap-1 bg-card border border-border rounded-full p-0.5 shadow-sm">
@@ -181,14 +205,87 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <img src="/logo.png" alt="Dealspot Connect" className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mb-3 sm:mb-4 shadow-lg" />
-      <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-1 text-center">Dealspot <span className="text-xs sm:text-sm font-normal text-muted-foreground">connect</span></h1>
-      <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">{t("ಡೀಲ್ ಸ್ಪಾಟ್", "Rural Marketplace")}</p>
+      {/* Brand */}
+      <div className="relative mb-5 flex flex-col items-center">
+        <div className="p-1.5 rounded-full bg-gradient-to-br from-primary/30 to-emerald-400/20 shadow-lg mb-3">
+          <img src="/logo.png" alt="Dealspot Connect" className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover ring-4 ring-background" />
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+          Dealspot <span className="text-primary">connect</span>
+        </h1>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("ಗ್ರಾಮೀಣ ಮಾರುಕಟ್ಟೆ", "Rural Marketplace")}</p>
+      </div>
 
-      <div className="w-full max-w-sm space-y-4 bg-card p-5 sm:p-6 rounded-2xl shadow-sm border border-border" suppressHydrationWarning>
-        <h2 className="text-center font-semibold text-foreground text-lg">
-          {isRegister ? t("ನೋಂದಣಿ", "Register") : t("ಲಾಗಿನ್", "Login")}
-        </h2>
+      <div className="relative w-full max-w-sm space-y-4 bg-card/95 backdrop-blur p-6 sm:p-7 rounded-3xl shadow-xl border border-border" suppressHydrationWarning>
+
+        {/* ─── GOOGLE — the hero sign-in (always the main attraction) ─── */}
+        <div className="text-center space-y-1.5">
+          <h2 className="font-bold text-foreground text-xl">
+            {t("ಸ್ವಾಗತ 👋", "Welcome 👋")}
+          </h2>
+          <p className="text-sm text-muted-foreground px-2">
+            {t("Google ಖಾತೆಯೊಂದಿಗೆ ಕ್ಷಣದಲ್ಲಿ ಪ್ರಾರಂಭಿಸಿ", "Sign in instantly with your Google account")}
+          </p>
+        </div>
+
+        {!(isRegister && regStep === "otp") && !showPasswordAuth && (
+          <div className="space-y-4 py-1">
+            {/* Feature highlights */}
+            <div className="flex items-center justify-center gap-4 py-1">
+              {[
+                { icon: "⚡", label: t("ವೇಗ", "Fast") },
+                { icon: "🔒", label: t("ಸುರಕ್ಷಿತ", "Secure") },
+                { icon: "✓", label: t("ಪಾಸ್‌ವರ್ಡ್ ಇಲ್ಲ", "No password") },
+              ].map((f) => (
+                <div key={f.label} className="flex flex-col items-center gap-1">
+                  <span className="text-lg">{f.icon}</span>
+                  <span className="text-[10px] text-muted-foreground">{f.label}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-center">
+              <GoogleSignInButton onCredential={handleGoogle} text="continue_with" />
+            </div>
+            {loading && (
+              <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
+                <Loader2 size={13} className="animate-spin" /> {t("ಸೈನ್ ಇನ್ ಆಗುತ್ತಿದೆ...", "Signing in...")}
+              </p>
+            )}
+            <p className="text-center text-[11px] text-muted-foreground px-4 leading-relaxed">
+              {t("ಮುಂದುವರಿಯುವ ಮೂಲಕ ನೀವು ನಮ್ಮ ನಿಯಮಗಳನ್ನು ಒಪ್ಪುತ್ತೀರಿ", "By continuing you agree to our Terms & Privacy Policy")}
+            </p>
+
+            {/* Secondary: reveal phone/password login */}
+            <div className="pt-1">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex-1 h-px bg-border" />
+                <span className="text-[11px] text-muted-foreground uppercase tracking-wide">{t("ಅಥವಾ", "or")}</span>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+              <button
+                onClick={() => setShowPasswordAuth(true)}
+                className="w-full h-11 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-muted/50 hover:border-primary/40 transition flex items-center justify-center gap-2"
+              >
+                📱 {t("ಫೋನ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್‌ನೊಂದಿಗೆ ಲಾಗಿನ್", "Use phone & password instead")}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ─── Phone/password auth (collapsed by default) ─── */}
+        {(showPasswordAuth || (isRegister && regStep === "otp")) && (
+        <>
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-foreground text-base">
+            {isRegister ? t("ನೋಂದಣಿ", "Register") : t("ಲಾಗಿನ್", "Login")}
+          </h2>
+          {!(isRegister && regStep === "otp") && (
+            <button onClick={() => { setShowPasswordAuth(false); setIsRegister(false); }} className="text-xs text-muted-foreground hover:text-primary">
+              ← {t("Google ಬಳಸಿ", "Use Google")}
+            </button>
+          )}
+        </div>
 
         {/* ─── OTP verification step ─── */}
         {isRegister && regStep === "otp" ? (
@@ -302,6 +399,8 @@ export default function LoginPage() {
             ? t("ಈಗಾಗಲೇ ಖಾತೆ ಇದೆ? ಲಾಗಿನ್ ಮಾಡಿ", "Already have an account? Login")
             : t("ಹೊಸ ಖಾತೆ? ನೋಂದಣಿ ಮಾಡಿ", "New here? Create an account")}
         </button>
+        </>
+        )}
       </div>
     </div>
   );

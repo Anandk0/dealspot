@@ -191,6 +191,16 @@ class ApiClient {
     return res;
   }
 
+  // Sign in / up with a Google ID token obtained in the browser.
+  async loginWithGoogle(idToken: string) {
+    const res = await this.request<AuthResponseData>("/api/auth/google", {
+      method: "POST",
+      body: JSON.stringify({ idToken }),
+    });
+    this.setTokens(res.token, res.refreshToken);
+    return res;
+  }
+
   async logout() {
     try {
       await this.request("/api/auth/logout", { method: "POST" });
@@ -629,6 +639,7 @@ export interface AuthResponseData {
   userId: number;
   name: string;
   phone: string;
+  needsOnboarding?: boolean;
 }
 
 export interface DistrictOption {
