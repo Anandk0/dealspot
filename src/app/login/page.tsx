@@ -230,19 +230,6 @@ export default function LoginPage() {
 
         {!(isRegister && regStep === "otp") && !showPasswordAuth && (
           <div className="space-y-4 py-1">
-            {/* Feature highlights */}
-            <div className="flex items-center justify-center gap-4 py-1">
-              {[
-                { icon: "⚡", label: t("ವೇಗ", "Fast") },
-                { icon: "🔒", label: t("ಸುರಕ್ಷಿತ", "Secure") },
-                { icon: "✓", label: t("ಪಾಸ್‌ವರ್ಡ್ ಇಲ್ಲ", "No password") },
-              ].map((f) => (
-                <div key={f.label} className="flex flex-col items-center gap-1">
-                  <span className="text-lg">{f.icon}</span>
-                  <span className="text-[10px] text-muted-foreground">{f.label}</span>
-                </div>
-              ))}
-            </div>
 
             <div className="flex justify-center">
               <GoogleSignInButton onCredential={handleGoogle} text="continue_with" />
