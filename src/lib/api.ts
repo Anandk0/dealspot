@@ -172,6 +172,7 @@ class ApiClient {
     email?: string;
     location?: string;
     district?: string;
+    taluk?: string;
     recaptchaToken?: string;
   }) {
     const res = await this.request<AuthResponseData>("/api/auth/register", {

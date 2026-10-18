@@ -7,8 +7,9 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useLang } from "@/lib/lang-context";
-import { Loader2, MailCheck } from "lucide-react";
+import { Loader2, MailCheck, LocateFixed, MapPin, Check, AlertCircle } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
+import { lookupPincode } from "@/lib/pincode";
 
 // Registration steps: form → otp → done
 type RegStep = "form" | "otp";
@@ -29,6 +30,12 @@ export default function LoginPage() {
     email: "",
     location: "",
   });
+
+  // GPS-detected location for registration (replaces the manual location field).
+  // Registration is blocked until `geo` is successfully populated.
+  const [geo, setGeo] = useState<{ district: string; taluk: string; area: string } | null>(null);
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
 
   // Email OTP state
   const [regStep, setRegStep] = useState<RegStep>("form");
@@ -63,6 +70,73 @@ export default function LoginPage() {
     return true;
   };
 
+  // ── GPS location detection (mandatory for registration) ──
+  // Gets device GPS, reverse-geocodes via OpenStreetMap, then resolves the
+  // district + taluk. When OSM returns a postcode we feed it to the India Post
+  // lookup for a taluk that matches our backend vocabulary; otherwise we fall
+  // back to the OSM district name. Registration cannot proceed without this.
+  const detectLocation = () => {
+    if (!("geolocation" in navigator)) {
+      setGeoError(t("ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಲೊಕೇಶನ್ ಲಭ್ಯವಿಲ್ಲ", "Location is not available in this browser"));
+      return;
+    }
+    setGeoLoading(true);
+    setGeoError(null);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=12&addressdetails=1`,
+            { headers: { "Accept-Language": "en" } }
+          );
+          const data = await res.json();
+          const addr = data?.address || {};
+
+          const osmDistrict: string = (addr.state_district || addr.county || addr.city_district || addr.city || "")
+            .toString()
+            .replace(/\s*district$/i, "")
+            .trim();
+          const area: string = (addr.suburb || addr.village || addr.town || addr.city || addr.hamlet || "")
+            .toString()
+            .trim();
+          const postcode: string = (addr.postcode || "").toString().replace(/\D/g, "");
+
+          let district = osmDistrict;
+          let taluk = "";
+
+          // Prefer the India Post lookup (gives a taluk from our vocabulary).
+          if (/^\d{6}$/.test(postcode)) {
+            const pin = await lookupPincode(postcode, (d) => api.getTaluks(d));
+            if (pin) {
+              district = pin.district || district;
+              taluk = pin.taluk || "";
+            }
+          }
+
+          if (!district) {
+            setGeoError(t("ಜಿಲ್ಲೆ ಪತ್ತೆಯಾಗಲಿಲ್ಲ, ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ", "Couldn't determine your district — please try again"));
+            setGeo(null);
+            return;
+          }
+
+          setGeo({ district, taluk, area });
+        } catch {
+          setGeoError(t("ಲೊಕೇಶನ್ ಪತ್ತೆ ವಿಫಲವಾಗಿದೆ, ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ", "Location detection failed — please try again"));
+          setGeo(null);
+        } finally {
+          setGeoLoading(false);
+        }
+      },
+      () => {
+        setGeoLoading(false);
+        setGeo(null);
+        setGeoError(t("ಲೊಕೇಶನ್ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ನೋಂದಣಿಗೆ ಲೊಕೇಶನ್ ಅಗತ್ಯ.", "Location permission denied. Location is required to register."));
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  };
+
   // ── Registration: Step 1 — send OTP to email ──
   const handleSendOtp = async () => {
     if (!form.name.trim()) {
@@ -74,6 +148,12 @@ export default function LoginPage() {
       return;
     }
     if (!validateBaseFields()) return;
+    // Location is mandatory for registration — must be detected via GPS.
+    if (!geo) {
+      setGeoError(t("ಮುಂದುವರಿಯಲು ನಿಮ್ಮ ಲೊಕೇಶನ್ ಪತ್ತೆ ಮಾಡಿ", "Please detect your location to continue"));
+      toast.error(t("ನೋಂದಣಿಗೆ ಲೊಕೇಶನ್ ಅಗತ್ಯ", "Location is required to register"));
+      return;
+    }
 
     setOtpSending(true);
     try {
@@ -124,7 +204,10 @@ export default function LoginPage() {
         password: form.password,
         name: form.name.trim(),
         email: form.email.trim(),
-        location: form.location?.trim() || undefined,
+        // GPS-detected location (mandatory). `location` carries the area label.
+        location: geo?.area || undefined,
+        district: geo?.district || undefined,
+        taluk: geo?.taluk || undefined,
       });
       login(res);
       toast.success(t("ಯಶಸ್ವಿಯಾಗಿ ನೋಂದಣಿ ಆಗಿದೆ!", "Registered successfully!"));
@@ -355,11 +438,58 @@ export default function LoginPage() {
               <Input name="password" type="password" value={form.password} onChange={handleChange} placeholder={t("ಕನಿಷ್ಠ 6 ಅಕ್ಷರ", "At least 6 characters")} className="h-11" />
             </div>
 
-            {/* Location (register only) */}
+            {/* Location (register only) — GPS detected, mandatory */}
             {isRegister && (
               <div>
-                <label className="text-sm text-muted-foreground mb-1 block">{t("ಸ್ಥಳ", "Location")}</label>
-                <Input name="location" value={form.location} onChange={handleChange} placeholder={t("ಮಂಡ್ಯ", "e.g. Mandya")} className="h-11" />
+                <label className="text-sm text-muted-foreground mb-1 block">
+                  {t("ಸ್ಥಳ", "Location")} <span className="text-red-500">*</span>
+                </label>
+                {geo ? (
+                  <div className="rounded-xl border border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-950/30 p-3">
+                    <div className="flex items-start gap-2">
+                      <Check size={16} className="text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground">
+                          {geo.district}
+                          {geo.taluk ? ` • ${geo.taluk}` : ""}
+                        </p>
+                        {geo.area && <p className="text-xs text-muted-foreground truncate">{geo.area}</p>}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={detectLocation}
+                        disabled={geoLoading}
+                        className="text-xs text-primary hover:underline shrink-0"
+                      >
+                        {t("ಬದಲಾಯಿಸಿ", "Change")}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={detectLocation}
+                    disabled={geoLoading}
+                    className="w-full h-11 rounded-xl border border-primary/40 text-primary hover:bg-primary/5 transition flex items-center justify-center gap-2 text-sm font-medium disabled:opacity-60"
+                  >
+                    {geoLoading ? (
+                      <><Loader2 size={16} className="animate-spin" /> {t("ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...", "Detecting...")}</>
+                    ) : (
+                      <><LocateFixed size={16} /> {t("ನನ್ನ ಲೊಕೇಶನ್ ಪತ್ತೆ ಮಾಡಿ", "Detect my location")}</>
+                    )}
+                  </button>
+                )}
+                {geoError && (
+                  <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+                    <AlertCircle size={12} className="shrink-0" /> {geoError}
+                  </p>
+                )}
+                {!geo && !geoError && (
+                  <p className="text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1">
+                    <MapPin size={11} className="shrink-0" />
+                    {t("ನಿಮ್ಮ ಜಿಲ್ಲೆ/ತಾಲೂಕು ಸ್ವಯಂ ತುಂಬಲು GPS ಬಳಸಲಾಗುತ್ತದೆ", "We use GPS to auto-fill your district & taluk")}
+                  </p>
+                )}
               </div>
             )}
 
