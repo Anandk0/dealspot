@@ -12,6 +12,11 @@ import { api } from "@/lib/api";
 import AppLayout from "@/components/AppLayout";
 import AgentRegistration from "@/components/AgentRegistration";
 import PropertyForm from "@/components/PropertyForm";
+import ServiceForm from "@/components/ServiceForm";
+import LivestockForm from "@/components/LivestockForm";
+import VehicleRentForm from "@/components/VehicleRentForm";
+import PetForm from "@/components/PetForm";
+import AgricultureEquipmentForm from "@/components/AgricultureEquipmentForm";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
 import { useAgentSystem } from "@/lib/useAgentSystem";
 import { useRef, useState } from "react";
@@ -103,6 +108,76 @@ export default function CreateListingPage() {
             {category?.name} • {category?.nameEn}
           </p>
           <PropertyForm categoryId={categoryId} rent={rent} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // ── Services (electrician, plumber, carpenter, painter, CCTV, vehicle drivers) ──
+  const SERVICE_SLUGS = ["service-electrician", "service-plumber", "service-carpenter", "service-painter", "service-cctv", "Vehicle-Drivers-Hire"];
+  if (SERVICE_SLUGS.includes(categoryId) || SERVICE_SLUGS.includes(fieldCategoryId)) {
+    const slug = SERVICE_SLUGS.includes(categoryId) ? categoryId : fieldCategoryId;
+    return (
+      <AppLayout>
+        <div className="max-w-3xl mx-auto px-4 py-4 sm:p-6 pb-28 lg:pb-8">
+          <FormHeader categoryId={slug} category={category} parentCategory={parentCategory} />
+          <ServiceForm categoryId={slug} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // ── Livestock (cow, bull, buffalo, goat, sheep) ──
+  const LIVESTOCK_SLUGS = ["livestock-cow", "livestock-bull", "livestock-buffalo", "livestock-goat", "livestock-sheep"];
+  if (LIVESTOCK_SLUGS.includes(categoryId) || LIVESTOCK_SLUGS.includes(fieldCategoryId)) {
+    const slug = LIVESTOCK_SLUGS.includes(categoryId) ? categoryId : fieldCategoryId;
+    return (
+      <AppLayout>
+        <div className="max-w-3xl mx-auto px-4 py-4 sm:p-6 pb-28 lg:pb-8">
+          <FormHeader categoryId={slug} category={category} parentCategory={parentCategory} />
+          <LivestockForm categoryId={slug} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // ── Vehicle rent (car, auto, tempo, mini truck) ──
+  const VEHICLE_SLUGS = ["vehicle-car", "vehicle-auto", "vehicle-tempo", "vehicle-mini-truck"];
+  if (VEHICLE_SLUGS.includes(categoryId) || VEHICLE_SLUGS.includes(fieldCategoryId)) {
+    const slug = VEHICLE_SLUGS.includes(categoryId) ? categoryId : fieldCategoryId;
+    return (
+      <AppLayout>
+        <div className="max-w-3xl mx-auto px-4 py-4 sm:p-6 pb-28 lg:pb-8">
+          <FormHeader categoryId={slug} category={category} parentCategory={parentCategory} />
+          <VehicleRentForm categoryId={slug} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // ── Pets (dog, cat) ──
+  const PET_SLUGS = ["pets-dogs-wanted", "pets-pet-cats"];
+  if (PET_SLUGS.includes(categoryId) || PET_SLUGS.includes(fieldCategoryId)) {
+    const slug = PET_SLUGS.includes(categoryId) ? categoryId : fieldCategoryId;
+    return (
+      <AppLayout>
+        <div className="max-w-3xl mx-auto px-4 py-4 sm:p-6 pb-28 lg:pb-8">
+          <FormHeader categoryId={slug} category={category} parentCategory={parentCategory} />
+          <PetForm categoryId={slug} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // ── Agriculture equipment (all agri-* subcategories) ──
+  const isAgriEquipment = categoryId.startsWith("agri-") || fieldCategoryId.startsWith("agri-") || categoryId === "agriculture-equipment" || fieldCategoryId === "agriculture-equipment";
+  if (isAgriEquipment) {
+    const slug = categoryId.startsWith("agri-") || categoryId === "agriculture-equipment" ? categoryId : fieldCategoryId;
+    return (
+      <AppLayout>
+        <div className="max-w-3xl mx-auto px-4 py-4 sm:p-6 pb-28 lg:pb-8">
+          <FormHeader categoryId={slug} category={category} parentCategory={parentCategory} />
+          <AgricultureEquipmentForm categoryId={slug} />
         </div>
       </AppLayout>
     );
@@ -451,5 +526,47 @@ export default function CreateListingPage() {
         </div>
       </div>
     </AppLayout>
+  );
+}
+
+// ── Shared breadcrumb + title block for new dedicated forms ─────────────────
+function FormHeader({
+  categoryId,
+  category,
+  parentCategory,
+}: {
+  categoryId: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  category: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  parentCategory: any;
+}) {
+  return (
+    <>
+      <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground mb-4 overflow-x-auto">
+        <Link href="/home" className="hover:text-primary shrink-0">ಹೋಮ್</Link>
+        <span>/</span>
+        {parentCategory && (
+          <>
+            <Link href={`/category/${parentCategory.id}`} className="hover:text-primary shrink-0">
+              {parentCategory.nameEn}
+            </Link>
+            <span>/</span>
+          </>
+        )}
+        <Link href={`/category/${categoryId}`} className="hover:text-primary shrink-0">
+          {category?.nameEn}
+        </Link>
+        <span>/</span>
+        <span className="text-foreground font-medium shrink-0">ಹೊಸ ಜಾಹೀರಾತು</span>
+      </div>
+      <h1 className="text-lg sm:text-xl font-bold text-foreground mb-1">
+        {category?.name}{" "}
+        <span className="text-sm font-normal text-muted-foreground">({category?.nameEn})</span>
+      </h1>
+      <p className="text-xs sm:text-sm text-muted-foreground mb-5">
+        ಹೊಸ ಜಾಹೀರಾತು ಹಾಕಿ — Post a new listing
+      </p>
+    </>
   );
 }
