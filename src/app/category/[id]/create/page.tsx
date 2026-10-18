@@ -12,6 +12,7 @@ import { api } from "@/lib/api";
 import AppLayout from "@/components/AppLayout";
 import AgentRegistration from "@/components/AgentRegistration";
 import PropertyForm from "@/components/PropertyForm";
+import PropertyRentForm from "@/components/PropertyRentForm";
 import ServiceForm from "@/components/ServiceForm";
 import LivestockForm from "@/components/LivestockForm";
 import VehicleRentForm from "@/components/VehicleRentForm";
@@ -107,7 +108,7 @@ export default function CreateListingPage() {
           <p className="text-xs sm:text-sm text-muted-foreground mb-5">
             {category?.name} • {category?.nameEn}
           </p>
-          <PropertyForm categoryId={categoryId} rent={rent} />
+          {rent ? <PropertyRentForm categoryId={categoryId} /> : <PropertyForm categoryId={categoryId} rent={false} />}
         </div>
       </AppLayout>
     );

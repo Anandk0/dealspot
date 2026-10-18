@@ -97,6 +97,7 @@ export default function AgricultureEquipmentForm({ categoryId }: { categoryId: s
         {
           title: `${equipmentName.trim() || equipmentType} — ${mode === "sale" ? "For Sale" : "For Rent"}`,
           category: categoryId,
+          listingType: mode === "sale" ? "SALE" : "RENT",
           description: description.trim(),
           location: loc.area.trim(),
           district: loc.district,
@@ -120,14 +121,14 @@ export default function AgricultureEquipmentForm({ categoryId }: { categoryId: s
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Mode toggle — Sale vs Rent */}
-      <div className="flex gap-3">
+      {/* Mode toggle — Sale vs Rent (segmented control) */}
+      <div className="grid grid-cols-2 gap-2 p-1.5 bg-muted rounded-2xl">
         <button type="button" onClick={() => setMode("sale")}
-          className={`flex-1 h-12 rounded-2xl border-2 font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "sale" ? "border-primary bg-primary text-white" : "border-border text-muted-foreground hover:bg-muted"}`}>
+          className={`h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "sale" ? "bg-primary text-white shadow-md" : "bg-card text-foreground border border-border hover:border-primary/40"}`}>
           <ShoppingCart size={16} /> {t("ಮಾರಾಟ (For Sale)", "For Sale")}
         </button>
         <button type="button" onClick={() => setMode("rent")}
-          className={`flex-1 h-12 rounded-2xl border-2 font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "rent" ? "border-primary bg-primary text-white" : "border-border text-muted-foreground hover:bg-muted"}`}>
+          className={`h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "rent" ? "bg-primary text-white shadow-md" : "bg-card text-foreground border border-border hover:border-primary/40"}`}>
           <Tractor size={16} /> {t("ಬಾಡಿಗೆ (For Rent)", "For Rent")}
         </button>
       </div>
