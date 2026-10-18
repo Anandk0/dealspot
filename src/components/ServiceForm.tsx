@@ -163,6 +163,7 @@ export default function ServiceForm({ categoryId }: { categoryId: string }) {
   const [mobile, setMobile] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [serviceOther, setServiceOther] = useState("");
   const [experience, setExperience] = useState("");
   const [charge, setCharge] = useState("");
   const [pricingBasis, setPricingBasis] = useState("");
@@ -211,11 +212,17 @@ export default function ServiceForm({ categoryId }: { categoryId: string }) {
     if (!api.getToken()) { toast.error(t("ದಯವಿಟ್ಟು ಲಾಗಿನ್ ಮಾಡಿ", "Please login first")); router.push("/login"); return; }
     if (!name.trim()) { toast.error(t("ಹೆಸರು ಅಗತ್ಯ", "Name is required")); return; }
     if (selectedServices.length === 0) { toast.error(t("ಸೇವೆ ಆಯ್ಕೆ ಮಾಡಿ", "Select at least one service type")); return; }
+    const hasOther = selectedServices.some((s) => s.includes("Other") || s.includes("ಇತರ"));
+    if (hasOther && !serviceOther.trim()) { toast.error(t("ಇತರ ಸೇವೆ ನಮೂದಿಸಿ", "Please specify the other service")); return; }
+    // Replace the generic "Other" entry with the specified text so it's stored meaningfully.
+    const resolvedServices = hasOther
+      ? [...selectedServices.filter((s) => !(s.includes("Other") || s.includes("ಇತರ"))), `Other: ${serviceOther.trim()}`]
+      : selectedServices;
 
     setLoading(true);
     try {
       const details = {
-        serviceTypes: selectedServices,
+        serviceTypes: resolvedServices,
         workType: workType || null,
         hasLicence: hasLicence || null,
         materialBy: materialBy || null,
@@ -244,7 +251,7 @@ export default function ServiceForm({ categoryId }: { categoryId: string }) {
           pincode: loc.pincode || null,
           experience: experience || null,
           rateInfo: charge ? `${charge} ${pricingBasis}`.trim() : null,
-          skill: selectedServices.join(", "),
+          skill: resolvedServices.join(", "),
           details: JSON.stringify(details),
         },
         allImages.length > 0 ? allImages : undefined
@@ -299,6 +306,11 @@ export default function ServiceForm({ categoryId }: { categoryId: string }) {
             </button>
           ))}
         </div>
+        {selectedServices.some((s) => s.includes("Other") || s.includes("ಇತರ")) && (
+          <div className="mt-3">
+            <Field label={t("ಇತರ ಸೇವೆ ನಮೂದಿಸಿ (Specify Other)", "Specify other service")} value={serviceOther} onChange={setServiceOther} placeholder={t("ಸೇವೆ ವಿವರ", "Describe the service")} />
+          </div>
+        )}
         {isCCTV && (
           <div className="mt-3">
             <p className="text-xs font-medium text-muted-foreground mb-2">{t("ಕ್ಯಾಮೆರಾ ವಿಧ (Camera Type)", "Camera Type")}</p>

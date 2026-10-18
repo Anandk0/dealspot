@@ -238,8 +238,8 @@ export default function AdminCategoriesPage() {
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                  {/* Actions (always visible on touch; hover-reveal on desktop) */}
+                  <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
                     <button
                       onClick={() => openCreateSub(cat.id)}
                       title="Add subcategory"
@@ -291,7 +291,7 @@ export default function AdminCategoriesPage() {
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                        <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
                           <button
                             onClick={() => openEdit(sub)}
                             className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted/70 transition"

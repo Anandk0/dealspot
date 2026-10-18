@@ -32,6 +32,7 @@ export default function PetForm({ categoryId }: { categoryId: string }) {
   const [loc, setLoc] = useState<LocationValue>({ pincode: "", district: "", taluk: "", area: "" });
 
   const [breed, setBreed] = useState("");
+  const [breedOther, setBreedOther] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [color, setColor] = useState("");
@@ -57,11 +58,14 @@ export default function PetForm({ categoryId }: { categoryId: string }) {
     e.preventDefault();
     if (!api.getToken()) { toast.error("Please login"); router.push("/login"); return; }
     if (!breed) { toast.error("ತಳಿ ಆಯ್ಕೆ ಮಾಡಿ (Select breed)"); return; }
+    const isOther = breed.includes("Other") || breed.includes("ಇತರೆ");
+    if (isOther && !breedOther.trim()) { toast.error(t("ತಳಿ ಹೆಸರು ನಮೂದಿಸಿ", "Please specify the breed")); return; }
+    const resolvedBreed = isOther ? breedOther.trim() : breed;
 
     setLoading(true);
     try {
       const details = {
-        breed,
+        breed: resolvedBreed,
         gender,
         color,
         quantity,
@@ -77,14 +81,14 @@ export default function PetForm({ categoryId }: { categoryId: string }) {
 
       await api.createListing(
         {
-          title: `${breed} ${config.en}`,
+          title: `${resolvedBreed} ${config.en}`,
           category: categoryId,
           description: description.trim(),
           location: loc.area.trim(),
           district: loc.district,
           taluk: loc.taluk || null,
           pincode: loc.pincode || null,
-          breed,
+          breed: resolvedBreed,
           age,
           price: price ? parseFloat(price.replace(/[^0-9.]/g, "")) || null : null,
           details: JSON.stringify(details),
@@ -130,6 +134,11 @@ export default function PetForm({ categoryId }: { categoryId: string }) {
                 className={`px-3 py-2.5 rounded-xl border text-xs font-medium text-left transition ${breed === b ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-muted"}`}>{b}</button>
             ))}
           </div>
+          {(breed.includes("Other") || breed.includes("ಇತರೆ")) && (
+            <div className="mt-3">
+              <PF label={t("ತಳಿ ಹೆಸರು ನಮೂದಿಸಿ (Specify Breed)", "Specify the breed")} value={breedOther} onChange={setBreedOther} placeholder={t("ತಳಿ ಹೆಸರು", "Enter breed name")} />
+            </div>
+          )}
         </Section>
       )}
 

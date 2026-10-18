@@ -40,6 +40,7 @@ export default function AgricultureEquipmentForm({ categoryId }: { categoryId: s
   const [loc, setLoc] = useState<LocationValue>({ pincode: "", district: "", taluk: "", area: "" });
 
   const [equipmentType, setEquipmentType] = useState("");
+  const [equipmentTypeOther, setEquipmentTypeOther] = useState("");
   const [equipmentName, setEquipmentName] = useState("");
   const [brand, setBrand] = useState("");
   const [year, setYear] = useState("");
@@ -71,11 +72,15 @@ export default function AgricultureEquipmentForm({ categoryId }: { categoryId: s
     e.preventDefault();
     if (!api.getToken()) { toast.error("Please login"); router.push("/login"); return; }
     if (!equipmentType && !equipmentName.trim()) { toast.error("ಉಪಕರಣ ಆಯ್ಕೆ ಮಾಡಿ (Select equipment type)"); return; }
+    const typeIsOther = equipmentType.includes("Other");
+    if (typeIsOther && !equipmentTypeOther.trim() && !equipmentName.trim()) { toast.error(t("ಉಪಕರಣ ಹೆಸರು ನಮೂದಿಸಿ", "Please specify the equipment")); return; }
+    const resolvedType = typeIsOther && equipmentTypeOther.trim() ? equipmentTypeOther.trim() : equipmentType;
 
     setLoading(true);
     try {
       const details = {
         mode,
+        equipmentType: resolvedType || null,
         brand,
         year: year || null,
         condition,
@@ -156,10 +161,15 @@ export default function AgricultureEquipmentForm({ categoryId }: { categoryId: s
       <Section title={t("1. ಉಪಕರಣ ವಿಧ (Equipment Type)", "1. Equipment Type")}>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {EQUIPMENT_TYPES.map((eq) => (
-            <button key={eq} type="button" onClick={() => { setEquipmentType(eq); if (!equipmentName) setEquipmentName(eq.split(" / ")[0]); }}
+            <button key={eq} type="button" onClick={() => { setEquipmentType(eq); if (!equipmentName && !eq.includes("Other")) setEquipmentName(eq.split(" / ")[0]); }}
               className={`px-3 py-2.5 rounded-xl border text-xs font-medium text-left transition ${equipmentType === eq ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-muted"}`}>{eq}</button>
           ))}
         </div>
+        {equipmentType.includes("Other") && (
+          <div className="mt-3">
+            <EF label={t("ಉಪಕರಣ ಹೆಸರು ನಮೂದಿಸಿ (Specify Equipment)", "Specify the equipment")} value={equipmentTypeOther} onChange={setEquipmentTypeOther} placeholder={t("ಉಪಕರಣ ಹೆಸರು", "Enter equipment name")} />
+          </div>
+        )}
       </Section>
 
       {/* 2. Equipment details */}
