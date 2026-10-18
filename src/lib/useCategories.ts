@@ -70,9 +70,19 @@ export function useCategories(): UseCategoriesResult {
   };
 
   const getParent = (slug: string): CategoryItem | undefined => {
-    const cat = getCategory(slug);
+    // API path: find the top-level category that lists this slug as a child.
+    // (parentId from the API is a numeric id, not a slug, so we match by walking
+    // the tree rather than looking parentId up as a slug.)
+    if (apiCategories) {
+      const parent = apiCategories.find((c) =>
+        (c.subcategories ?? []).some((s) => s.id === slug)
+      );
+      return parent;
+    }
+    // Hardcoded fallback uses slug-based parentId.
+    const cat = hardcodedCategories.find((c) => c.id === slug);
     if (!cat?.parentId) return undefined;
-    return getCategory(cat.parentId);
+    return hardcodedCategories.find((c) => c.id === cat.parentId);
   };
 
   return { topLevel, getSubcats, getCategory, getParent, loading };

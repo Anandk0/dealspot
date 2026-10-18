@@ -5,6 +5,7 @@ import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import ContactUnlockModal from "@/components/ContactUnlockModal";
 import PropertyDetails from "@/components/PropertyDetails";
+import ListingDetails from "@/components/ListingDetails";
 import ImageGallery from "@/components/ImageGallery";
 import { api, ListingData } from "@/lib/api";
 import { getCategoryIcon } from "@/lib/categories";
@@ -192,8 +193,14 @@ export default function ItemDetailPage() {
               <PropertyDetails detailsJson={item.details} />
             )}
 
-            {/* Generic details — hidden for property (handled above) */}
-            {details.length > 0 && !(item.category.startsWith("property") || categoryId.startsWith("property")) && (
+            {/* Rich details for non-property categories (services, livestock,
+                vehicles, pets, equipment) stored in the details JSON. */}
+            {item.details && !(item.category.startsWith("property") || categoryId.startsWith("property")) && (
+              <ListingDetails detailsJson={item.details} />
+            )}
+
+            {/* Flat-column fallback — shown only when there's no rich details JSON. */}
+            {details.length > 0 && !item.details && !(item.category.startsWith("property") || categoryId.startsWith("property")) && (
               <div className="bg-card rounded-2xl p-6 shadow-sm border border-border">
                 <h3 className="text-base font-semibold text-foreground mb-4">ವಿವರಗಳು (Details)</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
