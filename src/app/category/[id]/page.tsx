@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { Heart, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
@@ -14,8 +14,22 @@ import { api, ListingData } from "@/lib/api";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 
+// Which category families show a transaction-type toggle, and the options.
+function typeToggleFor(id: string, parentId?: string): { options: [string, string][]; default: string } | null {
+  const key = `${id} ${parentId || ""}`;
+  if (key.includes("property-rent")) {
+    return { options: [["RENT", "Rent / ಬಾಡಿಗೆ"], ["LEASE", "Lease / ಲೀಸ್"]], default: "RENT" };
+  }
+  if (key.includes("agriculture-equipment") || key.includes("agri-")) {
+    return { options: [["SALE", "Sale / ಮಾರಾಟ"], ["RENT", "Rent / ಬಾಡಿಗೆ"]], default: "SALE" };
+  }
+  return null;
+}
+
 export default function CategoryPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const id = params.id as string;
 
   const { getCategory, getSubcats, getParent } = useCategories();
@@ -25,6 +39,15 @@ export default function CategoryPage() {
   const category = getCategory(id);
   const subcategories = getSubcats(id);
   const parentCategory = getParent(id);
+
+  // Transaction-type toggle (Rent/Lease, Sale/Rent) for property-rent & agri.
+  const toggleCfg = typeToggleFor(id, parentCategory?.id);
+  const activeType = (searchParams.get("type") || toggleCfg?.default || "").toUpperCase();
+  const setType = (type: string) => {
+    const sp = new URLSearchParams(Array.from(searchParams.entries()));
+    sp.set("type", type);
+    router.replace(`/category/${id}?${sp.toString()}`);
+  };
 
   // Primary/secondary name based on selected language
   const primaryName = (c?: { name: string; nameEn: string }) =>
@@ -42,11 +65,13 @@ export default function CategoryPage() {
       setLoading(false);
       return;
     }
-    api.getListingsByCategory(id)
+    setLoading(true);
+    const typeFilter = toggleCfg ? activeType : undefined;
+    api.getListingsByCategory(id, 0, 20, typeFilter)
       .then((res) => setListings(res.content))
       .catch(() => setListings([]))
       .finally(() => setLoading(false));
-  }, [id, subcategories.length]);
+  }, [id, subcategories.length, activeType, toggleCfg]);
 
   // Load which listings are already favorited
   useEffect(() => {
@@ -145,6 +170,25 @@ export default function CategoryPage() {
           )}
         </div>
 
+        {/* Transaction-type toggle (Rent/Lease, Sale/Rent) */}
+        {toggleCfg && (
+          <div className="grid grid-cols-2 gap-2 p-1.5 bg-muted rounded-2xl mb-6 max-w-sm">
+            {toggleCfg.options.map(([val, label]) => (
+              <button
+                key={val}
+                onClick={() => setType(val)}
+                className={`h-11 rounded-xl font-semibold text-sm transition ${
+                  activeType === val
+                    ? "bg-primary text-white shadow-md"
+                    : "bg-card text-foreground border border-border hover:border-primary/40"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Subcategories grid */}
         {subcategories.length > 0 && (
           <div className="mb-6">
@@ -153,7 +197,7 @@ export default function CategoryPage() {
               {subcategories.map((sub, idx) => (
                 <Link
                   key={sub.id}
-                  href={`/category/${sub.id}`}
+                  href={toggleCfg ? `/category/${sub.id}?type=${activeType}` : `/category/${sub.id}`}
                   className="relative bg-card rounded-xl sm:rounded-2xl overflow-hidden border border-border shadow-sm hover:shadow-xl hover:-translate-y-0.5 sm:hover:-translate-y-1 transition-all duration-300 group"
                   style={{ animationDelay: `${idx * 50}ms` }}
                 >

@@ -241,9 +241,10 @@ class ApiClient {
   }
 
   // ─── Listings ───────────────────────────────────────────
-  async getListingsByCategory(category: string, page = 0, size = 20) {
+  async getListingsByCategory(category: string, page = 0, size = 20, type?: string) {
+    const typeParam = type ? `&type=${encodeURIComponent(type)}` : "";
     return this.request<PagedResponse<ListingData>>(
-      `/api/listings/category/${category}?page=${page}&size=${size}`
+      `/api/listings/category/${category}?page=${page}&size=${size}${typeParam}`
     );
   }
 
