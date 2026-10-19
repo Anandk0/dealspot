@@ -14,8 +14,8 @@ import { useLang } from "@/lib/lang-context";
 // Support WhatsApp numbers. `dial` is digits-only (country code + number) for
 // the wa.me link; `display` is the pretty label shown to the user.
 const WHATSAPP_NUMBERS: { display: string; dial: string }[] = [
+  { display: "+91 87227 27150", dial: "918722727150" },
   { display: "+91 87227 27151", dial: "918722727151" },
-  { display: "+91 97421 91025", dial: "919742191025" },
 ];
 
 /**

@@ -15,13 +15,16 @@ import { toast } from "sonner";
 import { useState, useEffect, useMemo } from "react";
 
 // Which category families show a transaction-type toggle, and the options.
+// Transaction-type filter config. "ALL" is the first option (value "" = no
+// filter, shows mixed types) and is the default. The buttons render INSIDE
+// subcategory/leaf pages to filter that subcategory's listings.
 function typeToggleFor(id: string, parentId?: string): { options: [string, string][]; default: string } | null {
   const key = `${id} ${parentId || ""}`;
   if (key.includes("property-rent")) {
-    return { options: [["RENT", "Rent / ಬಾಡಿಗೆ"], ["LEASE", "Lease / ಲೀಸ್"]], default: "RENT" };
+    return { options: [["", "All / ಎಲ್ಲಾ"], ["RENT", "Rent / ಬಾಡಿಗೆ"], ["LEASE", "Lease / ಲೀಸ್"]], default: "" };
   }
   if (key.includes("agriculture-equipment") || key.includes("agri-")) {
-    return { options: [["SALE", "Sale / ಮಾರಾಟ"], ["RENT", "Rent / ಬಾಡಿಗೆ"]], default: "SALE" };
+    return { options: [["", "All / ಎಲ್ಲಾ"], ["SALE", "Sale / ಮಾರಾಟ"], ["RENT", "Rent / ಬಾಡಿಗೆ"]], default: "" };
   }
   return null;
 }
@@ -47,16 +50,20 @@ export default function CategoryPage() {
     () => typeToggleFor(id, parentCategory?.id),
     [id, parentCategory?.id]
   );
-  const activeType = (searchParams.get("type") || toggleCfg?.default || "").toUpperCase();
-  // The toggle buttons appear ONLY on the parent grid page (the category that
-  // has subcategories, e.g. /category/agriculture-equipment). Subcategory/leaf
-  // pages (e.g. Seeder) still apply the selected type to filter their listings
-  // — carried through the URL ?type= param — but don't render the buttons.
-  const showToggle = !!toggleCfg && subcategories.length > 0;
+  // Selected type. The URL param wins; otherwise fall back to the config
+  // default ("" = All). Empty string means "show all mixed types".
+  const typeParam = searchParams.get("type");
+  const activeType = (typeParam ?? toggleCfg?.default ?? "").toUpperCase();
+  // The toggle buttons appear INSIDE subcategory/leaf pages (no subcategories
+  // of their own), e.g. "Agricultural Land" or "Seeder" — NOT on the parent
+  // grid page. They filter that subcategory's listings by the selected type.
+  const showToggle = !!toggleCfg && subcategories.length === 0;
   const setType = (type: string) => {
     const sp = new URLSearchParams(Array.from(searchParams.entries()));
-    sp.set("type", type);
-    router.replace(`/category/${id}?${sp.toString()}`);
+    if (type) sp.set("type", type);
+    else sp.delete("type"); // "All" clears the filter
+    const qs = sp.toString();
+    router.replace(qs ? `/category/${id}?${qs}` : `/category/${id}`);
   };
 
   // Primary/secondary name based on selected language
@@ -76,7 +83,8 @@ export default function CategoryPage() {
       return;
     }
     setLoading(true);
-    const typeFilter = toggleCfg ? activeType : undefined;
+    // Only send a type filter when a specific type is selected; "All" ("") omits it.
+    const typeFilter = toggleCfg && activeType ? activeType : undefined;
     api.getListingsByCategory(id, 0, 20, typeFilter)
       .then((res) => setListings(res.content))
       .catch(() => setListings([]))
@@ -180,9 +188,9 @@ export default function CategoryPage() {
           )}
         </div>
 
-        {/* Transaction-type toggle (Rent/Lease, Sale/Rent) — parent page only */}
+        {/* Transaction-type filter (All / Rent / Lease, All / Sale / Rent) — inside subcategory pages */}
         {showToggle && toggleCfg && (
-          <div className="grid grid-cols-2 gap-2 p-1.5 bg-muted rounded-2xl mb-6 max-w-sm">
+          <div className="grid grid-cols-3 gap-2 p-1.5 bg-muted rounded-2xl mb-6 max-w-md">
             {toggleCfg.options.map(([val, label]) => (
               <button
                 key={val}
@@ -207,7 +215,7 @@ export default function CategoryPage() {
               {subcategories.map((sub, idx) => (
                 <Link
                   key={sub.id}
-                  href={toggleCfg ? `/category/${sub.id}?type=${activeType}` : `/category/${sub.id}`}
+                  href={`/category/${sub.id}`}
                   className="relative bg-card rounded-xl sm:rounded-2xl overflow-hidden border border-border shadow-sm hover:shadow-xl hover:-translate-y-0.5 sm:hover:-translate-y-1 transition-all duration-300 group"
                   style={{ animationDelay: `${idx * 50}ms` }}
                 >
