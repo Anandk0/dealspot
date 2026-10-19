@@ -13,6 +13,7 @@ import { useLocation } from "@/lib/location-context";
 import { useAuth } from "@/lib/auth-context";
 import { hasMinimumRole } from "@/lib/useAdminGuard";
 import { haversineKm, formatDistance } from "@/lib/distance";
+import { districtCentroid } from "@/lib/districtCentroids";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 
@@ -184,12 +185,16 @@ export default function ItemDetailPage() {
               alt={item.title}
               fallback={getCategoryIcon(item.category)}
               overlay={
-                coords && item.latitude != null && item.longitude != null ? (
-                  <span className="absolute top-3 right-3 inline-flex items-center gap-1 bg-primary text-white text-sm font-semibold px-3 py-1.5 rounded-full shadow-lg pointer-events-none">
-                    <MapPin size={14} />
-                    {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))}
-                  </span>
-                ) : null
+                (() => {
+                  const c = districtCentroid(item.district);
+                  if (!coords || !c) return null;
+                  return (
+                    <span className="absolute top-3 right-3 inline-flex items-center gap-1 bg-primary text-white text-sm font-semibold px-3 py-1.5 rounded-full shadow-lg pointer-events-none">
+                      <MapPin size={14} />
+                      {formatDistance(haversineKm(coords.lat, coords.lng, c.lat, c.lng))}
+                    </span>
+                  );
+                })()
               }
             />
 

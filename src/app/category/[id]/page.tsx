@@ -10,9 +10,19 @@ import { useAgentSystem } from "@/lib/useAgentSystem";
 import { useLang } from "@/lib/lang-context";
 import { useLocation } from "@/lib/location-context";
 import { haversineKm, formatDistance } from "@/lib/distance";
+import { districtCentroid } from "@/lib/districtCentroids";
 import { api, ListingData } from "@/lib/api";
 import { toast } from "sonner";
 import { useState, useEffect, useMemo } from "react";
+
+// Approximate distance from the buyer to a listing's DISTRICT centroid (the
+// exact coords are paywalled, so we show a district-level estimate).
+function approxDistance(coords: { lat: number; lng: number } | null, district?: string): string | null {
+  if (!coords) return null;
+  const c = districtCentroid(district);
+  if (!c) return null;
+  return formatDistance(haversineKm(coords.lat, coords.lng, c.lat, c.lng));
+}
 
 // Which category families show a transaction-type toggle, and the options.
 // Transaction-type filter config. "ALL" is the first option (value "" = no
@@ -304,11 +314,11 @@ export default function CategoryPage() {
                     ) : (
                       <span className="text-3xl sm:text-4xl">{getCategoryIcon(item.category)}</span>
                     )}
-                    {/* Distance badge overlaid on the thumbnail */}
-                    {coords && item.latitude != null && item.longitude != null && (
+                    {/* Approximate distance badge (district-level) */}
+                    {approxDistance(coords, item.district) && (
                       <span className="absolute bottom-0.5 left-0.5 inline-flex items-center gap-0.5 bg-primary text-white text-[8px] sm:text-[9px] font-semibold px-1 py-0.5 rounded-full shadow">
                         <MapPin size={8} className="shrink-0" />
-                        {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))}
+                        {approxDistance(coords, item.district)}
                       </span>
                     )}
                   </div>

@@ -163,16 +163,55 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     // unexpected permission prompt; the user can still set it via the prompt.
   }, []);
 
-  // Refresh coordinates on every app load so the shown distance is accurate.
+  // Actively request the device GPS on every app load so distance is always
+  // available. Unlike refreshCoords (which only reads when already granted),
+  // this triggers the browser permission prompt the first time. If the user
+  // previously denied, the browser won't re-prompt — we keep whatever we have.
+  const ensureCoords = useCallback(() => {
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) return;
+
+    const read = () =>
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          setCoordsState(c);
+          try {
+            localStorage.setItem(COORDS_KEY, JSON.stringify(c));
+          } catch {
+            // ignore
+          }
+        },
+        () => {
+          /* denied or unavailable — keep whatever we have */
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
+
+    const perms = (navigator as Navigator & { permissions?: Permissions }).permissions;
+    if (perms?.query) {
+      perms
+        .query({ name: "geolocation" as PermissionName })
+        .then((status) => {
+          // granted → refresh silently; prompt → ask now; denied → do nothing.
+          if (status.state === "granted" || status.state === "prompt") read();
+        })
+        .catch(() => read()); // Permissions API error — just try to read.
+    } else {
+      // No Permissions API — request directly (browser decides whether to prompt).
+      read();
+    }
+  }, []);
+
+  // Request/refresh coordinates on every app load so the shown distance is accurate.
   useEffect(() => {
     if (!hydrated) return;
-    refreshCoords();
-  }, [hydrated, refreshCoords]);
+    ensureCoords();
+  }, [hydrated, ensureCoords]);
 
   // Also refresh right after the user logs in.
   useEffect(() => {
-    if (isLoggedIn) refreshCoords();
-  }, [isLoggedIn, refreshCoords]);
+    if (isLoggedIn) ensureCoords();
+  }, [isLoggedIn, ensureCoords]);
 
   const dismissPrompt = useCallback(() => {
     setDismissed(true);

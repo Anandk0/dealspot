@@ -8,8 +8,17 @@ import { useCategories } from "@/lib/useCategories";
 import { useLang } from "@/lib/lang-context";
 import { useLocation } from "@/lib/location-context";
 import { haversineKm, formatDistance } from "@/lib/distance";
+import { districtCentroid } from "@/lib/districtCentroids";
 import { api, ListingData, BannerResponse } from "@/lib/api";
 import WhatsAppButton from "@/components/WhatsAppButton";
+
+// Approximate distance from the buyer to a listing's DISTRICT centroid.
+function approxDistance(coords: { lat: number; lng: number } | null, district?: string): string | null {
+  if (!coords) return null;
+  const c = districtCentroid(district);
+  if (!c) return null;
+  return formatDistance(haversineKm(coords.lat, coords.lng, c.lat, c.lng));
+}
 
 const categoryImages: Record<string, string> = {
   "property-sales": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop&q=80",
@@ -348,11 +357,11 @@ export default function HomePage() {
                     <span className="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 bg-black/60 backdrop-blur-xs text-white text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-md capitalize max-w-[85%] truncate">
                       {item.category.replace(/-/g, " ")}
                     </span>
-                    {/* Distance badge overlaid on the image (top-right) */}
-                    {coords && item.latitude != null && item.longitude != null && (
+                    {/* Approximate distance badge (district-level, top-right) */}
+                    {approxDistance(coords, item.district) && (
                       <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 inline-flex items-center gap-1 bg-primary text-white text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full shadow">
                         <MapPin size={9} className="shrink-0" />
-                        {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))}
+                        {approxDistance(coords, item.district)}
                       </span>
                     )}
                   </div>
@@ -450,11 +459,11 @@ export default function HomePage() {
                     <span className="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 bg-black/60 backdrop-blur-xs text-white text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-md capitalize max-w-[60%] truncate">
                       {item.category.replace(/-/g, " ")}
                     </span>
-                    {/* Distance badge overlaid on the image (bottom-right) */}
-                    {coords && item.latitude != null && item.longitude != null && (
+                    {/* Approximate distance badge (district-level, bottom-right) */}
+                    {approxDistance(coords, item.district) && (
                       <span className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 inline-flex items-center gap-1 bg-primary text-white text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full shadow">
                         <MapPin size={9} className="shrink-0" />
-                        {formatDistance(haversineKm(coords.lat, coords.lng, item.latitude, item.longitude))}
+                        {approxDistance(coords, item.district)}
                       </span>
                     )}
                   </div>
