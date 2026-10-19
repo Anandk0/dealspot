@@ -12,7 +12,7 @@ import { useLocation } from "@/lib/location-context";
 import { haversineKm, formatDistance } from "@/lib/distance";
 import { api, ListingData } from "@/lib/api";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 // Which category families show a transaction-type toggle, and the options.
 function typeToggleFor(id: string, parentId?: string): { options: [string, string][]; default: string } | null {
@@ -41,7 +41,12 @@ export default function CategoryPage() {
   const parentCategory = getParent(id);
 
   // Transaction-type toggle (Rent/Lease, Sale/Rent) for property-rent & agri.
-  const toggleCfg = typeToggleFor(id, parentCategory?.id);
+  // Memoised so its identity is stable across renders — otherwise it would
+  // retrigger the listings effect every render and flicker the skeletons.
+  const toggleCfg = useMemo(
+    () => typeToggleFor(id, parentCategory?.id),
+    [id, parentCategory?.id]
+  );
   const activeType = (searchParams.get("type") || toggleCfg?.default || "").toUpperCase();
   const setType = (type: string) => {
     const sp = new URLSearchParams(Array.from(searchParams.entries()));
