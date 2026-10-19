@@ -68,9 +68,9 @@ export default function FavoritesPage() {
                       <p className="text-lg font-bold text-primary mt-1">
                         {item.price ? `₹${item.price.toLocaleString()}` : item.rateInfo || ""}
                       </p>
-                      {item.location && (
+                      {(item.taluk || item.district) && (
                         <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                          <MapPin size={11} /> {item.location}
+                          <MapPin size={11} /> {[item.taluk, item.district].filter(Boolean).join(", ")}
                         </div>
                       )}
                     </div>

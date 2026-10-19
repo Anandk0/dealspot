@@ -145,9 +145,9 @@ export default function MyListingsPage() {
                           <Eye size={11} /> {item.viewCount} ವೀಕ್ಷಣೆ
                         </span>
                         {/* Location */}
-                        {item.location && (
+                        {(item.location || item.taluk || item.district) && (
                           <span className="flex items-center gap-1 text-xs text-muted-foreground truncate">
-                            <MapPin size={11} className="shrink-0" /> {item.location}
+                            <MapPin size={11} className="shrink-0" /> {item.location || [item.taluk, item.district].filter(Boolean).join(", ")}
                           </span>
                         )}
                       </div>

@@ -174,19 +174,22 @@ export default function LocationFields({
         </div>
       </div>
 
-      {/* Area */}
+      {/* Area / full address — always editable. Pincode pre-fills a suggestion,
+          but the user types their complete address here (house no, cross,
+          landmark, etc.), so it is never locked. */}
       <div>
-        <label className="text-xs sm:text-sm font-medium text-foreground mb-1 flex items-center gap-1">
-          {t("ಪ್ರದೇಶ / ಗ್ರಾಮ (Area / Village)", "Area / Village")}
-          {locked && <Lock size={11} className="text-muted-foreground" />}
+        <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">
+          {t("ಪ್ರದೇಶ / ಗ್ರಾಮ / ಪೂರ್ಣ ವಿಳಾಸ (Area / Village / Full Address)", "Area / Village / Full Address")}
         </label>
         <Input
           value={value.area}
           onChange={(e) => onChange({ ...value, area: e.target.value })}
-          disabled={locked}
-          placeholder={t("ಪ್ರದೇಶ / ಗ್ರಾಮ", "Area / Village")}
-          className="h-10 sm:h-11 disabled:opacity-60 disabled:cursor-not-allowed"
+          placeholder={t("ಉದಾ: ಮನೆ ನಂ 7, 2ನೇ ಕ್ರಾಸ್, ಗ್ರಾಮ, ಲ್ಯಾಂಡ್‌ಮಾರ್ಕ್", "e.g. House No 7, 2nd Cross, Village, Landmark")}
+          className="h-10 sm:h-11"
         />
+        <p className="text-[11px] text-muted-foreground mt-1">
+          {t("ನಿಮ್ಮ ಪೂರ್ಣ ವಿಳಾಸ ನಮೂದಿಸಿ — ಸಂಪಾದಿಸಬಹುದು", "Enter your full address — you can edit this")}
+        </p>
       </div>
     </div>
   );

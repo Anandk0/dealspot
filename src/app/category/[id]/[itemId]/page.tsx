@@ -155,9 +155,14 @@ export default function ItemDetailPage() {
     item.experience && `ಅನುಭವ: ${item.experience}`,
     item.vehicleType && `ವಿಧ: ${item.vehicleType}`,
     item.rateInfo && `ದರ: ${item.rateInfo}`,
-    item.location && `ಸ್ಥಳ: ${item.location}`,
+    // Only the general area is free: district + taluk. The exact location
+    // (item.location) is withheld by the backend until the buyer unlocks.
     item.district && `ಜಿಲ್ಲೆ: ${item.district}`,
+    item.taluk && `ತಾಲೂಕು: ${item.taluk}`,
   ].filter(Boolean) as string[];
+
+  // Free, general location label: "Taluk, District" (exact address is paid).
+  const generalLocation = [item.taluk, item.district].filter(Boolean).join(", ");
 
   return (
     <AppLayout>
@@ -271,11 +276,16 @@ export default function ItemDetailPage() {
               <p className="text-3xl font-bold text-primary">
                 {item.price ? `₹${item.price.toLocaleString()}${item.priceUnit ? '/' + item.priceUnit : ''}` : item.rateInfo || ""}
               </p>
-              {item.location && (
+              {generalLocation && (
                 <div className="flex items-center gap-1 text-sm text-muted-foreground mt-2">
                   <MapPin size={14} />
-                  <span>{item.location}</span>
+                  <span>{generalLocation}</span>
                 </div>
+              )}
+              {!item.location && (
+                <p className="text-[11px] text-muted-foreground/80 mt-1 flex items-center gap-1">
+                  🔒 ನಿಖರ ವಿಳಾಸ ಅನ್‌ಲಾಕ್ ನಂತರ (Exact address shown after unlock)
+                </p>
               )}
 
               <div className="flex items-center justify-between mt-2">
@@ -296,7 +306,7 @@ export default function ItemDetailPage() {
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-xl">👤</div>
                 <div>
                   <p className="font-medium">{item.sellerName || "Seller"}</p>
-                  <p className="text-xs text-muted-foreground">{item.sellerLocation || item.location}</p>
+                  <p className="text-xs text-muted-foreground">{item.sellerLocation || generalLocation}</p>
                 </div>
               </div>
               <ContactUnlockModal listingId={item.id} />

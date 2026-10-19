@@ -332,10 +332,10 @@ export default function CategoryPage() {
                     <p className="text-base sm:text-lg font-bold text-primary mt-1.5 truncate">
                       {item.price ? `₹${item.price.toLocaleString()}${item.priceUnit ? '/' + item.priceUnit : ''}` : item.rateInfo || (isAgentCategory ? "Verified Agent" : "")}
                     </p>
-                    {item.location && (
+                    {(item.taluk || item.district) && (
                       <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-1 truncate">
                         <MapPin size={11} className="shrink-0 text-primary/70" />
-                        <span className="truncate">{item.location}</span>
+                        <span className="truncate">{[item.taluk, item.district].filter(Boolean).join(", ")}</span>
                       </div>
                     )}
                   </div>

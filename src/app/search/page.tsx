@@ -91,10 +91,10 @@ export default function SearchPage() {
                     <p className="text-sm text-primary font-semibold">
                       {item.price ? `₹${item.price.toLocaleString()}` : item.rateInfo || ""}
                     </p>
-                    {item.location && (
+                    {(item.taluk || item.district) && (
                       <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
                         <MapPin size={11} />
-                        <span>{item.location}</span>
+                        <span>{[item.taluk, item.district].filter(Boolean).join(", ")}</span>
                       </div>
                     )}
                   </div>

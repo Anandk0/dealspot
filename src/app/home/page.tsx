@@ -365,9 +365,9 @@ export default function HomePage() {
                         {item.price ? `₹${item.price.toLocaleString()}${item.priceUnit ? '/' + item.priceUnit : ''}` : item.rateInfo || ""}
                       </p>
                     </div>
-                    {item.location && (
+                    {(item.taluk || item.district) && (
                       <p className="text-[10px] sm:text-[11px] text-muted-foreground flex items-center gap-1 truncate mt-1.5">
-                        <MapPin size={10} className="shrink-0 text-primary/70 sm:w-3 sm:h-3" /> {item.location}
+                        <MapPin size={10} className="shrink-0 text-primary/70 sm:w-3 sm:h-3" /> {[item.taluk, item.district].filter(Boolean).join(", ")}
                       </p>
                     )}
                   </div>
@@ -467,9 +467,9 @@ export default function HomePage() {
                         {item.price ? `₹${item.price.toLocaleString()}${item.priceUnit ? '/' + item.priceUnit : ''}` : item.rateInfo || ""}
                       </p>
                     </div>
-                    {item.location && (
+                    {(item.taluk || item.district) && (
                       <p className="text-[10px] sm:text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1 truncate">
-                        <MapPin size={10} className="shrink-0 text-primary/70 sm:w-3 sm:h-3" /> {item.location}
+                        <MapPin size={10} className="shrink-0 text-primary/70 sm:w-3 sm:h-3" /> {[item.taluk, item.district].filter(Boolean).join(", ")}
                       </p>
                     )}
                   </div>
