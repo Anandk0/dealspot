@@ -5,6 +5,7 @@ import { useAuth } from "./auth-context";
 
 const STORAGE_KEY = "dealspot_district";       // English name
 const STORAGE_KEY_KN = "dealspot_district_kn"; // Kannada name
+const STORAGE_KEY_TALUK = "dealspot_taluk";    // Selected taluk (optional)
 const DISMISS_KEY = "dealspot_district_prompt_dismissed";
 const COORDS_KEY = "dealspot_coords";          // JSON { lat, lng }
 
@@ -18,12 +19,16 @@ interface LocationContextType {
   district: string | null;
   /** Kannada district name, e.g. "ಮೈಸೂರು". */
   districtKn: string | null;
+  /** Selected taluk within the district (optional, for finer feed priority). */
+  taluk: string | null;
   /** The buyer's own GPS coordinates, if they granted location. Used for km distance. */
   coords: Coords | null;
   /** True when we have no district yet and the user hasn't dismissed the prompt. */
   needsPrompt: boolean;
   /** Save a chosen district (persists locally + to the profile when logged in). */
   setDistrict: (nameEn: string, nameKn?: string) => void;
+  /** Save the chosen taluk (persisted locally). Pass null to clear. */
+  setTaluk: (taluk: string | null) => void;
   /** Save the buyer's GPS coordinates (persisted locally). */
   setCoords: (coords: Coords) => void;
   /** Silently re-read GPS (only if permission already granted) to keep distance fresh. */
@@ -37,9 +42,11 @@ interface LocationContextType {
 const LocationContext = createContext<LocationContextType>({
   district: null,
   districtKn: null,
+  taluk: null,
   coords: null,
   needsPrompt: false,
   setDistrict: () => {},
+  setTaluk: () => {},
   setCoords: () => {},
   refreshCoords: () => {},
   dismissPrompt: () => {},
@@ -50,6 +57,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   const { user, isLoggedIn } = useAuth();
   const [district, setDistrictState] = useState<string | null>(null);
   const [districtKn, setDistrictKn] = useState<string | null>(null);
+  const [taluk, setTalukState] = useState<string | null>(null);
   const [coords, setCoordsState] = useState<Coords | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -63,6 +71,8 @@ export function LocationProvider({ children }: { children: ReactNode }) {
         setDistrictState(saved);
         setDistrictKn(savedKn);
       }
+      const savedTaluk = localStorage.getItem(STORAGE_KEY_TALUK);
+      if (savedTaluk) setTalukState(savedTaluk);
       const savedCoords = localStorage.getItem(COORDS_KEY);
       if (savedCoords) {
         const parsed = JSON.parse(savedCoords);
@@ -97,9 +107,12 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     (nameEn: string, nameKn?: string) => {
       setDistrictState(nameEn);
       setDistrictKn(nameKn ?? null);
+      // Changing the district invalidates any previously-selected taluk.
+      setTalukState(null);
       try {
         localStorage.setItem(STORAGE_KEY, nameEn);
         if (nameKn) localStorage.setItem(STORAGE_KEY_KN, nameKn);
+        localStorage.removeItem(STORAGE_KEY_TALUK);
         localStorage.removeItem(DISMISS_KEY);
       } catch {
         // ignore
@@ -113,6 +126,16 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     },
     [isLoggedIn]
   );
+
+  const setTaluk = useCallback((tk: string | null) => {
+    setTalukState(tk);
+    try {
+      if (tk) localStorage.setItem(STORAGE_KEY_TALUK, tk);
+      else localStorage.removeItem(STORAGE_KEY_TALUK);
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const setCoords = useCallback((c: Coords) => {
     setCoordsState(c);
@@ -235,7 +258,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
 
   return (
     <LocationContext.Provider
-      value={{ district, districtKn, coords, needsPrompt, setDistrict, setCoords, refreshCoords, dismissPrompt, openPrompt }}
+      value={{ district, districtKn, taluk, coords, needsPrompt, setDistrict, setTaluk, setCoords, refreshCoords, dismissPrompt, openPrompt }}
     >
       {children}
     </LocationContext.Provider>

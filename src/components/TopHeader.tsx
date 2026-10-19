@@ -5,7 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useLang } from "@/lib/lang-context";
+import { useLocation } from "@/lib/location-context";
 import { hasMinimumRole } from "@/lib/useAdminGuard";
+import { MapPin, ChevronDown } from "lucide-react";
 import { api } from "@/lib/api";
 import ThemeToggle from "./ThemeToggle";
 
@@ -28,6 +30,7 @@ const staffMenuItems = [
 export default function TopHeader() {
   const { user, isLoggedIn, logout } = useAuth();
   const { lang, setLang } = useLang();
+  const { district, districtKn, taluk, openPrompt } = useLocation();
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -83,6 +86,24 @@ export default function TopHeader() {
                 </h1>
               </div>
             </Link>
+
+            {/* Location selector (Swiggy-style) — opens the district/taluk picker */}
+            <button
+              onClick={openPrompt}
+              className="flex items-center gap-1 max-w-[150px] sm:max-w-[220px] pl-2 pr-1.5 py-1 rounded-lg hover:bg-accent transition group"
+              title={lang === "en" ? "Change location" : "ಸ್ಥಳ ಬದಲಾಯಿಸಿ"}
+            >
+              <MapPin size={15} className="text-primary shrink-0" />
+              <span className="min-w-0 text-left leading-tight">
+                <span className="block text-[9px] text-muted-foreground">{lang === "en" ? "Location" : "ಸ್ಥಳ"}</span>
+                <span className="block text-xs font-semibold text-foreground truncate">
+                  {district
+                    ? `${taluk ? taluk + ", " : ""}${lang === "en" ? district : (districtKn || district)}`
+                    : (lang === "en" ? "Select" : "ಆಯ್ಕೆ")}
+                </span>
+              </span>
+              <ChevronDown size={13} className="text-muted-foreground shrink-0" />
+            </button>
           </div>
 
           {/* Right Actions */}

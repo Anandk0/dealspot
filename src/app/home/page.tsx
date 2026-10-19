@@ -68,7 +68,7 @@ export default function HomePage() {
   const touchStartX = useRef<number | null>(null);
   const { topLevel: apiTopLevel } = useCategories();
   const { lang } = useLang();
-  const { district, districtKn, coords, openPrompt } = useLocation();
+  const { district, districtKn, taluk, coords, openPrompt } = useLocation();
 
   // Use API categories if loaded, otherwise fall back to hardcoded
   const displayCategories = apiTopLevel.length > 0 ? apiTopLevel : topLevelCategories;
@@ -95,12 +95,16 @@ export default function HomePage() {
     }
   };
 
+  // Main feed: location-prioritized (selected taluk → district → rest). Refetches
+  // when the chosen location changes. Falls back to plain recent order when no
+  // district is selected.
   useEffect(() => {
-    api.getRecentListings()
-      .then(setRecentListings)
+    setLoading(true);
+    api.getFeed(district, taluk, 0, 24)
+      .then((res) => setRecentListings(res.content))
       .catch(() => setRecentListings([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [district, taluk]);
 
   // Location-based recommendations: refetch whenever the chosen district changes.
   useEffect(() => {

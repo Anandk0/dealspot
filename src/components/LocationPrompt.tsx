@@ -9,12 +9,18 @@ import { useLang } from "@/lib/lang-context";
 import { toast } from "sonner";
 
 export default function LocationPrompt() {
-  const { needsPrompt, setDistrict, setCoords, dismissPrompt } = useLocation();
+  const { needsPrompt, district, setDistrict, setTaluk, setCoords, dismissPrompt } = useLocation();
   const { t } = useLang();
   const [districts, setDistricts] = useState<DistrictOption[]>([]);
   const [query, setQuery] = useState("");
   const [detecting, setDetecting] = useState(false);
   const [loadingList, setLoadingList] = useState(false);
+
+  // Two-step picker: choose district, then (optionally) a taluk within it.
+  const [step, setStep] = useState<"district" | "taluk">("district");
+  const [pendingDistrict, setPendingDistrict] = useState<DistrictOption | null>(null);
+  const [taluks, setTaluks] = useState<string[]>([]);
+  const [loadingTaluks, setLoadingTaluks] = useState(false);
 
   // Load the district list once the prompt needs to show.
   useEffect(() => {
@@ -25,6 +31,30 @@ export default function LocationPrompt() {
       .catch(() => setDistricts([]))
       .finally(() => setLoadingList(false));
   }, [needsPrompt, districts.length]);
+
+  // When the prompt (re)opens, reset to the district step.
+  useEffect(() => {
+    if (needsPrompt) { setStep("district"); setPendingDistrict(null); setQuery(""); }
+  }, [needsPrompt]);
+
+  // Pick a district → save it, then advance to the taluk step (load its taluks).
+  const chooseDistrict = (d: DistrictOption) => {
+    setDistrict(d.nameEn, d.name);
+    setPendingDistrict(d);
+    setStep("taluk");
+    setLoadingTaluks(true);
+    setTaluks([]);
+    api.getTaluks(d.nameEn)
+      .then(setTaluks)
+      .catch(() => setTaluks([]))
+      .finally(() => setLoadingTaluks(false));
+  };
+
+  // Pick a taluk (or skip) → persist and close.
+  const chooseTaluk = (tk: string | null) => {
+    setTaluk(tk);
+    dismissPrompt();
+  };
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -96,10 +126,14 @@ export default function LocationPrompt() {
             </div>
             <div>
               <h2 className="font-bold text-foreground leading-tight">
-                {t("ನಿಮ್ಮ ಜಿಲ್ಲೆ ಆಯ್ಕೆಮಾಡಿ", "Choose your district")}
+                {step === "taluk"
+                  ? t("ತಾಲೂಕು ಆಯ್ಕೆಮಾಡಿ", "Choose your taluk")
+                  : t("ನಿಮ್ಮ ಜಿಲ್ಲೆ ಆಯ್ಕೆಮಾಡಿ", "Choose your district")}
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {t("ನಿಮ್ಮ ಹತ್ತಿರದ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು", "So we can show listings near you")}
+                {step === "taluk"
+                  ? `${pendingDistrict?.name || ""} — ${t("ನಿಮ್ಮ ಹತ್ತಿರದ ಜಾಹೀರಾತುಗಳಿಗೆ", "for the most relevant listings")}`
+                  : t("ನಿಮ್ಮ ಹತ್ತಿರದ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು", "So we can show listings near you")}
               </p>
             </div>
           </div>
@@ -112,6 +146,9 @@ export default function LocationPrompt() {
           </button>
         </div>
 
+        {/* ── District step: detect + search + district list ── */}
+        {step === "district" && (
+          <>
         {/* Detect button */}
         <div className="px-5 pb-3">
           <Button
@@ -156,7 +193,7 @@ export default function LocationPrompt() {
               {filtered.map((d) => (
                 <button
                   key={d.id}
-                  onClick={() => setDistrict(d.nameEn, d.name)}
+                  onClick={() => chooseDistrict(d)}
                   className="flex items-center gap-2 p-3 rounded-xl border border-border bg-background hover:border-primary/50 hover:bg-primary/5 transition text-left"
                 >
                   <span className="text-base shrink-0">{d.icon}</span>
@@ -169,6 +206,47 @@ export default function LocationPrompt() {
             </div>
           )}
         </div>
+          </>
+        )}
+
+        {/* ── Taluk step: pick a taluk within the chosen district, or skip ── */}
+        {step === "taluk" && (
+          <div className="flex-1 overflow-y-auto px-5 pb-4">
+            <button
+              onClick={() => chooseTaluk(null)}
+              className="w-full mb-2 p-3 rounded-xl border border-primary/40 bg-primary/5 text-primary text-sm font-medium hover:bg-primary/10 transition"
+            >
+              {t("ಇಡೀ ಜಿಲ್ಲೆ (ಎಲ್ಲಾ ತಾಲೂಕು)", "All of district (any taluk)")}
+            </button>
+            {loadingTaluks ? (
+              <div className="flex items-center justify-center py-10">
+                <Loader2 className="animate-spin text-muted-foreground" size={24} />
+              </div>
+            ) : taluks.length === 0 ? (
+              <p className="text-center text-sm text-muted-foreground py-6">
+                {t("ತಾಲೂಕು ಪಟ್ಟಿ ಇಲ್ಲ", "No taluks listed")}
+              </p>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                {taluks.map((tk) => (
+                  <button
+                    key={tk}
+                    onClick={() => chooseTaluk(tk)}
+                    className="p-3 rounded-xl border border-border bg-background hover:border-primary/50 hover:bg-primary/5 transition text-left text-sm font-medium text-foreground truncate"
+                  >
+                    {tk}
+                  </button>
+                ))}
+              </div>
+            )}
+            <button
+              onClick={() => setStep("district")}
+              className="mt-3 text-xs text-muted-foreground hover:text-primary"
+            >
+              ← {t("ಜಿಲ್ಲೆ ಬದಲಾಯಿಸಿ", "Change district")}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

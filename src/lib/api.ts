@@ -242,6 +242,14 @@ class ApiClient {
   }
 
   // ─── Listings ───────────────────────────────────────────
+  // Location-prioritized feed: taluk first, then district, then the rest.
+  async getFeed(district?: string | null, taluk?: string | null, page = 0, size = 20) {
+    const params = new URLSearchParams({ page: String(page), size: String(size) });
+    if (district) params.set("district", district);
+    if (taluk) params.set("taluk", taluk);
+    return this.request<PagedResponse<ListingData>>(`/api/listings/feed?${params}`);
+  }
+
   async getListingsByCategory(category: string, page = 0, size = 20, type?: string) {
     const typeParam = type ? `&type=${encodeURIComponent(type)}` : "";
     return this.request<PagedResponse<ListingData>>(
