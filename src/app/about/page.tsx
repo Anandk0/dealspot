@@ -38,6 +38,30 @@ export default function AboutPage() {
             </div>
           </div>
 
+          {/* Founders */}
+          <div className="mt-8 pt-8 border-t border-border">
+            <h3 className="font-semibold text-base text-foreground text-center mb-1">
+              ನಮ್ಮ ಸಂಸ್ಥಾಪಕರು
+            </h3>
+            <p className="text-sm text-muted-foreground text-center mb-6">Our Founders</p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-xl mx-auto">
+              {FOUNDERS.map((f) => (
+                <div key={f.name} className="flex flex-col items-center text-center">
+                  <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden ring-4 ring-primary/15 shadow-md bg-muted">
+                    <img
+                      src={f.image}
+                      alt={f.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <p className="mt-3 font-semibold text-foreground">{f.name}</p>
+                  <p className="text-xs text-muted-foreground">{f.role}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <p className="text-center text-xs text-muted-foreground mt-8 pt-6 border-t border-border">
             © 2026 Deal Spot. All rights reserved.
           </p>
@@ -46,3 +70,10 @@ export default function AboutPage() {
     </AppLayout>
   );
 }
+
+// Founder details. Image filenames in /public contain spaces, so the URLs are
+// percent-encoded.
+const FOUNDERS: { name: string; role: string; image: string }[] = [
+  { name: "Dayanand Marathe", role: "Co-Founder / ಸಹ-ಸಂಸ್ಥಾಪಕ", image: "/Dayanand%20Marathe.png" },
+  { name: "Sachin Kuri", role: "Co-Founder / ಸಹ-ಸಂಸ್ಥಾಪಕ", image: "/Sachin%20Kuri.png" },
+];

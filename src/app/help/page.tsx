@@ -1,10 +1,10 @@
 "use client";
 import { Phone, Mail, MessageCircle } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const SUPPORT_PHONE = "+91 87227 27151";
 const SUPPORT_PHONE_DIAL = "+918722727151";
-const SUPPORT_WHATSAPP = "918722727151";
 const SUPPORT_EMAIL = "dealspotconnect.official@gmail.com";
 const UNLOCK_PRICE_PAISE = Number(process.env.NEXT_PUBLIC_UNLOCK_PRICE_PAISE) || 0;
 const UNLOCK_PRICE_DISPLAY = UNLOCK_PRICE_PAISE > 0 ? `₹${UNLOCK_PRICE_PAISE / 100}` : "—";
@@ -61,15 +61,19 @@ export default function HelpPage() {
                     <p className="text-xs text-muted-foreground">ಇಮೇಲ್</p>
                   </div>
                 </a>
-                <a href={`https://wa.me/${SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 w-full text-left p-3 rounded-xl hover:bg-muted/50 transition">
-                  <div className="w-10 h-10 bg-green-50 dark:bg-green-950/40 rounded-full flex items-center justify-center shrink-0">
-                    <MessageCircle size={16} className="text-green-500" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">WhatsApp ಸಹಾಯ</p>
-                    <p className="text-xs text-muted-foreground">ಚಾಟ್</p>
-                  </div>
-                </a>
+                <WhatsAppButton
+                  trigger={
+                    <button type="button" className="flex items-center gap-3 w-full text-left p-3 rounded-xl hover:bg-muted/50 transition">
+                      <div className="w-10 h-10 bg-green-50 dark:bg-green-950/40 rounded-full flex items-center justify-center shrink-0">
+                        <MessageCircle size={16} className="text-green-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">WhatsApp ಸಹಾಯ</p>
+                        <p className="text-xs text-muted-foreground">ಚಾಟ್</p>
+                      </div>
+                    </button>
+                  }
+                />
               </div>
             </div>
           </div>
