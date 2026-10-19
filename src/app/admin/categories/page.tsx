@@ -20,6 +20,7 @@ const EMPTY_FORM: CategoryRequestData = {
   parentId: null,
   isFree: false,
   unlockPrice: null,
+  visibleFields: null,
 };
 
 const COLORS = [
@@ -29,6 +30,79 @@ const COLORS = [
 ];
 
 const MODERATION_LEVELS = ["CHECKER_ONLY", "NO_AUTH", "ADMIN_ONLY"];
+
+// Fields each category family's posting form collects (stored in details JSON).
+// The admin ticks which of these buyers may see; unticked keys are stripped
+// from the public details by the backend. Contact + full address are ALWAYS
+// hidden regardless (handled by the private block), so they're not listed here.
+const FIELD_CATALOG: { label: string; keys: { key: string; label: string }[] }[] = [
+  {
+    label: "Property (Rent / Lease / Sale)",
+    keys: [
+      { key: "propertyType", label: "Property Type" },
+      { key: "bhk", label: "BHK / Rooms" },
+      { key: "size", label: "Size" },
+      { key: "areaUnit", label: "Area Unit" },
+      { key: "furnishing", label: "Furnishing" },
+      { key: "condition", label: "Condition" },
+      { key: "deposit", label: "Deposit / Advance" },
+      { key: "maintenance", label: "Maintenance" },
+      { key: "leaseDuration", label: "Lease Duration" },
+      { key: "negotiable", label: "Negotiable" },
+      { key: "facilities", label: "Facilities" },
+      { key: "houseRules", label: "House Rules" },
+    ],
+  },
+  {
+    label: "Agriculture Equipment",
+    keys: [
+      { key: "equipmentType", label: "Equipment Type" },
+      { key: "brand", label: "Brand & Model" },
+      { key: "year", label: "Manufacturing Year" },
+      { key: "condition", label: "Condition" },
+      { key: "rentType", label: "Rent Type" },
+      { key: "deposit", label: "Deposit" },
+      { key: "deliveryAvailable", label: "Delivery Available" },
+      { key: "operatorAvailable", label: "Operator Included" },
+      { key: "fuelIncluded", label: "Fuel Included" },
+      { key: "negotiable", label: "Negotiable" },
+    ],
+  },
+  {
+    label: "Livestock / Pets",
+    keys: [
+      { key: "breed", label: "Breed" },
+      { key: "age", label: "Age" },
+      { key: "gender", label: "Gender" },
+      { key: "weight", label: "Weight" },
+      { key: "health", label: "Health" },
+      { key: "pregnancy", label: "Pregnancy" },
+      { key: "milkYield", label: "Milk / Day" },
+      { key: "quantity", label: "Quantity" },
+      { key: "vaccination", label: "Vaccination" },
+      { key: "color", label: "Color" },
+    ],
+  },
+  {
+    label: "Vehicle",
+    keys: [
+      { key: "brand", label: "Brand" },
+      { key: "fuel", label: "Fuel" },
+      { key: "rentType", label: "Rate Basis" },
+      { key: "condition", label: "Condition" },
+    ],
+  },
+  {
+    label: "Services",
+    keys: [
+      { key: "workType", label: "Work Type" },
+      { key: "pricingBasis", label: "Pricing Basis" },
+      { key: "homeVisit", label: "Home Visit" },
+      { key: "workingHours", label: "Working Hours" },
+      { key: "serviceTypes", label: "Service Types" },
+    ],
+  },
+];
 
 // ─── Component ───────────────────────────────────────────
 
@@ -111,6 +185,7 @@ export default function AdminCategoriesPage() {
       parentId: cat.parentId ?? null,
       isFree: cat.isFree ?? false,
       unlockPrice: cat.unlockPrice ?? null,
+      visibleFields: cat.visibleFields ?? null,
     });
     setShowForm(true);
   };
@@ -549,6 +624,67 @@ export default function AdminCategoriesPage() {
                   </p>
                 </div>
               )}
+
+              {/* Buyer-visible fields — admin controls which seller-entered
+                  details appear to buyers (free). Contact & full address are
+                  always hidden. Empty selection = show all (default). */}
+              <div className="border-t border-border pt-4">
+                <label className="text-sm font-medium text-foreground mb-1 block">
+                  Fields shown to buyers
+                </label>
+                <p className="text-[11px] text-muted-foreground/70 mb-3">
+                  Tick the details buyers can see for this category. Owner contact &amp; full
+                  address are always hidden until unlock. Leave everything unticked to show all.
+                </p>
+                {(() => {
+                  const vf = form.visibleFields; // null/undefined = show all
+                  const toggle = (key: string) => {
+                    setForm((f) => {
+                      const cur = Array.isArray(f.visibleFields) ? [...f.visibleFields] : [];
+                      const next = cur.includes(key) ? cur.filter((k) => k !== key) : [...cur, key];
+                      return { ...f, visibleFields: next.length ? next : [] };
+                    });
+                  };
+                  const isShown = (key: string) => !Array.isArray(vf) || vf.length === 0 || vf.includes(key);
+                  return (
+                    <div className="space-y-3 max-h-56 overflow-y-auto pr-1">
+                      {FIELD_CATALOG.map((group) => (
+                        <div key={group.label}>
+                          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">{group.label}</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {group.keys.map(({ key, label }) => {
+                              const on = isShown(key);
+                              return (
+                                <button
+                                  key={group.label + key}
+                                  type="button"
+                                  onClick={() => toggle(key)}
+                                  className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border transition ${
+                                    on
+                                      ? "border-primary bg-primary/10 text-primary"
+                                      : "border-border bg-muted text-muted-foreground"
+                                  }`}
+                                >
+                                  {on && <Check size={11} />} {label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                      {Array.isArray(vf) && vf.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setForm((f) => ({ ...f, visibleFields: [] }))}
+                          className="text-[11px] text-primary hover:underline"
+                        >
+                          Reset (show all fields)
+                        </button>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
 
             {/* Modal Footer */}

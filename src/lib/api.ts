@@ -888,6 +888,7 @@ export interface AdminCategoryResponse {
   parentName?: string | null;
   isFree?: boolean;
   unlockPrice?: number | null; // per-category unlock price in PAISE (null = global default)
+  visibleFields?: string[] | null; // detail keys buyers may see (null/empty = all)
   subcategories: AdminCategoryResponse[];
 }
 
@@ -904,4 +905,5 @@ export interface CategoryRequestData {
   parentId?: number | null;
   isFree?: boolean;
   unlockPrice?: number | null; // in PAISE
+  visibleFields?: string[] | null; // detail keys buyers may see (null/empty = all)
 }
