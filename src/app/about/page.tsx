@@ -74,6 +74,6 @@ export default function AboutPage() {
 // Founder details. Image filenames in /public contain spaces, so the URLs are
 // percent-encoded.
 const FOUNDERS: { name: string; role: string; image: string }[] = [
-  { name: "Dayanand Marathe", role: "Co-Founder / ಸಹ-ಸಂಸ್ಥಾಪಕ", image: "/Dayanand%20Marathe.png" },
-  { name: "Sachin Kuri", role: "Co-Founder / ಸಹ-ಸಂಸ್ಥಾಪಕ", image: "/Sachin%20Kuri.png" },
+  { name: "Dayanand Marathe", role: "Co-Founder / ಸಹ-ಸಂಸ್ಥಾಪಕ", image: "/founder-dayanand.png" },
+  { name: "Sachin Kuri", role: "Co-Founder / ಸಹ-ಸಂಸ್ಥಾಪಕ", image: "/founder-sachin.png" },
 ];
