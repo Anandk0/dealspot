@@ -887,6 +887,7 @@ export interface AdminCategoryResponse {
   parentId?: number | null;
   parentName?: string | null;
   isFree?: boolean;
+  unlockPrice?: number | null; // per-category unlock price in PAISE (null = global default)
   subcategories: AdminCategoryResponse[];
 }
 
@@ -902,4 +903,5 @@ export interface CategoryRequestData {
   moderationLevel?: string;
   parentId?: number | null;
   isFree?: boolean;
+  unlockPrice?: number | null; // in PAISE
 }

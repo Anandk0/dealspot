@@ -19,6 +19,7 @@ const EMPTY_FORM: CategoryRequestData = {
   moderationLevel: "CHECKER_ONLY",
   parentId: null,
   isFree: false,
+  unlockPrice: null,
 };
 
 const COLORS = [
@@ -109,6 +110,7 @@ export default function AdminCategoriesPage() {
       moderationLevel: cat.moderationLevel,
       parentId: cat.parentId ?? null,
       isFree: cat.isFree ?? false,
+      unlockPrice: cat.unlockPrice ?? null,
     });
     setShowForm(true);
   };
@@ -524,6 +526,29 @@ export default function AdminCategoriesPage() {
                   <p className="text-[11px] text-muted-foreground/70">{form.isFree ? "Contact shown for free, no payment" : "Users pay to unlock contact"}</p>
                 </div>
               </div>
+
+              {/* Unlock price (₹) — only for paid categories. Entered in rupees,
+                  stored in paise. Blank = use the global default price. */}
+              {!form.isFree && (
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-1 block">
+                    Unlock Price (₹) <span className="text-muted-foreground font-normal">— blank uses the global default</span>
+                  </label>
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    value={form.unlockPrice != null ? String(form.unlockPrice / 100) : ""}
+                    onChange={(e) => {
+                      const rupees = e.target.value.replace(/[^0-9]/g, "");
+                      setForm(f => ({ ...f, unlockPrice: rupees ? Number(rupees) * 100 : null }));
+                    }}
+                    placeholder="e.g. 50"
+                  />
+                  <p className="text-[11px] text-muted-foreground/70 mt-1">
+                    Price this category&apos;s buyers pay to unlock a seller&apos;s contact. Leave blank to use the platform default.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Modal Footer */}
