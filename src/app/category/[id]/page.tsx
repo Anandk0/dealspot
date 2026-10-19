@@ -48,6 +48,11 @@ export default function CategoryPage() {
     [id, parentCategory?.id]
   );
   const activeType = (searchParams.get("type") || toggleCfg?.default || "").toUpperCase();
+  // The toggle buttons appear ONLY on the parent grid page (the category that
+  // has subcategories, e.g. /category/agriculture-equipment). Subcategory/leaf
+  // pages (e.g. Seeder) still apply the selected type to filter their listings
+  // — carried through the URL ?type= param — but don't render the buttons.
+  const showToggle = !!toggleCfg && subcategories.length > 0;
   const setType = (type: string) => {
     const sp = new URLSearchParams(Array.from(searchParams.entries()));
     sp.set("type", type);
@@ -175,8 +180,8 @@ export default function CategoryPage() {
           )}
         </div>
 
-        {/* Transaction-type toggle (Rent/Lease, Sale/Rent) */}
-        {toggleCfg && (
+        {/* Transaction-type toggle (Rent/Lease, Sale/Rent) — parent page only */}
+        {showToggle && toggleCfg && (
           <div className="grid grid-cols-2 gap-2 p-1.5 bg-muted rounded-2xl mb-6 max-w-sm">
             {toggleCfg.options.map(([val, label]) => (
               <button
