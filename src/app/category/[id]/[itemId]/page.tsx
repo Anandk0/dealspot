@@ -165,6 +165,12 @@ export default function ItemDetailPage() {
   // Free, general location label: "Taluk, District" (exact address is paid).
   const generalLocation = [item.taluk, item.district].filter(Boolean).join(", ");
 
+  // Property SALES use PropertyDetails (its schema); rent/lease + others use
+  // the generic ListingDetails which matches the keys those forms actually save.
+  const isPropertySales =
+    item.category.startsWith("property-sales") || categoryId.startsWith("property-sales") ||
+    item.category === "property-sales" || categoryId === "property-sales";
+
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto p-6">
@@ -198,19 +204,21 @@ export default function ItemDetailPage() {
               }
             />
 
-            {/* Property structured details (sales + rent) */}
-            {item.details && (item.category.startsWith("property") || categoryId.startsWith("property")) && (
+            {/* Property SALES use the sales-schema renderer (propertyArea, docs,
+                etc.). Property RENT/LEASE store a different schema (propertyType,
+                bhk, furnishing, facilities, houseRules...) so they use the
+                generic ListingDetails which renders those keys correctly. */}
+            {item.details && isPropertySales && (
               <PropertyDetails detailsJson={item.details} />
             )}
 
-            {/* Rich details for non-property categories (services, livestock,
-                vehicles, pets, equipment) stored in the details JSON. */}
-            {item.details && !(item.category.startsWith("property") || categoryId.startsWith("property")) && (
+            {/* Rich details for rent/lease + all non-property categories. */}
+            {item.details && !isPropertySales && (
               <ListingDetails detailsJson={item.details} />
             )}
 
             {/* Flat-column fallback — shown only when there's no rich details JSON. */}
-            {details.length > 0 && !item.details && !(item.category.startsWith("property") || categoryId.startsWith("property")) && (
+            {details.length > 0 && !item.details && !isPropertySales && (
               <div className="bg-card rounded-2xl p-6 shadow-sm border border-border">
                 <h3 className="text-base font-semibold text-foreground mb-4">ವಿವರಗಳು (Details)</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
