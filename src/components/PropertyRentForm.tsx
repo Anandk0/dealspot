@@ -10,8 +10,19 @@ import { api } from "@/lib/api";
 import { useLang } from "@/lib/lang-context";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
 
-const RENT_PROPERTY_TYPES = ["House / ಮನೆ", "Flat / ಫ್ಲಾಟ್", "Shop / ಅಂಗಡಿ", "Office / ಕಚೇರಿ", "Commercial Building / ವಾಣಿಜ್ಯ", "PG / ಪಿಜಿ", "Room / ರೂಮ್"];
-const LEASE_PROPERTY_TYPES = ["House / ಮನೆ", "Flat / ಫ್ಲಾಟ್", "Shop / ಅಂಗಡಿ", "Office / ಕಚೇರಿ", "Commercial Building / ವಾಣಿಜ್ಯ", "Agricultural Land / ಕೃಷಿ ಜಮೀನು", "Commercial Land / ವಾಣಿಜ್ಯ ಭೂಮಿ", "Warehouse / ಗೋದಾಮು"];
+const RENT_PROPERTY_TYPES = ["House / ಮನೆ", "Flat / ಫ್ಲಾಟ್", "Shop / ಅಂಗಡಿ", "Office / ಕಚೇರಿ", "Commercial Building / ವಾಣಿಜ್ಯ", "PG / ಪಿಜಿ", "Room / ರೂಮ್", "Vacant Land / ಖಾಲಿ ನಿವೇಶನ", "Agricultural Land / ಕೃಷಿ ಜಮೀನು"];
+const LEASE_PROPERTY_TYPES = ["House / ಮನೆ", "Flat / ಫ್ಲಾಟ್", "Shop / ಅಂಗಡಿ", "Office / ಕಚೇರಿ", "Commercial Building / ವಾಣಿಜ್ಯ", "Agricultural Land / ಕೃಷಿ ಜಮೀನು", "Vacant Land / ಖಾಲಿ ನಿವೇಶನ", "Commercial Land / ವಾಣಿಜ್ಯ ಭೂಮಿ", "Warehouse / ಗೋದಾಮು"];
+
+// Map a property-rent subcategory slug → the property type it implies, so the
+// form opens already matching the category the user chose. Some types are
+// land/lease-oriented and should default the mode to Lease.
+const SUBCATEGORY_TYPE: Record<string, { type: string; defaultMode: "rent" | "lease" }> = {
+  "property-rent-house": { type: "House / ಮನೆ", defaultMode: "rent" },
+  "property-rent-shop": { type: "Shop / ಅಂಗಡಿ", defaultMode: "rent" },
+  "property-rent-pg-room": { type: "PG / ಪಿಜಿ", defaultMode: "rent" },
+  "property-rent-agricultural-land": { type: "Agricultural Land / ಕೃಷಿ ಜಮೀನು", defaultMode: "lease" },
+  "property-rent-vacant-land": { type: "Vacant Land / ಖಾಲಿ ನಿವೇಶನ", defaultMode: "lease" },
+};
 
 const RENT_FACILITIES = [
   "24-Hour Water / 24-ಗಂಟೆ ನೀರು", "Borewell / Municipal Water", "Electricity / ವಿದ್ಯುತ್", "Separate Meter / ಪ್ರತ್ಯೇಕ ಮೀಟರ್",
@@ -35,13 +46,17 @@ export default function PropertyRentForm({ categoryId }: { categoryId: string })
   const { t } = useLang();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [mode, setMode] = useState<"rent" | "lease">("rent");
+  // Derive the implied property type + default mode from the subcategory slug
+  // so the form matches the category the user picked (e.g. Agricultural Land).
+  const preset = SUBCATEGORY_TYPE[categoryId];
+
+  const [mode, setMode] = useState<"rent" | "lease">(preset?.defaultMode ?? "rent");
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [loc, setLoc] = useState<LocationValue>({ pincode: "", district: "", taluk: "", area: "" });
 
-  const [propertyType, setPropertyType] = useState("");
+  const [propertyType, setPropertyType] = useState(preset?.type ?? "");
   const [title, setTitle] = useState("");
   const [bhk, setBhk] = useState("");
   const [size, setSize] = useState("");
@@ -156,11 +171,11 @@ export default function PropertyRentForm({ categoryId }: { categoryId: string })
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Mode toggle (segmented control) */}
       <div className="grid grid-cols-2 gap-2 p-1.5 bg-muted rounded-2xl">
-        <button type="button" onClick={() => { setMode("rent"); setPropertyType(""); setFacilities([]); }}
+        <button type="button" onClick={() => { setMode("rent"); setPropertyType(preset?.type ?? ""); setFacilities([]); }}
           className={`h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "rent" ? "bg-primary text-white shadow-md" : "bg-card text-foreground border border-border hover:border-primary/40"}`}>
           <Home size={16} /> {t("ಬಾಡಿಗೆ (Rent)", "Rent")}
         </button>
-        <button type="button" onClick={() => { setMode("lease"); setPropertyType(""); setFacilities([]); }}
+        <button type="button" onClick={() => { setMode("lease"); setPropertyType(preset?.type ?? ""); setFacilities([]); }}
           className={`h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "lease" ? "bg-primary text-white shadow-md" : "bg-card text-foreground border border-border hover:border-primary/40"}`}>
           <FileText size={16} /> {t("ಲೀಸ್ (Lease)", "Lease")}
         </button>
