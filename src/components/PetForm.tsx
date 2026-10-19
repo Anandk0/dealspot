@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { useLang } from "@/lib/lang-context";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
+import { sanitizeByType } from "@/lib/fieldSanitize";
 
 const DOG_BREEDS = ["Labrador Retriever", "Golden Retriever", "German Shepherd", "Rottweiler", "Pug", "Beagle", "Pomeranian", "Shih Tzu", "Doberman", "Indian Pariah Dog / ನಾಡ ನಾಯಿ", "Rajapalayam / ರಾಜಪಾಳಯಂ", "Mudhol Hound / ಮುದೋಳ್", "Other / ಇತರೆ"];
 const CAT_BREEDS = ["Persian / ಪರ್ಷಿಯನ್", "Siamese / ಸಯಾಮೀಸ್", "Bengal / ಬೆಂಗಾಲ್", "Maine Coon", "British Shorthair", "Himalayan / ಹಿಮಾಲಯನ್", "Indian Domestic Cat / ನಾಡ ಬೆಕ್ಕು", "Other / ಇತರೆ"];
@@ -223,5 +224,5 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return <div className="bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-sm space-y-3"><h3 className="text-sm font-semibold text-foreground">{title}</h3>{children}</div>;
 }
 function PF({ label, value, onChange, type = "text", placeholder }: { label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string }) {
-  return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}</label><Input value={value} onChange={(e) => onChange(e.target.value)} type={type} placeholder={placeholder || label} className="h-10 sm:h-11" /></div>;
+  return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}</label><Input value={value} onChange={(e) => onChange(sanitizeByType(e.target.value, { type, key: label }))} type={type === "number" ? "text" : type} inputMode={type === "number" || type === "tel" ? "numeric" : undefined} placeholder={placeholder || label} className="h-10 sm:h-11" /></div>;
 }

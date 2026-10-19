@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { useLang } from "@/lib/lang-context";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
+import { sanitizeByType } from "@/lib/fieldSanitize";
 
 // ─── Breed lists per slug ────────────────────────────────────────────────────
 
@@ -310,7 +311,7 @@ function SField({ label, value, onChange, type = "text", placeholder }: { label:
   return (
     <div>
       <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}</label>
-      <Input value={value} onChange={(e) => onChange(e.target.value)} type={type} placeholder={placeholder || label} className="h-10 sm:h-11" />
+      <Input value={value} onChange={(e) => onChange(sanitizeByType(e.target.value, { type, key: label }))} type={type === "number" ? "text" : type} inputMode={type === "number" || type === "tel" ? "numeric" : undefined} placeholder={placeholder || label} className="h-10 sm:h-11" />
     </div>
   );
 }

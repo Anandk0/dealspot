@@ -19,6 +19,7 @@ import VehicleRentForm from "@/components/VehicleRentForm";
 import PetForm from "@/components/PetForm";
 import AgricultureEquipmentForm from "@/components/AgricultureEquipmentForm";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
+import { sanitizeByType } from "@/lib/fieldSanitize";
 import { useAgentSystem } from "@/lib/useAgentSystem";
 import { useRef, useState } from "react";
 
@@ -455,10 +456,10 @@ export default function CreateListingPage() {
                     <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{field.label}</label>
                     <Input
                       value={formData[field.key] || ""}
-                      onChange={(e) => handleChange(field.key, e.target.value)}
+                      onChange={(e) => handleChange(field.key, sanitizeByType(e.target.value, { key: field.key }))}
                       placeholder={field.label}
                       className="h-10 sm:h-11"
-                      type={field.key === "price" ? "number" : "text"}
+                      inputMode={field.key === "price" ? "numeric" : undefined}
                     />
                   </div>
                 ))}

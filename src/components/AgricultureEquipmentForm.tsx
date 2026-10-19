@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { useLang } from "@/lib/lang-context";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
+import { sanitizeByType } from "@/lib/fieldSanitize";
 
 const EQUIPMENT_TYPES = [
   "Tractor / ಟ್ರ್ಯಾಕ್ಟರ್",
@@ -74,6 +75,9 @@ export default function AgricultureEquipmentForm({ categoryId }: { categoryId: s
     if (!equipmentType && !equipmentName.trim()) { toast.error("ಉಪಕರಣ ಆಯ್ಕೆ ಮಾಡಿ (Select equipment type)"); return; }
     const typeIsOther = equipmentType.includes("Other");
     if (typeIsOther && !equipmentTypeOther.trim() && !equipmentName.trim()) { toast.error(t("ಉಪಕರಣ ಹೆಸರು ನಮೂದಿಸಿ", "Please specify the equipment")); return; }
+    // Phone numbers, if provided, must be a full 10 digits.
+    if (mobile && mobile.replace(/\D/g, "").length !== 10) { toast.error(t("ಸರಿಯಾದ 10 ಅಂಕಿಗಳ ಮೊಬೈಲ್", "Enter a valid 10-digit mobile number")); return; }
+    if (whatsapp && whatsapp.replace(/\D/g, "").length !== 10) { toast.error(t("ಸರಿಯಾದ 10 ಅಂಕಿಗಳ WhatsApp", "Enter a valid 10-digit WhatsApp number")); return; }
     const resolvedType = typeIsOther && equipmentTypeOther.trim() ? equipmentTypeOther.trim() : equipmentType;
 
     setLoading(true);
@@ -271,5 +275,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return <div className="bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-sm space-y-3"><h3 className="text-sm font-semibold text-foreground">{title}</h3>{children}</div>;
 }
 function EF({ label, value, onChange, type = "text", placeholder, required }: { label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string; required?: boolean }) {
-  return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}{required && <span className="text-red-500"> *</span>}</label><Input value={value} onChange={(e) => onChange(e.target.value)} type={type} placeholder={placeholder || label} className="h-10 sm:h-11" /></div>;
+  const inputMode = type === "number" || type === "tel" ? "numeric" : undefined;
+  return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}{required && <span className="text-red-500"> *</span>}</label><Input value={value} onChange={(e) => onChange(sanitizeByType(e.target.value, { type, key: label }))} type={type === "number" ? "text" : type} inputMode={inputMode} placeholder={placeholder || label} className="h-10 sm:h-11" /></div>;
 }

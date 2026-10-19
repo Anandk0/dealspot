@@ -10,6 +10,7 @@ import { api, type ListingData } from "@/lib/api";
 import { useLocation } from "@/lib/location-context";
 import { useLang } from "@/lib/lang-context";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
+import { sanitizeByType } from "@/lib/fieldSanitize";
 import ImageEditor from "@/components/ImageEditor";
 
 /**
@@ -338,7 +339,7 @@ function TextField({ label, value, onChange, type = "text", placeholder, require
       <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">
         {label}{required && <span className="text-red-500"> *</span>}
       </label>
-      <Input value={value} onChange={(e) => onChange(e.target.value)} type={type} placeholder={placeholder || label} className="h-10 sm:h-11" />
+      <Input value={value} onChange={(e) => onChange(sanitizeByType(e.target.value, { type, key: label }))} type={type === "number" ? "text" : type} inputMode={type === "number" || type === "tel" ? "numeric" : undefined} placeholder={placeholder || label} className="h-10 sm:h-11" />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { useLang } from "@/lib/lang-context";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
+import { sanitizeByType } from "@/lib/fieldSanitize";
 
 const VEHICLE_NAMES: Record<string, string> = {
   "vehicle-car": "ಕಾರು (Car)",
@@ -188,7 +189,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return <div className="bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-sm space-y-3"><h3 className="text-sm font-semibold text-foreground">{title}</h3>{children}</div>;
 }
 function F({ label, value, onChange, type = "text", placeholder, required }: { label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string; required?: boolean }) {
-  return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}{required && <span className="text-red-500"> *</span>}</label><Input value={value} onChange={(e) => onChange(e.target.value)} type={type} placeholder={placeholder || label} className="h-10 sm:h-11" /></div>;
+  const inputMode = type === "number" || type === "tel" ? "numeric" : undefined;
+  return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}{required && <span className="text-red-500"> *</span>}</label><Input value={value} onChange={(e) => onChange(sanitizeByType(e.target.value, { type, key: label }))} type={type === "number" ? "text" : type} inputMode={inputMode} placeholder={placeholder || label} className="h-10 sm:h-11" /></div>;
 }
 function SF({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
   return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}</label><select value={value} onChange={(e) => onChange(e.target.value)} className="w-full h-10 sm:h-11 rounded-md border border-border bg-card text-foreground px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"><option value="">Select</option>{options.map((o) => <option key={o} value={o}>{o}</option>)}</select></div>;
