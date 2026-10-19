@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Ban, UserCheck, Shield, Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Ban, UserCheck, Shield, Search, ChevronLeft, ChevronRight, Loader2, Trash2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { api, AdminUserResponse, PagedResponse } from "@/lib/api";
+import { api, AdminUserResponse, PagedResponse, ListingData } from "@/lib/api";
 import { useAdminGuard, hasMinimumRole } from "@/lib/useAdminGuard";
 import { useAuth } from "@/lib/auth-context";
 
@@ -65,6 +65,14 @@ export default function UsersPage() {
   const [roleModalOpen, setRoleModalOpen] = useState(false);
   const [newRole, setNewRole] = useState("");
   const [roleLoading, setRoleLoading] = useState(false);
+
+  // User listings drill-down state
+  const [listingsModalOpen, setListingsModalOpen] = useState(false);
+  const [listingsUser, setListingsUser] = useState<AdminUserResponse | null>(null);
+  const [userListings, setUserListings] = useState<ListingData[]>([]);
+  const [listingsLoading, setListingsLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deletingAll, setDeletingAll] = useState(false);
 
   const isSuperAdmin = hasMinimumRole(currentUser?.role, "SUPER_ADMIN");
 
@@ -160,6 +168,62 @@ export default function UsersPage() {
     }
   };
 
+  // Open the listings drill-down for a user and fetch their posts.
+  const openListingsModal = async (user: AdminUserResponse) => {
+    setListingsUser(user);
+    setListingsModalOpen(true);
+    setUserListings([]);
+    setListingsLoading(true);
+    try {
+      const data = await api.adminGetUserListings(user.id, 0, 100);
+      setUserListings(data.content);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to load listings");
+    } finally {
+      setListingsLoading(false);
+    }
+  };
+
+  // Delete a single listing (with confirmation).
+  const handleDeleteListing = async (listing: ListingData) => {
+    if (!window.confirm(`Delete "${listing.title}"? This cannot be undone.`)) return;
+    setDeletingId(listing.id);
+    try {
+      await api.adminDeleteListing(listing.id);
+      setUserListings((prev) => prev.filter((l) => l.id !== listing.id));
+      toast.success("Listing deleted");
+      fetchUsers(); // refresh listing counts in the table
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete listing");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  // Delete every listing by this user (with confirmation).
+  const handleDeleteAll = async () => {
+    if (userListings.length === 0) return;
+    if (!window.confirm(`Delete ALL ${userListings.length} listings by ${listingsUser?.name}? This cannot be undone.`)) return;
+    setDeletingAll(true);
+    const ids = userListings.map((l) => l.id);
+    const failed: number[] = [];
+    for (const id of ids) {
+      try {
+        await api.adminDeleteListing(id);
+      } catch {
+        failed.push(id);
+      }
+    }
+    setUserListings((prev) => prev.filter((l) => failed.includes(l.id)));
+    setDeletingAll(false);
+    fetchUsers();
+    if (failed.length === 0) {
+      toast.success(`Deleted all ${ids.length} listings`);
+    } else {
+      toast.error(`Deleted ${ids.length - failed.length}, failed ${failed.length}`);
+    }
+  };
+
   if (guardLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -226,15 +290,22 @@ export default function UsersPage() {
               {users.map((u) => (
                 <tr key={u.id} className="border-b border-border last:border-0 hover:bg-muted">
                   <td className="px-5 py-3">
-                    <div>
-                      <span className="font-medium">{u.name}</span>
-                      {u.location && (
-                        <span className="text-xs text-muted-foreground ml-2">{u.location}</span>
+                    <button
+                      type="button"
+                      onClick={() => openListingsModal(u)}
+                      className="text-left hover:underline"
+                      title="View this user's listings"
+                    >
+                      <div>
+                        <span className="font-medium text-primary">{u.name}</span>
+                        {u.location && (
+                          <span className="text-xs text-muted-foreground ml-2">{u.location}</span>
+                        )}
+                      </div>
+                      {u.email && (
+                        <span className="text-xs text-muted-foreground">{u.email}</span>
                       )}
-                    </div>
-                    {u.email && (
-                      <span className="text-xs text-muted-foreground">{u.email}</span>
-                    )}
+                    </button>
                   </td>
                   <td className="px-5 py-3 text-muted-foreground">{u.phone}</td>
                   <td className="px-5 py-3">
@@ -256,7 +327,16 @@ export default function UsersPage() {
                       <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">Active</span>
                     )}
                   </td>
-                  <td className="px-5 py-3 text-muted-foreground">{u.listingCount ?? 0}</td>
+                  <td className="px-5 py-3">
+                    <button
+                      type="button"
+                      onClick={() => openListingsModal(u)}
+                      className="inline-flex items-center gap-1 text-primary hover:underline"
+                      title="View & manage this user's listings"
+                    >
+                      <Package size={13} /> {u.listingCount ?? 0}
+                    </button>
+                  </td>
                   <td className="px-5 py-3 text-muted-foreground">
                     {new Date(u.createdAt).toLocaleDateString()}
                   </td>
@@ -403,6 +483,91 @@ export default function UsersPage() {
               {roleLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
               Save
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* User Listings Modal */}
+      <Dialog open={listingsModalOpen} onOpenChange={setListingsModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Listings by {listingsUser?.name}</DialogTitle>
+            <DialogDescription>
+              {listingsUser?.phone}
+              {listingsUser?.email ? ` • ${listingsUser.email}` : ""}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-y-auto -mx-1 px-1">
+            {listingsLoading ? (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="animate-spin text-muted-foreground" size={26} />
+              </div>
+            ) : userListings.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+                <Package size={32} className="mb-2 opacity-50" />
+                <p className="text-sm">This user has no listings</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {userListings.map((l) => (
+                  <div
+                    key={l.id}
+                    className="flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30"
+                  >
+                    <div className="w-12 h-12 rounded-md bg-muted overflow-hidden shrink-0 flex items-center justify-center">
+                      {l.images?.[0] ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={l.images[0]} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <Package size={18} className="text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{l.title}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {l.category}
+                        {l.price != null ? ` • ₹${l.price.toLocaleString()}` : ""}
+                        {` • `}
+                        <span className="uppercase">{l.status}</span>
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-red-600 text-xs h-8 shrink-0"
+                      onClick={() => handleDeleteListing(l)}
+                      disabled={deletingId === l.id || deletingAll}
+                    >
+                      {deletingId === l.id ? (
+                        <Loader2 size={12} className="animate-spin" />
+                      ) : (
+                        <><Trash2 size={12} className="mr-1" /> Delete</>
+                      )}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-between gap-2">
+            <Button variant="outline" onClick={() => setListingsModalOpen(false)}>
+              Close
+            </Button>
+            {userListings.length > 0 && (
+              <Button
+                variant="destructive"
+                onClick={handleDeleteAll}
+                disabled={deletingAll || deletingId != null}
+              >
+                {deletingAll ? (
+                  <><Loader2 size={14} className="mr-2 animate-spin" /> Deleting all...</>
+                ) : (
+                  <><Trash2 size={14} className="mr-2" /> Delete all ({userListings.length})</>
+                )}
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

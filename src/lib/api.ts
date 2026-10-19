@@ -436,6 +436,17 @@ class ApiClient {
     return this.request<{ message: string }>(`/api/admin/users/${userId}/role`, { method: "PUT", body: JSON.stringify({ role }) });
   }
 
+  // All listings posted by a user (any status), for the admin drill-down.
+  async adminGetUserListings(userId: number, page = 0, size = 50) {
+    const params = new URLSearchParams({ page: String(page), size: String(size) });
+    return this.request<PagedResponse<ListingData>>(`/api/admin/users/${userId}/listings?${params}`);
+  }
+
+  // Admin force-delete of any listing (bypasses the owner check).
+  async adminDeleteListing(listingId: number) {
+    return this.request<{ message: string }>(`/api/admin/listings/${listingId}`, { method: "DELETE" });
+  }
+
   async adminGetSettings() {
     return this.request<Record<string, string>>("/api/admin/settings");
   }
