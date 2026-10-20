@@ -28,8 +28,10 @@ export default function MyListingsPage() {
       await api.deleteListing(id);
       setListings((prev) => prev.filter((l) => l.id !== id));
       toast.success("ಜಾಹೀರಾತು ಅಳಿಸಲಾಗಿದೆ (Listing deleted)");
-    } catch {
-      toast.error("ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ (Failed to delete)");
+    } catch (err) {
+      // Surface the real backend reason instead of a generic message.
+      const msg = err instanceof Error ? err.message : "Failed to delete";
+      toast.error(`ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: ${msg}`);
     } finally {
       setDeletingId(null);
       setConfirmId(null);
