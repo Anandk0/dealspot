@@ -642,6 +642,14 @@ class ApiClient {
     });
   }
 
+  // Set the before-unlock (free) and after-unlock (paid) field lists for a category.
+  async adminSetFieldVisibility(id: number, freeFields: string[], unlockFields: string[]) {
+    return this.request<AdminCategoryResponse>(`/api/admin/categories/${id}/field-visibility`, {
+      method: "PUT",
+      body: JSON.stringify({ freeFields, unlockFields }),
+    });
+  }
+
   async adminUpdateCategory(id: number, data: CategoryRequestData) {
     return this.request<AdminCategoryResponse>(`/api/admin/categories/${id}`, {
       method: "PUT",
@@ -902,7 +910,9 @@ export interface AdminCategoryResponse {
   parentName?: string | null;
   isFree?: boolean;
   unlockPrice?: number | null; // per-category unlock price in PAISE (null = global default)
-  visibleFields?: string[] | null; // detail keys buyers may see (null/empty = all)
+  visibleFields?: string[] | null; // detail keys buyers may see (null/empty = all) [legacy]
+  freeFields?: string[] | null;    // shown before unlock
+  unlockFields?: string[] | null;  // shown after unlock
   subcategories: AdminCategoryResponse[];
 }
 

@@ -37,12 +37,14 @@ interface RazorpayResponse {
 
 interface Props {
   listingId: number;
+  /** Called after a successful unlock so the page can re-fetch the now-revealed details. */
+  onUnlocked?: () => void;
 }
 
 const UNLOCK_PRICE_PAISE = Number(process.env.NEXT_PUBLIC_UNLOCK_PRICE_PAISE) || 0;
 const UNLOCK_PRICE_RUPEES = UNLOCK_PRICE_PAISE > 0 ? UNLOCK_PRICE_PAISE / 100 : null;
 
-export default function ContactUnlockModal({ listingId }: Props) {
+export default function ContactUnlockModal({ listingId, onUnlocked }: Props) {
   const { isLoggedIn, user } = useAuth();
   const [unlocked, setUnlocked] = useState(false);
   const [isFree, setIsFree] = useState(false);
@@ -128,6 +130,7 @@ export default function ContactUnlockModal({ listingId }: Props) {
             setPhone(result.phone);
             // Pull the full contact block (name/whatsapp/address) for the card.
             api.checkUnlock(listingId).then((r) => setContact(r.contact || null)).catch(() => {});
+            onUnlocked?.(); // let the page re-fetch so paid fields + exact location appear
             toast.success("ಯಶಸ್ವಿಯಾಗಿ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ!");
           } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : "Payment verification failed";
@@ -235,6 +238,7 @@ export default function ContactUnlockModal({ listingId }: Props) {
     const handleFreeUnlock = () => {
       if (phone || contact) {
         setFreeUnlocked(true);
+        onUnlocked?.();
         return;
       }
       // Fallback: if the contact wasn't returned on check, fetch it now.
@@ -244,6 +248,7 @@ export default function ContactUnlockModal({ listingId }: Props) {
           setPhone(res.phone || null);
           setContact(res.contact || null);
           setFreeUnlocked(true);
+          onUnlocked?.();
         })
         .catch(() => toast.error("ಸಂಪರ್ಕ ಪಡೆಯಲು ವಿಫಲವಾಗಿದೆ (Failed to load contact)"))
         .finally(() => setLoading(false));

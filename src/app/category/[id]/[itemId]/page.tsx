@@ -31,6 +31,14 @@ export default function ItemDetailPage() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
 
+  // Re-fetch the listing (used after an unlock so the now-revealed paid fields
+  // + exact location appear without a full page reload).
+  const refetchListing = () => {
+    const id = parseInt(itemId);
+    if (isNaN(id)) return;
+    api.getListingById(id).then(setItem).catch(() => {});
+  };
+
   useEffect(() => {
     const id = parseInt(itemId);
     if (isNaN(id)) {
@@ -322,7 +330,7 @@ export default function ItemDetailPage() {
                   <p className="text-xs text-muted-foreground">{item.sellerLocation || generalLocation}</p>
                 </div>
               </div>
-              <ContactUnlockModal listingId={item.id} />
+              <ContactUnlockModal listingId={item.id} onUnlocked={refetchListing} />
             </div>
 
             {/* Moderator action — take down this listing */}
