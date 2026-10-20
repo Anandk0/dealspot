@@ -397,6 +397,12 @@ class ApiClient {
       unlocked: boolean;
       free: boolean;
       phone?: string;
+      contact?: {
+        name?: string | null;
+        mobile?: string | null;
+        whatsapp?: string | null;
+        fullAddress?: string | null;
+      } | null;
     }>(`/api/payments/unlock/check/${listingId}`);
   }
 

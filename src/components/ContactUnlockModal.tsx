@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Phone, Lock, CheckCircle2, Loader2 } from "lucide-react";
+import { Phone, Lock, CheckCircle2, Loader2, User } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
@@ -49,6 +49,8 @@ export default function ContactUnlockModal({ listingId }: Props) {
   // For free listings we hold the phone but only reveal it after the user clicks.
   const [freeUnlocked, setFreeUnlocked] = useState(false);
   const [phone, setPhone] = useState<string | null>(null);
+  // Full contact block revealed after unlock (name, mobile, whatsapp, address).
+  const [contact, setContact] = useState<{ name?: string | null; mobile?: string | null; whatsapp?: string | null; fullAddress?: string | null } | null>(null);
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [price, setPrice] = useState<number | null>(UNLOCK_PRICE_RUPEES);
@@ -62,14 +64,16 @@ export default function ContactUnlockModal({ listingId }: Props) {
     api.checkUnlock(listingId)
       .then((res) => {
         if (res.free) {
-          // Free listing: keep the phone in state but DON'T reveal it yet —
+          // Free listing: keep the contact in state but DON'T reveal it yet —
           // the user must click "Unlock for Free" first.
           setIsFree(true);
           setPhone(res.phone || null);
+          setContact(res.contact || null);
         } else if (res.unlocked) {
           // Paid listing already unlocked earlier: show it directly.
           setUnlocked(true);
           setPhone(res.phone || null);
+          setContact(res.contact || null);
         }
       })
       .catch(() => {})
@@ -122,6 +126,8 @@ export default function ContactUnlockModal({ listingId }: Props) {
             });
             setUnlocked(true);
             setPhone(result.phone);
+            // Pull the full contact block (name/whatsapp/address) for the card.
+            api.checkUnlock(listingId).then((r) => setContact(r.contact || null)).catch(() => {});
             toast.success("ಯಶಸ್ವಿಯಾಗಿ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ!");
           } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : "Payment verification failed";
@@ -150,20 +156,68 @@ export default function ContactUnlockModal({ listingId }: Props) {
 
   const priceDisplay = price ? `₹${price}` : "...";
 
-  // Show the contact once it's revealed: paid-and-unlocked, or free-and-clicked.
-  if ((unlocked || (isFree && freeUnlocked)) && phone) {
+  // Show the full contact card once revealed: paid-and-unlocked, or free-and-clicked.
+  if ((unlocked || (isFree && freeUnlocked)) && (phone || contact)) {
+    const name = contact?.name;
+    const mobile = contact?.mobile || phone;
+    const whatsapp = contact?.whatsapp;
+    const fullAddress = contact?.fullAddress;
     return (
-      <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-xl p-4 text-center">
-        <CheckCircle2 className="mx-auto mb-2 text-green-500" size={28} />
-        <p className="text-sm text-green-700 dark:text-green-400 font-medium mb-2">
-          {isFree ? "ಉಚಿತ ಕಾಂಟ್ಯಾಕ್ಟ್ (Free Contact)" : "ಕಾಂಟ್ಯಾಕ್ಟ್ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ"}
-        </p>
-        <p className="text-xl font-bold text-green-800 dark:text-green-300">{phone}</p>
-        <a href={`tel:${phone}`} className="mt-2 inline-block">
-          <Button variant="outline" size="sm" className="border-green-300 dark:border-green-800 text-green-700 dark:text-green-400">
-            <Phone size={14} className="mr-1" /> ಕರೆ ಮಾಡಿ
-          </Button>
-        </a>
+      <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-xl p-4 space-y-3">
+        <div className="text-center">
+          <CheckCircle2 className="mx-auto mb-1 text-green-500" size={26} />
+          <p className="text-sm text-green-700 dark:text-green-400 font-medium">
+            {isFree ? "ಉಚಿತ ಕಾಂಟ್ಯಾಕ್ಟ್ (Free Contact)" : "ಕಾಂಟ್ಯಾಕ್ಟ್ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ (Unlocked)"}
+          </p>
+        </div>
+
+        {name && (
+          <div className="flex items-center gap-2 bg-white/60 dark:bg-black/20 rounded-lg px-3 py-2">
+            <User size={15} className="text-green-700 dark:text-green-400 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground">ಹೆಸರು (Name)</p>
+              <p className="text-sm font-semibold text-foreground truncate">{name}</p>
+            </div>
+          </div>
+        )}
+
+        {mobile && (
+          <a href={`tel:${mobile}`} className="flex items-center gap-2 bg-white/60 dark:bg-black/20 rounded-lg px-3 py-2">
+            <Phone size={15} className="text-green-700 dark:text-green-400 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground">ಮೊಬೈಲ್ (Mobile)</p>
+              <p className="text-sm font-bold text-green-800 dark:text-green-300 truncate">{mobile}</p>
+            </div>
+          </a>
+        )}
+
+        {whatsapp && (
+          <a href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-white/60 dark:bg-black/20 rounded-lg px-3 py-2">
+            <Phone size={15} className="text-green-700 dark:text-green-400 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground">WhatsApp</p>
+              <p className="text-sm font-bold text-green-800 dark:text-green-300 truncate">{whatsapp}</p>
+            </div>
+          </a>
+        )}
+
+        {fullAddress && (
+          <div className="flex items-center gap-2 bg-white/60 dark:bg-black/20 rounded-lg px-3 py-2">
+            <User size={15} className="text-green-700 dark:text-green-400 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground">ವಿಳಾಸ (Address)</p>
+              <p className="text-sm font-medium text-foreground">{fullAddress}</p>
+            </div>
+          </div>
+        )}
+
+        {mobile && (
+          <a href={`tel:${mobile}`} className="block">
+            <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+              <Phone size={14} className="mr-1.5" /> ಕರೆ ಮಾಡಿ (Call)
+            </Button>
+          </a>
+        )}
       </div>
     );
   }
@@ -179,15 +233,16 @@ export default function ContactUnlockModal({ listingId }: Props) {
   // Free listing that hasn't been revealed yet — show an "Unlock for Free" button.
   if (isFree) {
     const handleFreeUnlock = () => {
-      if (phone) {
+      if (phone || contact) {
         setFreeUnlocked(true);
         return;
       }
-      // Fallback: if the phone wasn't returned on check, fetch it now.
+      // Fallback: if the contact wasn't returned on check, fetch it now.
       setLoading(true);
       api.checkUnlock(listingId)
         .then((res) => {
           setPhone(res.phone || null);
+          setContact(res.contact || null);
           setFreeUnlocked(true);
         })
         .catch(() => toast.error("ಸಂಪರ್ಕ ಪಡೆಯಲು ವಿಫಲವಾಗಿದೆ (Failed to load contact)"))
