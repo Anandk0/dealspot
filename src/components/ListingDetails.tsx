@@ -1,6 +1,5 @@
 "use client";
 import { useLang } from "@/lib/lang-context";
-import { Lock, Phone, MessageCircle, User, MapPin } from "lucide-react";
 
 /**
  * Generic renderer for a listing's `details` JSON (non-property categories:
@@ -71,14 +70,6 @@ function prettify(key: string): string {
   return key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());
 }
 
-interface Private {
-  ownerName?: string | null;
-  ownerAgent?: string | null;
-  mobile?: string | null;
-  whatsapp?: string | null;
-  fullAddress?: string | null;
-}
-
 export default function ListingDetails({ detailsJson }: { detailsJson?: string }) {
   const { t, lang } = useLang();
 
@@ -107,8 +98,6 @@ export default function ListingDetails({ detailsJson }: { detailsJson?: string }
   const serviceTypes = Array.isArray(d.serviceTypes) ? (d.serviceTypes as string[]) : [];
   const facilities = Array.isArray(d.facilities) ? (d.facilities as string[]) : [];
   const houseRules = (d.houseRules as Record<string, string> | null) || null;
-  const priv = (d.private as Private | undefined) ?? undefined;
-  const hasContact = priv && (priv.ownerName || priv.ownerAgent || priv.mobile || priv.whatsapp);
 
   return (
     <div className="space-y-4">
@@ -149,37 +138,9 @@ export default function ListingDetails({ detailsJson }: { detailsJson?: string }
         </div>
       )}
 
-      {/* Contact — only when unlocked (backend returned private block) */}
-      {priv ? (
-        <div className="bg-card rounded-2xl p-6 shadow-sm border border-border space-y-3">
-          <h3 className="text-base font-semibold text-foreground">{t("ಸಂಪರ್ಕ (Contact)", "Contact")}</h3>
-          {(priv.ownerName || priv.ownerAgent) && (
-            <Row icon={<User size={15} />} label={t("ಹೆಸರು", "Name")} value={(priv.ownerName || priv.ownerAgent)!} />
-          )}
-          {priv.mobile && (
-            <a href={`tel:${priv.mobile}`} className="block">
-              <Row icon={<Phone size={15} />} label={t("ಮೊಬೈಲ್", "Mobile")} value={priv.mobile} link />
-            </a>
-          )}
-          {priv.whatsapp && (
-            <a href={`https://wa.me/${priv.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="block">
-              <Row icon={<MessageCircle size={15} />} label="WhatsApp" value={priv.whatsapp} link />
-            </a>
-          )}
-          {priv.fullAddress && (
-            <Row icon={<MapPin size={15} />} label={t("ವಿಳಾಸ", "Address")} value={priv.fullAddress} />
-          )}
-          {!hasContact && <p className="text-sm text-muted-foreground">{t("ಸಂಪರ್ಕ ವಿವರ ಲಭ್ಯವಿಲ್ಲ", "No contact details provided")}</p>}
-        </div>
-      ) : (
-        <div className="bg-muted/50 rounded-2xl p-5 border border-dashed border-border text-center">
-          <Lock size={22} className="mx-auto text-muted-foreground mb-2" />
-          <p className="text-sm font-medium text-foreground">{t("ಸಂಪರ್ಕ ವಿವರ ಲಾಕ್ ಆಗಿದೆ", "Contact details are locked")}</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {t("ಅನ್‌ಲಾಕ್ ಮಾಡಿದ ನಂತರ ಮಾಲೀಕರ ಸಂಪರ್ಕ ಕಾಣಿಸುತ್ತದೆ", "Unlock to see the owner's contact details.")}
-          </p>
-        </div>
-      )}
+      {/* NOTE: Owner contact is intentionally NOT rendered here. Contact is
+          shown only through the seller card's unlock flow (ContactUnlockModal),
+          so it never appears for free until the buyer clicks "Unlock". */}
     </div>
   );
 }
@@ -203,14 +164,4 @@ function Chip({ label, highlight }: { label: string; highlight?: boolean }) {
   );
 }
 
-function Row({ icon, label, value, link }: { icon: React.ReactNode; label: string; value: string; link?: boolean }) {
-  return (
-    <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-      <span className="text-primary shrink-0">{icon}</span>
-      <div className="min-w-0 flex-1">
-        <p className="text-[11px] text-muted-foreground">{label}</p>
-        <p className={`text-sm font-medium ${link ? "text-primary" : "text-card-foreground"} truncate`}>{value}</p>
-      </div>
-    </div>
-  );
-}
+

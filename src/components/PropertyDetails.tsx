@@ -1,6 +1,5 @@
 "use client";
 import { useLang } from "@/lib/lang-context";
-import { Lock, MapPin, Phone, MessageCircle, Clock, User } from "lucide-react";
 
 interface PropertyDetailsJson {
   taluk?: string | null;
@@ -75,10 +74,6 @@ export default function PropertyDetails({ detailsJson }: { detailsJson?: string 
 
   const hasAny = (rows: [string, string | null | undefined][]) => rows.some(([, v]) => v);
 
-  const priv = d.private;
-  const hasContact = priv && (priv.ownerAgent || priv.mobile || priv.whatsapp || priv.preferredTime);
-  const hasMap = priv && priv.mapLat != null && priv.mapLng != null;
-
   return (
     <div className="space-y-4">
       {/* Basic + property details */}
@@ -119,63 +114,11 @@ export default function PropertyDetails({ detailsJson }: { detailsJson?: string 
         </div>
       )}
 
-      {/* Contact + Map — only rendered when the backend returned the private block */}
-      {priv ? (
-        <div className="bg-card rounded-2xl p-6 shadow-sm border border-border space-y-3">
-          <h3 className="text-base font-semibold text-foreground">{t("ಸಂಪರ್ಕ & ಲೊಕೇಶನ್ (Contact & Location)", "Contact & Location")}</h3>
-          {hasContact && (
-            <div className="space-y-2">
-              {priv.ownerAgent && (
-                <Row icon={<User size={15} />} label={t("ಮಾಲೀಕ/ಏಜೆಂಟ್", "Owner/Agent")} value={priv.ownerAgent} />
-              )}
-              {priv.mobile && (
-                <a href={`tel:${priv.mobile}`} className="block">
-                  <Row icon={<Phone size={15} />} label={t("ಮೊಬೈಲ್", "Mobile")} value={priv.mobile} link />
-                </a>
-              )}
-              {priv.whatsapp && (
-                <a href={`https://wa.me/${priv.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="block">
-                  <Row icon={<MessageCircle size={15} />} label="WhatsApp" value={priv.whatsapp} link />
-                </a>
-              )}
-              {priv.preferredTime && (
-                <Row icon={<Clock size={15} />} label={t("ಸಂಪರ್ಕ ಸಮಯ", "Contact Time")} value={priv.preferredTime} />
-              )}
-            </div>
-          )}
-          {hasMap && (
-            <a
-              href={`https://www.google.com/maps/search/?api=1&query=${priv!.mapLat},${priv!.mapLng}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full h-11 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition"
-            >
-              <MapPin size={16} /> {t("ಗೂಗಲ್ ಮ್ಯಾಪ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ (Open in Google Maps)", "Open in Google Maps")}
-            </a>
-          )}
-        </div>
-      ) : (
-        // Locked hint — the unlock action is the ContactUnlockModal in the seller card.
-        <div className="bg-muted/50 rounded-2xl p-5 border border-dashed border-border text-center">
-          <Lock size={22} className="mx-auto text-muted-foreground mb-2" />
-          <p className="text-sm font-medium text-foreground">{t("ಸಂಪರ್ಕ & ನಿಖರ ಲೊಕೇಶನ್ ಲಾಕ್ ಆಗಿದೆ", "Contact & exact location are locked")}</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {t("ಅನ್‌ಲಾಕ್ ಮಾಡಿದ ನಂತರ ಮಾಲೀಕರ ಸಂಪರ್ಕ ಮತ್ತು ಗೂಗಲ್ ಮ್ಯಾಪ್ ಲೊಕೇಶನ್ ಕಾಣಿಸುತ್ತದೆ", "Unlock to see the owner's contact and the exact map location.")}
-          </p>
-        </div>
-      )}
+      {/* NOTE: Owner contact + exact map are intentionally NOT rendered here.
+          Contact is shown only through the seller card's unlock flow
+          (ContactUnlockModal), so it never appears for free. */}
     </div>
   );
 }
 
-function Row({ icon, label, value, link }: { icon: React.ReactNode; label: string; value: string; link?: boolean }) {
-  return (
-    <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-      <span className="text-primary shrink-0">{icon}</span>
-      <div className="min-w-0 flex-1">
-        <p className="text-[11px] text-muted-foreground">{label}</p>
-        <p className={`text-sm font-medium ${link ? "text-primary" : "text-card-foreground"} truncate`}>{value}</p>
-      </div>
-    </div>
-  );
-}
+
