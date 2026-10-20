@@ -60,6 +60,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   const [taluk, setTalukState] = useState<string | null>(null);
   const [coords, setCoordsState] = useState<Coords | null>(null);
   const [dismissed, setDismissed] = useState(false);
+  const [promptOpen, setPromptOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
   // Load any saved district from localStorage on first mount.
@@ -238,6 +239,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
 
   const dismissPrompt = useCallback(() => {
     setDismissed(true);
+    setPromptOpen(false);
     try {
       localStorage.setItem(DISMISS_KEY, "1");
     } catch {
@@ -245,7 +247,10 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Explicitly open the picker (e.g. from the header location button) — works
+  // even when a district is already set, so users can change their location.
   const openPrompt = useCallback(() => {
+    setPromptOpen(true);
     setDismissed(false);
     try {
       localStorage.removeItem(DISMISS_KEY);
@@ -254,7 +259,9 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const needsPrompt = hydrated && !district && !dismissed;
+  // Show the picker when the user explicitly opened it, OR on first run (no
+  // district chosen yet and not dismissed).
+  const needsPrompt = promptOpen || (hydrated && !district && !dismissed);
 
   return (
     <LocationContext.Provider
