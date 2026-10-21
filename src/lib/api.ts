@@ -360,6 +360,13 @@ class ApiClient {
     return this.request<UserData>("/api/users/me");
   }
 
+  // Upload/replace the user's profile picture. Returns the updated profile.
+  async uploadProfileImage(file: File) {
+    const fd = new FormData();
+    fd.append("image", file);
+    return this.request<UserData>("/api/users/me/image", { method: "POST", body: fd });
+  }
+
   async updateProfile(data: Record<string, string>) {
     return this.request<UserData>("/api/users/me", {
       method: "PUT",
