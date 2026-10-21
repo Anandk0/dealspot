@@ -68,11 +68,12 @@ export default function ItemDetailPage() {
         .then((res) => setIsFavorited(res.content.some((f) => f.id === id)))
         .catch(() => {});
 
-      // Reveal the full cards on load ONLY if already PAID-unlocked (not free).
-      // Free listings must still click "Unlock for Free" first.
+      // Reveal the full cards on load if the user has a SAVED unlock record
+      // (paid, or a free unlock they clicked earlier). Free listings not yet
+      // clicked stay locked until the user clicks "Unlock for Free".
       api.checkUnlock(id)
         .then((r) => {
-          if (r.unlocked && !r.free) {
+          if (r.recorded) {
             setUnlocked(true);
             setContact(r.contact || null);
           }

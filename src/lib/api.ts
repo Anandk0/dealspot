@@ -396,6 +396,7 @@ class ApiClient {
     return this.request<{
       unlocked: boolean;
       free: boolean;
+      recorded?: boolean; // user has a saved unlock record (free-click or paid)
       phone?: string;
       contact?: {
         name?: string | null;
@@ -404,6 +405,15 @@ class ApiClient {
         fullAddress?: string | null;
       } | null;
     }>(`/api/payments/unlock/check/${listingId}`);
+  }
+
+  // Record a FREE unlock so it persists for this user+listing (no payment).
+  async freeUnlock(listingId: number) {
+    return this.request<{
+      unlocked: boolean;
+      phone?: string;
+      contact?: { name?: string | null; mobile?: string | null; whatsapp?: string | null; fullAddress?: string | null } | null;
+    }>(`/api/payments/unlock/free/${listingId}`, { method: "POST" });
   }
 
   // ─── Health ─────────────────────────────────────────────

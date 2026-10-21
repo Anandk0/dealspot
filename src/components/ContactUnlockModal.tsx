@@ -66,11 +66,12 @@ export default function ContactUnlockModal({ listingId, onUnlocked }: Props) {
     api.checkUnlock(listingId)
       .then((res) => {
         if (res.free) {
-          // Free listing: keep the contact in state but DON'T reveal it yet —
-          // the user must click "Unlock for Free" first.
           setIsFree(true);
           setPhone(res.phone || null);
           setContact(res.contact || null);
+          // If the user previously clicked "Unlock for Free", it's saved —
+          // reveal directly without asking again.
+          if (res.recorded) setFreeUnlocked(true);
         } else if (res.unlocked) {
           // Paid listing already unlocked earlier: show it directly.
           setUnlocked(true);
@@ -236,14 +237,9 @@ export default function ContactUnlockModal({ listingId, onUnlocked }: Props) {
   // Free listing that hasn't been revealed yet — show an "Unlock for Free" button.
   if (isFree) {
     const handleFreeUnlock = () => {
-      if (phone || contact) {
-        setFreeUnlocked(true);
-        onUnlocked?.();
-        return;
-      }
-      // Fallback: if the contact wasn't returned on check, fetch it now.
+      // Persist the free unlock so it stays unlocked for this user next time.
       setLoading(true);
-      api.checkUnlock(listingId)
+      api.freeUnlock(listingId)
         .then((res) => {
           setPhone(res.phone || null);
           setContact(res.contact || null);
