@@ -554,6 +554,13 @@ class ApiClient {
     return this.request<PagedResponse<AuditLogEntry>>(`/api/admin/audit?${params}`);
   }
 
+  // Restore a taken-down listing back to ACTIVE (within 30 days, CHECKER+).
+  async adminRestoreListing(listingId: number) {
+    return this.request<{ message: string }>(`/api/admin/listings/${listingId}/restore`, {
+      method: "PUT",
+    });
+  }
+
   // Take down a live/flagged/pending listing (CHECKER and above).
   async adminTakeDownListing(listingId: number, reason: string) {
     return this.request<{ message: string }>(`/api/admin/listings/${listingId}/takedown`, {
@@ -755,6 +762,7 @@ export interface ListingData {
   longitude?: number;
   status: string;
   images: string[];
+  imagesPurged?: boolean; // images deleted by the 30-day retention job after takedown
   viewCount: number;
   createdAt: string;
   breed?: string;

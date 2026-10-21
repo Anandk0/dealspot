@@ -28,6 +28,7 @@ export default function ItemDetailPage() {
   const [item, setItem] = useState<ListingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [takingDown, setTakingDown] = useState(false);
+  const [restoring, setRestoring] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
 
@@ -149,6 +150,20 @@ export default function ItemDetailPage() {
       toast.error(err instanceof Error ? err.message : "Failed to take down listing");
     } finally {
       setTakingDown(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (!item) return;
+    setRestoring(true);
+    try {
+      await api.adminRestoreListing(item.id);
+      toast.success("ಜಾಹೀರಾತು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ (Listing restored)");
+      setItem({ ...item, status: "ACTIVE" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to restore listing");
+    } finally {
+      setRestoring(false);
     }
   };
 
@@ -411,9 +426,25 @@ export default function ItemDetailPage() {
                   <ShieldAlert size={13} className="text-red-500" /> ಮಾಡರೇಟರ್ (Moderator)
                 </p>
                 {item.status === "REJECTED" ? (
-                  <p className="text-sm text-red-500 font-medium">
-                    ಈ ಜಾಹೀರಾತು ತೆಗೆದುಹಾಕಲಾಗಿದೆ (This listing has been removed)
-                  </p>
+                  <div className="space-y-2">
+                    <p className="text-sm text-red-500 font-medium">
+                      ಈ ಜಾಹೀರಾತು ತೆಗೆದುಹಾಕಲಾಗಿದೆ (This listing has been taken down)
+                    </p>
+                    {item.imagesPurged ? (
+                      <p className="text-xs text-muted-foreground">
+                        ಚಿತ್ರಗಳು ಅಳಿಸಲಾಗಿದೆ — ಮರುಸ್ಥಾಪನೆ ಅವಧಿ ಮುಗಿದಿದೆ (Images purged — restore window expired)
+                      </p>
+                    ) : (
+                      <button
+                        onClick={handleRestore}
+                        disabled={restoring}
+                        className="flex items-center justify-center gap-2 w-full h-10 rounded-xl border border-green-300 dark:border-green-900 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/30 transition text-sm font-medium disabled:opacity-50"
+                      >
+                        <ShieldAlert size={15} />
+                        {restoring ? "ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ..." : "ಮರುಸ್ಥಾಪಿಸಿ (Restore)"}
+                      </button>
+                    )}
+                  </div>
                 ) : (
                   <button
                     onClick={handleTakeDown}
