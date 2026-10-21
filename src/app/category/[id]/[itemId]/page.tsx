@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from "next/navigation";
-import { Share2, Heart, MapPin, ShieldAlert, Flag } from "lucide-react";
+import { Share2, Heart, MapPin, ShieldAlert, Flag, CheckCircle2, User, Phone, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import ContactUnlockModal from "@/components/ContactUnlockModal";
@@ -31,12 +31,24 @@ export default function ItemDetailPage() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
 
-  // Re-fetch the listing (used after an unlock so the now-revealed paid fields
-  // + exact location appear without a full page reload).
+  // Unlock state + revealed contact, lifted here so the full Contact and
+  // Address cards can render in the left column (Housing.com style) after unlock.
+  const [unlocked, setUnlocked] = useState(false);
+  const [contact, setContact] = useState<{ name?: string | null; mobile?: string | null; whatsapp?: string | null; fullAddress?: string | null } | null>(null);
+
+  // Re-fetch the listing + unlock status (used after an unlock so the now-
+  // revealed paid fields, exact location and contact appear without a reload).
   const refetchListing = () => {
     const id = parseInt(itemId);
     if (isNaN(id)) return;
+    // The user just unlocked (free click or paid) → reveal the full cards.
+    setUnlocked(true);
     api.getListingById(id).then(setItem).catch(() => {});
+    if (api.getToken()) {
+      api.checkUnlock(id)
+        .then((r) => setContact(r.contact || null))
+        .catch(() => {});
+    }
   };
 
   useEffect(() => {
@@ -54,6 +66,17 @@ export default function ItemDetailPage() {
     if (api.getToken()) {
       api.getFavorites(0, 100)
         .then((res) => setIsFavorited(res.content.some((f) => f.id === id)))
+        .catch(() => {});
+
+      // Reveal the full cards on load ONLY if already PAID-unlocked (not free).
+      // Free listings must still click "Unlock for Free" first.
+      api.checkUnlock(id)
+        .then((r) => {
+          if (r.unlocked && !r.free) {
+            setUnlocked(true);
+            setContact(r.contact || null);
+          }
+        })
         .catch(() => {});
     }
   }, [itemId]);
@@ -236,6 +259,53 @@ export default function ItemDetailPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* ── After-unlock reveal cards (Housing.com style) — full location
+                 and contact shown below the details once unlocked. ── */}
+            {unlocked && (item.location || contact) && (
+              <div className="bg-green-50 dark:bg-green-950/20 rounded-2xl p-6 shadow-sm border border-green-200 dark:border-green-900 space-y-4">
+                <h3 className="text-base font-semibold text-green-700 dark:text-green-400 flex items-center gap-2">
+                  <CheckCircle2 size={18} /> {"ಅನ್‌ಲಾಕ್ ಆದ ವಿವರಗಳು (Unlocked Details)"}
+                </h3>
+
+                {/* Exact location / address */}
+                {(item.location || item.latitude != null) && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">{"ನಿಖರ ವಿಳಾಸ (Address & Location)"}</p>
+                    {item.location && (
+                      <p className="text-sm font-medium text-foreground flex items-start gap-2">
+                        <MapPin size={15} className="text-primary shrink-0 mt-0.5" /> {item.location}
+                      </p>
+                    )}
+                    {item.latitude != null && item.longitude != null && (
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${item.latitude},${item.longitude}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition"
+                      >
+                        <MapPin size={15} /> {"ಗೂಗಲ್ ಮ್ಯಾಪ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ (Open in Maps)"}
+                      </a>
+                    )}
+                  </div>
+                )}
+
+                {/* Contact */}
+                {contact && (contact.name || contact.mobile || contact.whatsapp) && (
+                  <div className="space-y-2 pt-2 border-t border-green-200 dark:border-green-900">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">{"ಸಂಪರ್ಕ (Contact)"}</p>
+                    {contact.name && (
+                      <p className="text-sm text-foreground flex items-center gap-2"><User size={14} className="text-primary" /> {contact.name}</p>
+                    )}
+                    {contact.mobile && (
+                      <a href={`tel:${contact.mobile}`} className="text-sm font-semibold text-primary flex items-center gap-2"><Phone size={14} /> {contact.mobile}</a>
+                    )}
+                    {contact.whatsapp && (
+                      <a href={`https://wa.me/${contact.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-green-600 flex items-center gap-2"><MessageCircle size={14} /> WhatsApp: {contact.whatsapp}</a>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
