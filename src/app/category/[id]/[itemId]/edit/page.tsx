@@ -2,8 +2,8 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
-import LeafLoader from "@/components/LeafLoader";
 import PropertyForm from "@/components/PropertyForm";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
 import ImageEditor from "@/components/ImageEditor";
@@ -161,7 +161,7 @@ export default function EditListingPage() {
     return (
       <AppLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
-          <LeafLoader variant="orbit" size={52} />
+          <Loader2 className="animate-spin text-primary" size={28} />
         </div>
       </AppLayout>
     );
@@ -242,7 +242,7 @@ export default function EditListingPage() {
             </div>
             <div className="flex gap-3 pt-1">
               <Button type="submit" disabled={saving} className="bg-primary px-8 h-11 text-sm font-medium">
-                {saving ? <><LeafLoader variant="trio" size={18} /> <span className="ml-2">{t("ಉಳಿಸಲಾಗುತ್ತಿದೆ...", "Saving...")}</span></> : t("ನವೀಕರಿಸಿ (Update)", "Update")}
+                {saving ? <><Loader2 size={16} className="mr-2 animate-spin" /> {t("ಉಳಿಸಲಾಗುತ್ತಿದೆ...", "Saving...")}</> : t("ನವೀಕರಿಸಿ (Update)", "Update")}
               </Button>
               <Link href="/profile/listings">
                 <Button type="button" variant="outline" className="h-11 text-sm">{t("ರದ್ದು (Cancel)", "Cancel")}</Button>

@@ -10,7 +10,6 @@ import { useCategories } from "@/lib/useCategories";
 import { useLocation } from "@/lib/location-context";
 import { api } from "@/lib/api";
 import AppLayout from "@/components/AppLayout";
-import LeafLoader from "@/components/LeafLoader";
 import AgentRegistration from "@/components/AgentRegistration";
 import PropertyForm from "@/components/PropertyForm";
 import PropertyRentForm from "@/components/PropertyRentForm";
@@ -74,7 +73,7 @@ export default function CreateListingPage() {
     return (
       <AppLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
-          <LeafLoader variant="orbit" size={52} />
+          <Loader2 className="animate-spin text-primary" size={28} />
         </div>
       </AppLayout>
     );
@@ -514,7 +513,7 @@ export default function CreateListingPage() {
             <div className="flex flex-col sm:flex-row gap-3 pt-3">
               <Button type="submit" disabled={loading} className="bg-primary w-full sm:w-auto px-8 h-11 text-sm font-medium">
                 {loading ? (
-                  <><LeafLoader variant="trio" size={18} /> <span className="ml-2">ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...</span></>
+                  <><Loader2 size={16} className="mr-2 animate-spin" /> ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...</>
                 ) : (
                   "ಸಲ್ಲಿಸಿ (Submit Listing)"
                 )}
