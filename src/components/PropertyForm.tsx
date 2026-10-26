@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, LocateFixed, Check } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -313,7 +314,7 @@ export default function PropertyForm({
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
         <Button type="submit" disabled={loading} className="bg-primary w-full sm:w-auto px-8 h-11 text-sm font-medium">
           {loading
-            ? <><Loader2 size={16} className="mr-2 animate-spin" /> {isEdit ? t("ನವೀಕರಿಸಲಾಗುತ್ತಿದೆ...", "Updating...") : t("ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...", "Submitting...")}</>
+            ? <><LeafLoader variant="trio" size={18} /> <span className="ml-2">{isEdit ? t("ನವೀಕರಿಸಲಾಗುತ್ತಿದೆ...", "Updating...") : t("ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...", "Submitting...")}</span></>
             : isEdit ? t("ನವೀಕರಿಸಿ (Update Listing)", "Update Listing") : t("ಸಲ್ಲಿಸಿ (Submit Listing)", "Submit Listing")}
         </Button>
       </div>

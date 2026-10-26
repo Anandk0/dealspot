@@ -1,7 +1,8 @@
 "use client";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Plus, X, Loader2, Lock } from "lucide-react";
+import { Camera, Plus, X, Lock } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -213,7 +214,7 @@ export default function PetForm({ categoryId }: { categoryId: string }) {
 
       <div className="flex gap-3 pt-2">
         <Button type="submit" disabled={loading} className="bg-primary px-8 h-11 font-medium">
-          {loading ? <><Loader2 size={16} className="mr-2 animate-spin" />Posting...</> : t("ಪೋಸ್ಟ್ ಮಾಡಿ", "Post Listing")}
+          {loading ? <><LeafLoader variant="trio" size={18} /><span className="ml-2">Posting...</span></> : t("ಪೋಸ್ಟ್ ಮಾಡಿ", "Post Listing")}
         </Button>
       </div>
     </form>

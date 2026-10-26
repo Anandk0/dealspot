@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useLang } from "@/lib/lang-context";
 import { Home, Search, PlusCircle, Heart, User } from "lucide-react";
-import { Loader2 } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 
 const mobileNavItems = [
   { href: "/home", icon: Home, label: "ಮುಖಪುಟ", labelEn: "Home" },
@@ -34,7 +34,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="animate-spin text-primary" size={32} />
+        <LeafLoader variant="orbit" size={56} />
       </div>
     );
   }
