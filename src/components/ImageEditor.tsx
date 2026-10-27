@@ -1,6 +1,6 @@
 "use client";
-import { useRef } from "react";
-import { Camera, Plus, X } from "lucide-react";
+import { useState, useRef } from "react";
+import { Camera, Plus, X, Loader2 } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 
 const MAX_IMAGES = 5;
@@ -14,6 +14,8 @@ const MAX_IMAGES = 5;
  * enforcing a combined cap of {@link MAX_IMAGES}. On submit the parent sends
  * `existingUrls` as the kept list and `newFiles` as the uploads.
  */
+import { compressImages } from "@/lib/compressImage";
+
 export default function ImageEditor({
   existingUrls,
   newFiles,
@@ -27,17 +29,26 @@ export default function ImageEditor({
 }) {
   const { t } = useLang();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [compressing, setCompressing] = useState(false);
   const total = existingUrls.length + newFiles.length;
 
-  const addFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const picked = Array.from(e.target.files || []);
-    if (total + picked.length > MAX_IMAGES) {
-      onChangeNew([...newFiles, ...picked].slice(0, MAX_IMAGES - existingUrls.length));
-    } else {
-      onChangeNew([...newFiles, ...picked]);
+  const addFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawPicked = Array.from(e.target.files || []);
+    if (rawPicked.length === 0) return;
+
+    setCompressing(true);
+    try {
+      const picked = await compressImages(rawPicked);
+      if (total + picked.length > MAX_IMAGES) {
+        onChangeNew([...newFiles, ...picked].slice(0, MAX_IMAGES - existingUrls.length));
+      } else {
+        onChangeNew([...newFiles, ...picked]);
+      }
+    } finally {
+      setCompressing(false);
+      // Reset so re-picking the same file fires onChange again.
+      if (inputRef.current) inputRef.current.value = "";
     }
-    // Reset so re-picking the same file fires onChange again.
-    if (inputRef.current) inputRef.current.value = "";
   };
 
   const removeExisting = (i: number) => onChangeExisting(existingUrls.filter((_, idx) => idx !== i));
@@ -83,11 +94,26 @@ export default function ImageEditor({
         {total < MAX_IMAGES && (
           <button
             type="button"
+            disabled={compressing}
             onClick={() => inputRef.current?.click()}
-            className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition bg-muted/30"
+            className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition bg-muted/30 disabled:opacity-60"
           >
-            {total === 0 ? <Camera size={22} /> : <Plus size={18} />}
-            <span className="text-[10px] mt-1">{total === 0 ? t("ಸೇರಿಸಿ", "Add") : t("ಇನ್ನಷ್ಟು", "More")}</span>
+            {compressing ? (
+              <>
+                <Loader2 size={20} className="animate-spin text-primary" />
+                <span className="text-[9px] mt-1 text-primary">ಕುಗ್ಗಿಸಲಾಗುತ್ತಿದೆ</span>
+              </>
+            ) : total === 0 ? (
+              <>
+                <Camera size={22} />
+                <span className="text-[10px] mt-1">{t("ಸೇರಿಸಿ", "Add")}</span>
+              </>
+            ) : (
+              <>
+                <Plus size={18} />
+                <span className="text-[10px] mt-1">{t("ಇನ್ನಷ್ಟು", "More")}</span>
+              </>
+            )}
           </button>
         )}
       </div>

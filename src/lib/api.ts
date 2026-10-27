@@ -1,3 +1,5 @@
+import { compressImages } from "./compressImage";
+
 // In the browser we call relative "/api/..." paths so requests go to the same
 // origin the app is served from — Next.js rewrites() then proxies them to the
 // backend. This avoids CORS and stale-IP issues entirely.
@@ -74,10 +76,21 @@ class ApiClient {
     // Required to bypass ngrok browser warning page for API calls
     headers["ngrok-skip-browser-warning"] = "true";
 
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      ...options,
-      headers,
-    });
+    let response: Response;
+    try {
+      response = await fetch(`${API_BASE}${endpoint}`, {
+        ...options,
+        headers,
+      });
+    } catch (networkErr: unknown) {
+      const msg = networkErr instanceof Error ? networkErr.message : String(networkErr);
+      if (msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
+        throw new Error(
+          "ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕ ದೋಷ ಅಥವಾ ಫೋಟೋಗಳ ಗಾತ್ರ ಮೀರಿದೆ. ದಯವಿಟ್ಟು ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ ಅಥವಾ ಫೋಟೋಗಳನ್ನು ಕಡಿಮೆ ಮಾಡಿ (Network error or upload failed. Please check connection and try again)"
+        );
+      }
+      throw networkErr;
+    }
 
     // Auth endpoints (login, register, OTP) are public — never trigger the
     // token-refresh / redirect-to-login flow on their errors. Just surface them.
@@ -97,18 +110,45 @@ class ApiClient {
     }
 
     if (!response.ok) {
-      let errorMsg = "Something went wrong";
+      let errorMsg = "";
       try {
-        const error = await response.json();
-        errorMsg = error.message || error.error || (typeof error === "string" ? error : JSON.stringify(error));
+        const text = await response.text();
+        if (text) {
+          try {
+            const data = JSON.parse(text);
+            if (data.details && typeof data.details === "object") {
+              errorMsg = Object.values(data.details).join(", ");
+            } else {
+              errorMsg = data.message || data.error || (typeof data === "string" ? data : JSON.stringify(data));
+            }
+          } catch {
+            if (text.includes("<html") || text.includes("<!DOCTYPE")) {
+              if (response.status === 413) {
+                errorMsg = "ಫೋಟೋಗಳ ಗಾತ್ರ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ. ದಯವಿಟ್ಟು ಚಿಕ್ಕ ಫೋಟೋಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ (Upload size too large. Please upload smaller photos)";
+              } else if (response.status === 504 || response.status === 502) {
+                errorMsg = "ಸರ್ವರ್ ಸಮಯ ಮೀರಿದೆ. ದಯವಿಟ್ಟು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ (Server timed out, please try again)";
+              } else {
+                errorMsg = `ಸರ್ವರ್ ದೋಷ (${response.status}) (Server error ${response.status})`;
+              }
+            } else {
+              errorMsg = text.slice(0, 250);
+            }
+          }
+        }
       } catch {
-        try {
-          const text = await response.text();
-          if (text) errorMsg = text;
-        } catch {
-          // ignore
+        // ignore
+      }
+
+      if (!errorMsg) {
+        if (response.status === 413) {
+          errorMsg = "ಫೋಟೋಗಳ ಗಾತ್ರ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ (Upload size too large)";
+        } else if (response.status === 504 || response.status === 502) {
+          errorMsg = "ಸರ್ವರ್ ಸಮಯ ಮೀರಿದೆ. ದಯವಿಟ್ಟು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ (Server timed out)";
+        } else {
+          errorMsg = `ದೋಷ ಸಂಭವಿಸಿದೆ (${response.status}) (Something went wrong: ${response.status})`;
         }
       }
+
       throw new Error(errorMsg);
     }
 
@@ -128,10 +168,21 @@ class ApiClient {
     // Required to bypass ngrok browser warning page for API calls
     headers["ngrok-skip-browser-warning"] = "true";
 
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      ...options,
-      headers,
-    });
+    let response: Response;
+    try {
+      response = await fetch(`${API_BASE}${endpoint}`, {
+        ...options,
+        headers,
+      });
+    } catch (networkErr: unknown) {
+      const msg = networkErr instanceof Error ? networkErr.message : String(networkErr);
+      if (msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
+        throw new Error(
+          "ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕ ದೋಷ ಅಥವಾ ಫೋಟೋಗಳ ಗಾತ್ರ ಮೀರಿದೆ. ದಯವಿಟ್ಟು ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ ಅಥವಾ ಫೋಟೋಗಳನ್ನು ಕಡಿಮೆ ಮಾಡಿ (Network error or upload failed. Please check connection and try again)"
+        );
+      }
+      throw networkErr;
+    }
 
     if ((response.status === 401 || response.status === 403) && retry) {
       const refreshed = await this.refreshAccessToken();
@@ -146,18 +197,45 @@ class ApiClient {
     }
 
     if (!response.ok) {
-      let errorMsg = "Something went wrong";
+      let errorMsg = "";
       try {
-        const error = await response.json();
-        errorMsg = error.message || error.error || (typeof error === "string" ? error : JSON.stringify(error));
+        const text = await response.text();
+        if (text) {
+          try {
+            const data = JSON.parse(text);
+            if (data.details && typeof data.details === "object") {
+              errorMsg = Object.values(data.details).join(", ");
+            } else {
+              errorMsg = data.message || data.error || (typeof data === "string" ? data : JSON.stringify(data));
+            }
+          } catch {
+            if (text.includes("<html") || text.includes("<!DOCTYPE")) {
+              if (response.status === 413) {
+                errorMsg = "ಫೋಟೋಗಳ ಗಾತ್ರ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ (Upload size too large)";
+              } else if (response.status === 504 || response.status === 502) {
+                errorMsg = "ಸರ್ವರ್ ಸಮಯ ಮೀರಿದೆ. ದಯವಿಟ್ಟು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ (Server timed out)";
+              } else {
+                errorMsg = `ಸರ್ವರ್ ದೋಷ (${response.status}) (Server error ${response.status})`;
+              }
+            } else {
+              errorMsg = text.slice(0, 250);
+            }
+          }
+        }
       } catch {
-        try {
-          const text = await response.text();
-          if (text) errorMsg = text;
-        } catch {
-          // ignore
+        // ignore
+      }
+
+      if (!errorMsg) {
+        if (response.status === 413) {
+          errorMsg = "ಫೋಟೋಗಳ ಗಾತ್ರ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ (Upload size too large)";
+        } else if (response.status === 504 || response.status === 502) {
+          errorMsg = "ಸರ್ವರ್ ಸಮಯ ಮೀರಿದೆ (Server timed out)";
+        } else {
+          errorMsg = `ದೋಷ ಸಂಭವಿಸಿದೆ (${response.status}) (Something went wrong: ${response.status})`;
         }
       }
+
       throw new Error(errorMsg);
     }
 
@@ -298,8 +376,9 @@ class ApiClient {
   async createListing(data: Record<string, unknown>, images?: File[]) {
     const formData = new FormData();
     formData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
-    if (images) {
-      images.forEach((img) => formData.append("images", img));
+    if (images && images.length > 0) {
+      const compressed = await compressImages(images);
+      compressed.forEach((img) => formData.append("images", img));
     }
     return this.request<ListingData>("/api/listings", {
       method: "POST",
@@ -314,8 +393,9 @@ class ApiClient {
   async updateListing(id: number, data: Record<string, unknown>, images?: File[]) {
     const formData = new FormData();
     formData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
-    if (images) {
-      images.forEach((img) => formData.append("images", img));
+    if (images && images.length > 0) {
+      const compressed = await compressImages(images);
+      compressed.forEach((img) => formData.append("images", img));
     }
     return this.request<ListingData>(`/api/listings/${id}`, {
       method: "PUT",
