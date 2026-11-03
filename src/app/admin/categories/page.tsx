@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { api, AdminCategoryResponse, CategoryRequestData } from "@/lib/api";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, ChevronDown, ChevronRight, Tag, Loader2, X, Check } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronDown, ChevronRight, Tag, Loader2, X, Check, ArrowUpDown, ChevronUp, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -119,6 +119,13 @@ export default function AdminCategoriesPage() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
 
+  // Reorder mode: a local copy of the top-level order the admin can rearrange,
+  // then save. The saved order becomes the order every user sees on the home page.
+  const [reordering, setReordering] = useState(false);
+  const [order, setOrder] = useState<AdminCategoryResponse[]>([]);
+  const [savingOrder, setSavingOrder] = useState(false);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+
   const handleImageUpload = async (file: File | null) => {
     if (!file) return;
     setUploadingImage(true);
@@ -156,6 +163,45 @@ export default function AdminCategoriesPage() {
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
+  };
+
+  // ─── Reorder top-level categories ──────────────────────
+  const topLevel = categories.filter(c => !c.parentId);
+
+  const enterReorder = () => {
+    setOrder(topLevel);
+    setReordering(true);
+  };
+
+  const cancelReorder = () => {
+    setReordering(false);
+    setOrder([]);
+    setDragIndex(null);
+  };
+
+  const move = (from: number, to: number) => {
+    if (to < 0 || to >= order.length) return;
+    setOrder(prev => {
+      const next = [...prev];
+      const [item] = next.splice(from, 1);
+      next.splice(to, 0, item);
+      return next;
+    });
+  };
+
+  const saveOrder = async () => {
+    setSavingOrder(true);
+    try {
+      await api.adminReorderCategories(order.map(c => c.id));
+      toast.success("Category order saved — this is what all users now see");
+      setReordering(false);
+      setDragIndex(null);
+      await fetchCategories();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save order");
+    } finally {
+      setSavingOrder(false);
+    }
   };
 
   const openCreateParent = () => {
@@ -255,14 +301,78 @@ export default function AdminCategoriesPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Categories</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{categories.length} top-level categories</p>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {reordering ? "Drag or use arrows to set the home-page order" : `${topLevel.length} top-level categories`}
+          </p>
         </div>
-        <Button onClick={openCreateParent} className="flex items-center gap-2">
-          <Plus size={16} /> New Category
-        </Button>
+        {reordering ? (
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={cancelReorder} disabled={savingOrder} className="flex items-center gap-2">
+              <X size={16} /> Cancel
+            </Button>
+            <Button onClick={saveOrder} disabled={savingOrder} className="flex items-center gap-2">
+              {savingOrder ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />} Save order
+            </Button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={enterReorder} disabled={topLevel.length < 2} className="flex items-center gap-2">
+              <ArrowUpDown size={16} /> Reorder
+            </Button>
+            <Button onClick={openCreateParent} className="flex items-center gap-2">
+              <Plus size={16} /> New Category
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Category Tree */}
+      {/* Reorder mode — draggable / arrow-sortable list of top-level categories */}
+      {reordering ? (
+        <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+          <div className="px-4 py-3 bg-primary/5 border-b border-border text-xs text-muted-foreground">
+            The order here is the order every user sees on the home page. Subcategories keep their own order.
+          </div>
+          <div className="divide-y divide-border">
+            {order.map((cat, idx) => (
+              <div
+                key={cat.id}
+                draggable
+                onDragStart={() => setDragIndex(idx)}
+                onDragOver={(e) => { e.preventDefault(); if (dragIndex !== null && dragIndex !== idx) { move(dragIndex, idx); setDragIndex(idx); } }}
+                onDragEnd={() => setDragIndex(null)}
+                className={`flex items-center gap-3 px-4 py-3 transition ${dragIndex === idx ? "bg-primary/10" : "hover:bg-muted"}`}
+              >
+                <GripVertical size={16} className="text-muted-foreground cursor-grab shrink-0" />
+                <span className="w-6 text-center text-xs font-mono text-muted-foreground shrink-0">{idx + 1}</span>
+                <span className="text-xl w-7 text-center shrink-0">{cat.icon || "📁"}</span>
+                <div className="flex-1 min-w-0">
+                  <span className="font-semibold text-foreground text-sm">{cat.name}</span>
+                  <span className="text-xs text-muted-foreground ml-2">{cat.nameEn}</span>
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => move(idx, idx - 1)}
+                    disabled={idx === 0}
+                    title="Move up"
+                    className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition disabled:opacity-30"
+                  >
+                    <ChevronUp size={16} />
+                  </button>
+                  <button
+                    onClick={() => move(idx, idx + 1)}
+                    disabled={idx === order.length - 1}
+                    title="Move down"
+                    className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition disabled:opacity-30"
+                  >
+                    <ChevronDown size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+      /* Category Tree */
       <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
         {categories.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground/70">
@@ -392,6 +502,7 @@ export default function AdminCategoriesPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* Form Modal */}
       {showForm && (

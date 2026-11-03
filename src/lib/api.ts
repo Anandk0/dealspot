@@ -766,6 +766,15 @@ class ApiClient {
       method: "DELETE",
     });
   }
+
+  // Bulk-reorder categories. Pass the ids in the order you want them to appear;
+  // the backend writes sortOrder = 0,1,2,… so the new order applies to all users.
+  async adminReorderCategories(orderedIds: number[]) {
+    return this.request<{ message: string }>("/api/admin/categories/reorder", {
+      method: "PUT",
+      body: JSON.stringify({ orderedIds }),
+    });
+  }
 }
 
 export const api = new ApiClient();
