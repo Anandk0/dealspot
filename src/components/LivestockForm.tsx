@@ -128,7 +128,7 @@ export default function LivestockForm({ categoryId }: { categoryId: string }) {
         },
         images.length > 0 ? images : undefined
       );
-      toast.success(t("ಜಾಹೀರಾತು ಸಲ್ಲಿಸಲಾಗಿದೆ!", "Listing posted!"));
+      toast.success(t("ಜಾಹೀರಾತು ಸಲ್ಲಿಸಲಾಗಿದೆ", "Listing posted"));
       setTimeout(() => router.push(`/category/${categoryId}`), 1200);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Submission failed");
@@ -146,13 +146,13 @@ export default function LivestockForm({ categoryId }: { categoryId: string }) {
           {previews.map((p, i) => (
             <div key={i} className="relative w-20 h-20">
               <img src={p} alt="" className="w-full h-full object-cover rounded-xl border border-border" />
-              <button type="button" onClick={() => { setImages((a) => a.filter((_, j) => j !== i)); setPreviews((a) => a.filter((_, j) => j !== i)); }} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center"><X size={12} /></button>
+              <button type="button" onClick={() => { setImages((a) => a.filter((_, j) => j !== i)); setPreviews((a) => a.filter((_, j) => j !== i)); }} className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"><X size={12} /></button>
             </div>
           ))}
           {images.length < 5 && (
-            <button type="button" onClick={() => fileInputRef.current?.click()} className="w-20 h-20 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary bg-muted/30 transition">
+            <button type="button" onClick={() => fileInputRef.current?.click()} className="w-20 h-20 border border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary bg-muted/30 transition">
               {images.length === 0 ? <Camera size={22} /> : <Plus size={18} />}
-              <span className="text-[10px] mt-1">{images.length === 0 ? "ಸೇರಿಸಿ" : "ಇನ್ನಷ್ಟು"}</span>
+              <span className="text-xs mt-1">{images.length === 0 ? "ಸೇರಿಸಿ" : "ಇನ್ನಷ್ಟು"}</span>
             </button>
           )}
         </div>
@@ -264,7 +264,7 @@ export default function LivestockForm({ categoryId }: { categoryId: string }) {
       </Section>
 
       {/* 5. Seller details — locked */}
-      <Section title={t("5. ಮಾರಾಟಗಾರರ ವಿವರ 🔒", "5. Seller Details 🔒")}>
+      <Section title={t("5. ಮಾರಾಟಗಾರರ ವಿವರ", "5. Seller Details")}>
         <p className="text-xs text-muted-foreground -mt-1 mb-2 flex items-center gap-1">
           <Lock size={11} className="shrink-0" />
           {t("ಈ ವಿವರಗಳು ಖರೀದಿದಾರರಿಗೆ ಅನ್‌ಲಾಕ್ ನಂತರ ಮಾತ್ರ ಕಾಣಿಸುತ್ತವೆ", "Shown to buyers only after unlock")}
@@ -301,7 +301,7 @@ export default function LivestockForm({ categoryId }: { categoryId: string }) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-sm space-y-3">
+    <div className="bg-card rounded-xl p-4 sm:p-5 border border-border shadow-sm space-y-3">
       <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       {children}
     </div>

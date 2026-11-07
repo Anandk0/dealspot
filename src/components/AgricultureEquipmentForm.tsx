@@ -119,7 +119,7 @@ export default function AgricultureEquipmentForm({ categoryId }: { categoryId: s
         },
         images.length > 0 ? images : undefined
       );
-      toast.success(t("ಉಪಕರಣ ಜಾಹೀರಾತು ಸಲ್ಲಿಸಲಾಗಿದೆ!", "Equipment listing posted!"));
+      toast.success(t("ಉಪಕರಣ ಜಾಹೀರಾತು ಸಲ್ಲಿಸಲಾಗಿದೆ", "Equipment listing posted"));
       setTimeout(() => router.push(`/category/${categoryId}`), 1200);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed");
@@ -131,13 +131,13 @@ export default function AgricultureEquipmentForm({ categoryId }: { categoryId: s
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Mode toggle — Sale vs Rent (segmented control) */}
-      <div className="grid grid-cols-2 gap-2 p-1.5 bg-muted rounded-2xl">
+      <div className="grid grid-cols-2 gap-2 p-1.5 bg-muted rounded-xl">
         <button type="button" onClick={() => setMode("sale")}
-          className={`h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "sale" ? "bg-primary text-white shadow-md" : "bg-card text-foreground border border-border hover:border-primary/40"}`}>
+          className={`h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "sale" ? "bg-primary text-primary-foreground" : "bg-card text-foreground border border-border hover:border-primary/40"}`}>
           <ShoppingCart size={16} /> {t("ಮಾರಾಟ (For Sale)", "For Sale")}
         </button>
         <button type="button" onClick={() => setMode("rent")}
-          className={`h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "rent" ? "bg-primary text-white shadow-md" : "bg-card text-foreground border border-border hover:border-primary/40"}`}>
+          className={`h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "rent" ? "bg-primary text-primary-foreground" : "bg-card text-foreground border border-border hover:border-primary/40"}`}>
           <Tractor size={16} /> {t("ಬಾಡಿಗೆ (For Rent)", "For Rent")}
         </button>
       </div>
@@ -149,13 +149,13 @@ export default function AgricultureEquipmentForm({ categoryId }: { categoryId: s
           {previews.map((p, i) => (
             <div key={i} className="relative w-20 h-20">
               <img src={p} alt="" className="w-full h-full object-cover rounded-xl border border-border" />
-              <button type="button" onClick={() => { setImages((a) => a.filter((_, j) => j !== i)); setPreviews((a) => a.filter((_, j) => j !== i)); }} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center"><X size={12} /></button>
+              <button type="button" onClick={() => { setImages((a) => a.filter((_, j) => j !== i)); setPreviews((a) => a.filter((_, j) => j !== i)); }} className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"><X size={12} /></button>
             </div>
           ))}
           {images.length < 5 && (
-            <button type="button" onClick={() => fileInputRef.current?.click()} className="w-20 h-20 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary bg-muted/30 transition">
+            <button type="button" onClick={() => fileInputRef.current?.click()} className="w-20 h-20 border border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary bg-muted/30 transition">
               {images.length === 0 ? <Camera size={22} /> : <Plus size={18} />}
-              <span className="text-[10px] mt-1">{images.length === 0 ? "Add" : "More"}</span>
+              <span className="text-xs mt-1">{images.length === 0 ? "Add" : "More"}</span>
             </button>
           )}
         </div>
@@ -248,7 +248,7 @@ export default function AgricultureEquipmentForm({ categoryId }: { categoryId: s
       </Section>
 
       {/* 5. Owner — locked */}
-      <Section title={t("5. ಮಾಲೀಕರ ವಿವರ 🔒", "5. Owner Details 🔒")}>
+      <Section title={t("5. ಮಾಲೀಕರ ವಿವರ", "5. Owner Details")}>
         <p className="text-xs text-muted-foreground flex items-center gap-1 -mt-1 mb-2"><Lock size={11} />{t("ಅನ್‌ಲಾಕ್ ನಂತರ ಮಾತ್ರ ಕಾಣಿಸುತ್ತದೆ", "Shown after unlock")}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <EF label="Owner Name / ಮಾಲೀಕರ ಹೆಸರು" value={ownerName} onChange={setOwnerName} />
@@ -264,7 +264,7 @@ export default function AgricultureEquipmentForm({ categoryId }: { categoryId: s
 
       <div className="flex gap-3 pt-2">
         <Button type="submit" disabled={loading} className="bg-primary px-8 h-11 font-medium">
-          {loading ? <><Loader2 size={16} className="mr-2 animate-spin" />Posting...</> : t("ಪೋಸ್ಟ್ ಮಾಡಿ (Post Listing)", "Post Listing")}
+          {loading ? <><Loader2 size={16} className="mr-2 animate-spin" />{t("ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...", "Posting...")}</> : t("ಪೋಸ್ಟ್ ಮಾಡಿ (Post Listing)", "Post Listing")}
         </Button>
       </div>
     </form>
@@ -272,9 +272,9 @@ export default function AgricultureEquipmentForm({ categoryId }: { categoryId: s
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return <div className="bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-sm space-y-3"><h3 className="text-sm font-semibold text-foreground">{title}</h3>{children}</div>;
+  return <div className="bg-card rounded-xl p-4 sm:p-5 border border-border shadow-sm space-y-3"><h3 className="text-sm font-semibold text-foreground">{title}</h3>{children}</div>;
 }
 function EF({ label, value, onChange, type = "text", placeholder, required }: { label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string; required?: boolean }) {
   const inputMode = type === "number" || type === "tel" ? "numeric" : undefined;
-  return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}{required && <span className="text-red-500"> *</span>}</label><Input value={value} onChange={(e) => onChange(sanitizeByType(e.target.value, { type, key: label }))} type={type === "number" ? "text" : type} inputMode={inputMode} placeholder={placeholder || label} className="h-10 sm:h-11" /></div>;
+  return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}{required && <span className="text-destructive"> *</span>}</label><Input value={value} onChange={(e) => onChange(sanitizeByType(e.target.value, { type, key: label }))} type={type === "number" ? "text" : type} inputMode={inputMode} placeholder={placeholder || label} className="h-10 sm:h-11" /></div>;
 }

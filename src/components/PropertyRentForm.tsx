@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Plus, X, Loader2, Lock, Home, FileText } from "lucide-react";
+import { Camera, Plus, X, Loader2, Lock, Home, FileText, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -159,7 +159,7 @@ export default function PropertyRentForm({ categoryId }: { categoryId: string })
         },
         images.length > 0 ? images : undefined
       );
-      toast.success(t("ಆಸ್ತಿ ಜಾಹೀರಾತು ಸಲ್ಲಿಸಲಾಗಿದೆ!", "Property posted!"));
+      toast.success(t("ಆಸ್ತಿ ಜಾಹೀರಾತು ಸಲ್ಲಿಸಲಾಗಿದೆ", "Property posted"));
       setTimeout(() => router.push(`/category/${categoryId}`), 1200);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed");
@@ -174,13 +174,13 @@ export default function PropertyRentForm({ categoryId }: { categoryId: string })
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Mode toggle (segmented control) */}
-      <div className="grid grid-cols-2 gap-2 p-1.5 bg-muted rounded-2xl">
+      <div className="grid grid-cols-2 gap-2 p-1.5 bg-muted rounded-xl">
         <button type="button" onClick={() => { setMode("rent"); setPropertyType(preset?.type ?? ""); setFacilities([]); }}
-          className={`h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "rent" ? "bg-primary text-white shadow-md" : "bg-card text-foreground border border-border hover:border-primary/40"}`}>
+          className={`h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "rent" ? "bg-primary text-primary-foreground" : "bg-card text-foreground border border-border hover:border-primary/40"}`}>
           <Home size={16} /> {t("ಬಾಡಿಗೆ (Rent)", "Rent")}
         </button>
         <button type="button" onClick={() => { setMode("lease"); setPropertyType(preset?.type ?? ""); setFacilities([]); }}
-          className={`h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "lease" ? "bg-primary text-white shadow-md" : "bg-card text-foreground border border-border hover:border-primary/40"}`}>
+          className={`h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition ${mode === "lease" ? "bg-primary text-primary-foreground" : "bg-card text-foreground border border-border hover:border-primary/40"}`}>
           <FileText size={16} /> {t("ಲೀಸ್ (Lease)", "Lease")}
         </button>
       </div>
@@ -192,13 +192,13 @@ export default function PropertyRentForm({ categoryId }: { categoryId: string })
           {previews.map((p, i) => (
             <div key={i} className="relative w-20 h-20">
               <img src={p} alt="" className="w-full h-full object-cover rounded-xl border border-border" />
-              <button type="button" onClick={() => { setImages((a) => a.filter((_, j) => j !== i)); setPreviews((a) => a.filter((_, j) => j !== i)); }} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center"><X size={12} /></button>
+              <button type="button" onClick={() => { setImages((a) => a.filter((_, j) => j !== i)); setPreviews((a) => a.filter((_, j) => j !== i)); }} className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"><X size={12} /></button>
             </div>
           ))}
           {images.length < 5 && (
-            <button type="button" onClick={() => fileInputRef.current?.click()} className="w-20 h-20 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary bg-muted/30 transition">
+            <button type="button" onClick={() => fileInputRef.current?.click()} className="w-20 h-20 border border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary bg-muted/30 transition">
               {images.length === 0 ? <Camera size={22} /> : <Plus size={18} />}
-              <span className="text-[10px] mt-1">{images.length === 0 ? "Add" : "More"}</span>
+              <span className="text-xs mt-1">{images.length === 0 ? "Add" : "More"}</span>
             </button>
           )}
         </div>
@@ -255,7 +255,7 @@ export default function PropertyRentForm({ categoryId }: { categoryId: string })
             <button key={fa} type="button" onClick={() => toggleFacility(fa)}
               className={`px-3 py-2 rounded-xl border text-xs font-medium text-left transition flex items-center gap-1.5 ${facilities.includes(fa) ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-muted"}`}>
               <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0 ${facilities.includes(fa) ? "bg-primary border-primary" : "border-muted-foreground"}`}>
-                {facilities.includes(fa) && <span className="text-white text-[9px]">✓</span>}
+                {facilities.includes(fa) && <Check size={12} strokeWidth={2} className="text-primary-foreground" aria-hidden="true" />}
               </span>
               {fa}
             </button>
@@ -290,7 +290,7 @@ export default function PropertyRentForm({ categoryId }: { categoryId: string })
       </Section>
 
       {/* 7. Owner — locked */}
-      <Section title={t("7. ಮಾಲೀಕ / ಏಜೆಂಟ್ 🔒", "7. Owner / Agent 🔒")}>
+      <Section title={t("7. ಮಾಲೀಕ / ಏಜೆಂಟ್", "7. Owner / Agent")}>
         <p className="text-xs text-muted-foreground flex items-center gap-1 -mt-1 mb-2"><Lock size={11} />{t("ಅನ್‌ಲಾಕ್ ನಂತರ ಮಾತ್ರ ಕಾಣಿಸುತ್ತದೆ", "Shown after unlock")}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <F label="Owner / Agent Name / ಹೆಸರು" value={ownerName} onChange={setOwnerName} />
@@ -315,11 +315,11 @@ export default function PropertyRentForm({ categoryId }: { categoryId: string })
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return <div className="bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-sm space-y-3"><h3 className="text-sm font-semibold text-foreground">{title}</h3>{children}</div>;
+  return <div className="bg-card rounded-xl p-4 sm:p-5 border border-border shadow-sm space-y-3"><h3 className="text-sm font-semibold text-foreground">{title}</h3>{children}</div>;
 }
 function F({ label, value, onChange, type = "text", placeholder, required }: { label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string; required?: boolean }) {
   const inputMode = type === "number" || type === "tel" ? "numeric" : undefined;
-  return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}{required && <span className="text-red-500"> *</span>}</label><Input value={value} onChange={(e) => onChange(sanitizeByType(e.target.value, { type, key: label }))} type={type === "number" ? "text" : type} inputMode={inputMode} placeholder={placeholder || label} className="h-10 sm:h-11" /></div>;
+  return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}{required && <span className="text-destructive"> *</span>}</label><Input value={value} onChange={(e) => onChange(sanitizeByType(e.target.value, { type, key: label }))} type={type === "number" ? "text" : type} inputMode={inputMode} placeholder={placeholder || label} className="h-10 sm:h-11" /></div>;
 }
 function SF({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
   return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}</label><select value={value} onChange={(e) => onChange(e.target.value)} className="w-full h-10 sm:h-11 rounded-md border border-border bg-card text-foreground px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"><option value="">Select</option>{options.map((o) => <option key={o} value={o}>{o}</option>)}</select></div>;

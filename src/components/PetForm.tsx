@@ -96,7 +96,7 @@ export default function PetForm({ categoryId }: { categoryId: string }) {
         },
         images.length > 0 ? images : undefined
       );
-      toast.success(t("ಜಾಹೀರಾತು ಸಲ್ಲಿಸಲಾಗಿದೆ!", "Listing posted!"));
+      toast.success(t("ಜಾಹೀರಾತು ಸಲ್ಲಿಸಲಾಗಿದೆ", "Listing posted"));
       setTimeout(() => router.push(`/category/${categoryId}`), 1200);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed");
@@ -114,13 +114,13 @@ export default function PetForm({ categoryId }: { categoryId: string }) {
           {previews.map((p, i) => (
             <div key={i} className="relative w-20 h-20">
               <img src={p} alt="" className="w-full h-full object-cover rounded-xl border border-border" />
-              <button type="button" onClick={() => { setImages((a) => a.filter((_, j) => j !== i)); setPreviews((a) => a.filter((_, j) => j !== i)); }} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center"><X size={12} /></button>
+              <button type="button" onClick={() => { setImages((a) => a.filter((_, j) => j !== i)); setPreviews((a) => a.filter((_, j) => j !== i)); }} className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"><X size={12} /></button>
             </div>
           ))}
           {images.length < 5 && (
-            <button type="button" onClick={() => fileInputRef.current?.click()} className="w-20 h-20 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary bg-muted/30 transition">
+            <button type="button" onClick={() => fileInputRef.current?.click()} className="w-20 h-20 border border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary bg-muted/30 transition">
               {images.length === 0 ? <Camera size={22} /> : <Plus size={18} />}
-              <span className="text-[10px] mt-1">{images.length === 0 ? "Add" : "More"}</span>
+              <span className="text-xs mt-1">{images.length === 0 ? "Add" : "More"}</span>
             </button>
           )}
         </div>
@@ -202,7 +202,7 @@ export default function PetForm({ categoryId }: { categoryId: string }) {
       </Section>
 
       {/* 5. Owner — locked */}
-      <Section title={t("5. ಮಾಲೀಕರ ವಿವರ 🔒", "5. Owner Details 🔒")}>
+      <Section title={t("5. ಮಾಲೀಕರ ವಿವರ", "5. Owner Details")}>
         <p className="text-xs text-muted-foreground flex items-center gap-1 -mt-1 mb-2"><Lock size={11} />{t("ಅನ್‌ಲಾಕ್ ನಂತರ ಮಾತ್ರ ಕಾಣಿಸುತ್ತದೆ", "Shown after unlock")}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <PF label={t("ಮಾಲೀಕರ ಹೆಸರು", "Owner Name")} value={ownerName} onChange={setOwnerName} />
@@ -213,7 +213,7 @@ export default function PetForm({ categoryId }: { categoryId: string }) {
 
       <div className="flex gap-3 pt-2">
         <Button type="submit" disabled={loading} className="bg-primary px-8 h-11 font-medium">
-          {loading ? <><Loader2 size={16} className="mr-2 animate-spin" />Posting...</> : t("ಪೋಸ್ಟ್ ಮಾಡಿ", "Post Listing")}
+          {loading ? <><Loader2 size={16} className="mr-2 animate-spin" />{t("ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...", "Posting...")}</> : t("ಪೋಸ್ಟ್ ಮಾಡಿ", "Post Listing")}
         </Button>
       </div>
     </form>
@@ -221,7 +221,7 @@ export default function PetForm({ categoryId }: { categoryId: string }) {
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return <div className="bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-sm space-y-3"><h3 className="text-sm font-semibold text-foreground">{title}</h3>{children}</div>;
+  return <div className="bg-card rounded-xl p-4 sm:p-5 border border-border shadow-sm space-y-3"><h3 className="text-sm font-semibold text-foreground">{title}</h3>{children}</div>;
 }
 function PF({ label, value, onChange, type = "text", placeholder }: { label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string }) {
   return <div><label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">{label}</label><Input value={value} onChange={(e) => onChange(sanitizeByType(e.target.value, { type, key: label }))} type={type === "number" ? "text" : type} inputMode={type === "number" || type === "tel" ? "numeric" : undefined} placeholder={placeholder || label} className="h-10 sm:h-11" /></div>;

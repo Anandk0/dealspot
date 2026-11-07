@@ -1,6 +1,6 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
-import { Camera, Plus, X, Loader2, MapPin, LocateFixed, Check } from "lucide-react";
+import { Camera, Plus, X, Loader2, MapPin, LocateFixed, Check, Handshake } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,8 +50,8 @@ export default function CreateListingPage() {
       return (
         <AppLayout>
           <div className="max-w-xl mx-auto px-4 py-20 text-center">
-            <p className="text-5xl mb-4">🤝</p>
-            <h1 className="text-lg font-bold text-foreground">ಏಜೆಂಟ್ ಸೇವೆ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ (Agents unavailable)</h1>
+            <Handshake size={32} strokeWidth={1.5} className="mx-auto mb-4 text-muted-foreground" aria-hidden="true" />
+            <h1 className="text-lg font-semibold text-foreground">ಏಜೆಂಟ್ ಸೇವೆ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ (Agents unavailable)</h1>
             <p className="text-sm text-muted-foreground mt-2">
               ಈ ವೈಶಿಷ್ಟ್ಯವನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ. (This feature has been turned off.)
             </p>
@@ -103,7 +103,7 @@ export default function CreateListingPage() {
             <span>/</span>
             <span className="text-foreground font-medium shrink-0">ಹೊಸ ಜಾಹೀರಾತು</span>
           </div>
-          <h1 className="text-lg sm:text-xl font-bold text-foreground mb-1">
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground mb-1">
             {rent ? "ಆಸ್ತಿ ಬಾಡಿಗೆ / ಲೀಸ್ (Property Rent / Lease)" : "ಆಸ್ತಿ ಮಾರಾಟ (Property Sale)"}
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mb-5">
@@ -400,8 +400,8 @@ export default function CreateListingPage() {
           <span className="text-foreground font-medium shrink-0">ಹೊಸ ಜಾಹೀರಾತು</span>
         </div>
 
-        <div className="bg-card rounded-2xl p-4 sm:p-8 shadow-sm border border-border">
-          <h1 className="text-lg sm:text-xl font-bold text-foreground mb-1">ಹೊಸ ಜಾಹೀರಾತು (New Listing)</h1>
+        <div className="bg-card rounded-xl p-4 sm:p-8 shadow-sm border border-border">
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground mb-1">ಹೊಸ ಜಾಹೀರಾತು (New Listing)</h1>
           <p className="text-xs sm:text-sm text-muted-foreground mb-5 sm:mb-6">
             {parentCategory && <span>{parentCategory.name} → </span>}
             {category?.name} • {category?.nameEn}
@@ -428,7 +428,7 @@ export default function CreateListingPage() {
                     <button
                       type="button"
                       onClick={() => removeImage(i)}
-                      className="absolute -top-2 -right-2 w-5 h-5 sm:w-6 sm:h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
+                      className="absolute -top-2 -right-2 w-5 h-5 sm:w-6 sm:h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"
                     >
                       <X size={12} />
                     </button>
@@ -438,10 +438,10 @@ export default function CreateListingPage() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition bg-muted/30"
+                    className="w-20 h-20 sm:w-24 sm:h-24 border border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition bg-muted/30"
                   >
                     {images.length === 0 ? <Camera size={22} /> : <Plus size={18} />}
-                    <span className="text-[10px] mt-1">{images.length === 0 ? "ಸೇರಿಸಿ" : "ಇನ್ನಷ್ಟು"}</span>
+                    <span className="text-xs mt-1">{images.length === 0 ? "ಸೇರಿಸಿ" : "ಇನ್ನಷ್ಟು"}</span>
                   </button>
                 )}
               </div>
@@ -479,7 +479,7 @@ export default function CreateListingPage() {
                 disabled={pinning}
                 className={`flex items-center gap-2 w-full sm:w-auto px-4 h-10 sm:h-11 rounded-xl border text-sm transition ${
                   coords
-                    ? "border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400"
+                    ? "border-primary/40 bg-primary/10 text-primary"
                     : "border-border bg-background text-foreground hover:border-primary/50"
                 }`}
               >
@@ -491,7 +491,7 @@ export default function CreateListingPage() {
                   <><LocateFixed size={16} /> ನನ್ನ ಲೊಕೇಶನ್ ಪಿನ್ ಮಾಡಿ (Pin my location)</>
                 )}
               </button>
-              <p className="text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1">
+              <p className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1">
                 <MapPin size={11} className="shrink-0" />
                 ಇದು ಖರೀದಿದಾರರಿಗೆ ದೂರ (km) ತೋರಿಸುತ್ತದೆ — This shows buyers the distance in km.
               </p>
@@ -562,7 +562,7 @@ function FormHeader({
         <span>/</span>
         <span className="text-foreground font-medium shrink-0">ಹೊಸ ಜಾಹೀರಾತು</span>
       </div>
-      <h1 className="text-lg sm:text-xl font-bold text-foreground mb-1">
+      <h1 className="text-lg sm:text-xl font-semibold text-foreground mb-1">
         {category?.name}{" "}
         <span className="text-sm font-normal text-muted-foreground">({category?.nameEn})</span>
       </h1>

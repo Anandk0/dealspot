@@ -257,7 +257,7 @@ export default function ServiceForm({ categoryId }: { categoryId: string }) {
         },
         allImages.length > 0 ? allImages : undefined
       );
-      toast.success(t("ಸೇವೆ ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಸಲಾಗಿದೆ!", "Service posted successfully!"));
+      toast.success(t("ಸೇವೆ ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಸಲಾಗಿದೆ", "Service posted successfully"));
       setTimeout(() => router.push(`/category/${categoryId}`), 1200);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("ಸಲ್ಲಿಕೆ ವಿಫಲ", "Submission failed"));
@@ -275,13 +275,13 @@ export default function ServiceForm({ categoryId }: { categoryId: string }) {
           {previews.map((p, i) => (
             <div key={i} className="relative w-20 h-20">
               <img src={p} alt="" className="w-full h-full object-cover rounded-xl border border-border" />
-              <button type="button" onClick={() => { setImages((a) => a.filter((_, j) => j !== i)); setPreviews((a) => a.filter((_, j) => j !== i)); }} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center"><X size={12} /></button>
+              <button type="button" onClick={() => { setImages((a) => a.filter((_, j) => j !== i)); setPreviews((a) => a.filter((_, j) => j !== i)); }} className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"><X size={12} /></button>
             </div>
           ))}
           {images.length < 5 && (
-            <button type="button" onClick={() => fileInputRef.current?.click()} className="w-20 h-20 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary hover:text-primary bg-muted/30 transition">
+            <button type="button" onClick={() => fileInputRef.current?.click()} className="w-20 h-20 border border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary hover:text-primary bg-muted/30 transition">
               {images.length === 0 ? <Camera size={22} /> : <Plus size={18} />}
-              <span className="text-[10px] mt-1">{images.length === 0 ? t("ಸೇರಿಸಿ", "Add") : t("ಇನ್ನಷ್ಟು", "More")}</span>
+              <span className="text-xs mt-1">{images.length === 0 ? t("ಸೇರಿಸಿ", "Add") : t("ಇನ್ನಷ್ಟು", "More")}</span>
             </button>
           )}
         </div>
@@ -356,7 +356,7 @@ export default function ServiceForm({ categoryId }: { categoryId: string }) {
           {hasLicence.startsWith("Yes") && (
             <div>
               <p className="text-xs text-muted-foreground mb-2">{t("ಲೈಸೆನ್ಸ್ ಫೋಟೋ (ಐಚ್ಛಿಕ)", "Licence Photo (optional)")}</p>
-              <label className="block w-28 h-20 border-2 border-dashed border-border rounded-xl overflow-hidden cursor-pointer hover:border-primary">
+              <label className="block w-28 h-20 border border-dashed border-border rounded-xl overflow-hidden cursor-pointer hover:border-primary">
                 {licencePreview ? <img src={licencePreview} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground"><Camera size={20} /></div>}
                 <input type="file" accept="image/*" className="hidden" onChange={handleLicenceSelect} />
               </label>
@@ -389,7 +389,7 @@ export default function ServiceForm({ categoryId }: { categoryId: string }) {
       </Section>
 
       {/* ── Contact (locked) ── */}
-      <Section title={t("6. ಸಂಪರ್ಕ ವಿವರ (ಪಾವತಿ ನಂತರ) 🔒", "6. Contact Details (after unlock) 🔒")}>
+      <Section title={t("6. ಸಂಪರ್ಕ ವಿವರ (ಪಾವತಿ ನಂತರ)", "6. Contact Details (after unlock)")}>
         <p className="text-xs text-muted-foreground -mt-1 mb-2 flex items-center gap-1">
           <Lock size={11} className="shrink-0" />
           {t("ಈ ವಿವರಗಳು ಗ್ರಾಹಕರಿಗೆ ಅನ್‌ಲಾಕ್ ನಂತರ ಮಾತ್ರ ಕಾಣಿಸುತ್ತವೆ", "Shown to customers only after unlock")}
@@ -418,7 +418,7 @@ export default function ServiceForm({ categoryId }: { categoryId: string }) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-sm space-y-3">
+    <div className="bg-card rounded-xl p-4 sm:p-5 border border-border shadow-sm space-y-3">
       <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       {children}
     </div>
@@ -432,7 +432,7 @@ function Field({ label, value, onChange, type = "text", placeholder, required }:
   return (
     <div>
       <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">
-        {label}{required && <span className="text-red-500"> *</span>}
+        {label}{required && <span className="text-destructive"> *</span>}
       </label>
       <Input value={value} onChange={(e) => onChange(sanitizeByType(e.target.value, { type, key: label }))} type={type === "number" ? "text" : type} inputMode={type === "number" || type === "tel" ? "numeric" : undefined} placeholder={placeholder || label} className="h-10 sm:h-11" />
     </div>

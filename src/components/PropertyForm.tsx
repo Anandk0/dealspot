@@ -203,11 +203,11 @@ export default function PropertyForm({
         // Send the kept-image list so removals persist (and new files upload).
         listingData.existingImages = existingImages;
         await api.updateListing(existing.id, listingData, images.length > 0 ? images : undefined);
-        toast.success(t("ಜಾಹೀರಾತು ನವೀಕರಿಸಲಾಗಿದೆ!", "Listing updated!"));
+        toast.success(t("ಜಾಹೀರಾತು ನವೀಕರಿಸಲಾಗಿದೆ", "Listing updated"));
         setTimeout(() => router.push("/profile/listings"), 1200);
       } else {
         await api.createListing(listingData, images.length > 0 ? images : undefined);
-        toast.success(t("ಜಾಹೀರಾತು ಸಲ್ಲಿಸಲಾಗಿದೆ!", "Listing submitted!"));
+        toast.success(t("ಜಾಹೀರಾತು ಸಲ್ಲಿಸಲಾಗಿದೆ", "Listing submitted"));
         setTimeout(() => router.push(`/category/${categoryId}`), 1200);
       }
     } catch (err) {
@@ -296,7 +296,7 @@ export default function PropertyForm({
           onClick={pinLocation}
           disabled={pinning}
           className={`flex items-center gap-2 w-full sm:w-auto px-4 h-11 rounded-xl border text-sm transition ${
-            coords ? "border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400" : "border-border bg-background text-foreground hover:border-primary/50"
+            coords ? "border-primary/40 bg-primary/10 text-primary" : "border-border bg-background text-foreground hover:border-primary/50"
           }`}
         >
           {pinning ? <><Loader2 size={16} className="animate-spin" /> {t("ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...", "Detecting...")}</>
@@ -324,7 +324,7 @@ export default function PropertyForm({
 // ── Small presentational helpers ──
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-sm space-y-3">
+    <div className="bg-card rounded-xl p-4 sm:p-5 border border-border shadow-sm space-y-3">
       <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       {children}
     </div>
@@ -337,7 +337,7 @@ function TextField({ label, value, onChange, type = "text", placeholder, require
   return (
     <div>
       <label className="text-xs sm:text-sm font-medium text-foreground mb-1 block">
-        {label}{required && <span className="text-red-500"> *</span>}
+        {label}{required && <span className="text-destructive"> *</span>}
       </label>
       <Input value={value} onChange={(e) => onChange(sanitizeByType(e.target.value, { type, key: label }))} type={type === "number" ? "text" : type} inputMode={type === "number" || type === "tel" ? "numeric" : undefined} placeholder={placeholder || label} className="h-10 sm:h-11" />
     </div>

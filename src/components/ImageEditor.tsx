@@ -66,7 +66,7 @@ export default function ImageEditor({
             <button
               type="button"
               onClick={() => removeExisting(i)}
-              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
+              className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"
               aria-label="Remove image"
             >
               <X size={12} />
@@ -82,7 +82,7 @@ export default function ImageEditor({
             <button
               type="button"
               onClick={() => removeNew(i)}
-              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
+              className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"
               aria-label="Remove image"
             >
               <X size={12} />
@@ -96,28 +96,28 @@ export default function ImageEditor({
             type="button"
             disabled={compressing}
             onClick={() => inputRef.current?.click()}
-            className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition bg-muted/30 disabled:opacity-60"
+            className="w-20 h-20 sm:w-24 sm:h-24 border border-dashed border-border rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition bg-muted/30 disabled:opacity-60"
           >
             {compressing ? (
               <>
                 <Loader2 size={20} className="animate-spin text-primary" />
-                <span className="text-[9px] mt-1 text-primary">ಕುಗ್ಗಿಸಲಾಗುತ್ತಿದೆ</span>
+                <span className="text-xs mt-1 text-primary">ಕುಗ್ಗಿಸಲಾಗುತ್ತಿದೆ</span>
               </>
             ) : total === 0 ? (
               <>
                 <Camera size={22} />
-                <span className="text-[10px] mt-1">{t("ಸೇರಿಸಿ", "Add")}</span>
+                <span className="text-xs mt-1">{t("ಸೇರಿಸಿ", "Add")}</span>
               </>
             ) : (
               <>
                 <Plus size={18} />
-                <span className="text-[10px] mt-1">{t("ಇನ್ನಷ್ಟು", "More")}</span>
+                <span className="text-xs mt-1">{t("ಇನ್ನಷ್ಟು", "More")}</span>
               </>
             )}
           </button>
         )}
       </div>
-      <p className="text-[11px] text-muted-foreground mt-1.5">
+      <p className="text-xs text-muted-foreground mt-1.5">
         {t(`${total}/${MAX_IMAGES} ಫೋಟೋಗಳು`, `${total}/${MAX_IMAGES} photos`)}
       </p>
     </div>

@@ -2,7 +2,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Loader2, SearchX } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import PropertyForm from "@/components/PropertyForm";
 import LocationFields, { type LocationValue } from "@/components/LocationFields";
@@ -148,7 +148,7 @@ export default function EditListingPage() {
         existingImages,
       };
       await api.updateListing(item.id, data, newImages.length > 0 ? newImages : undefined);
-      toast.success(t("ಜಾಹೀರಾತು ನವೀಕರಿಸಲಾಗಿದೆ!", "Listing updated!"));
+      toast.success(t("ಜಾಹೀರಾತು ನವೀಕರಿಸಲಾಗಿದೆ", "Listing updated"));
       setTimeout(() => router.push("/profile/listings"), 1000);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("ನವೀಕರಣ ವಿಫಲ", "Update failed"));
@@ -171,7 +171,7 @@ export default function EditListingPage() {
     return (
       <AppLayout>
         <div className="max-w-3xl mx-auto p-6 text-center py-20">
-          <p className="text-5xl mb-4">😔</p>
+          <SearchX size={32} strokeWidth={1.5} aria-hidden className="mx-auto mb-4 text-muted-foreground" />
           <p className="text-muted-foreground">{t("ಜಾಹೀರಾತು ಸಿಗಲಿಲ್ಲ", "Listing not found")}</p>
           <Link href="/profile/listings" className="text-primary mt-4 inline-block hover:underline">← {t("ಹಿಂದೆ", "Back")}</Link>
         </div>
@@ -187,7 +187,7 @@ export default function EditListingPage() {
           <span>/</span>
           <span className="text-foreground font-medium">{t("ಸಂಪಾದಿಸಿ", "Edit")}</span>
         </div>
-        <h1 className="text-lg sm:text-xl font-bold text-foreground mb-4">
+        <h1 className="text-lg sm:text-xl font-semibold text-foreground mb-4">
           {t("ಜಾಹೀರಾತು ಸಂಪಾದಿಸಿ (Edit Listing)", "Edit Listing")}
         </h1>
 
@@ -198,7 +198,7 @@ export default function EditListingPage() {
             existing={item}
           />
         ) : (
-          <form onSubmit={handleSave} className="bg-card rounded-2xl p-4 sm:p-6 border border-border space-y-4">
+          <form onSubmit={handleSave} className="bg-card rounded-xl p-4 sm:p-6 border border-border space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {genericFields(item.category)
                 .filter((field) => !["district", "location", "area"].includes(field.key))
@@ -237,12 +237,12 @@ export default function EditListingPage() {
                 value={form.description || ""}
                 onChange={(e) => handleChange("description", e.target.value)}
                 rows={4}
-                placeholder={t("ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ...", "Enter details...")}
+                placeholder={t("ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ", "Enter details")}
               />
             </div>
             <div className="flex gap-3 pt-1">
               <Button type="submit" disabled={saving} className="bg-primary px-8 h-11 text-sm font-medium">
-                {saving ? <><Loader2 size={16} className="mr-2 animate-spin" /> {t("ಉಳಿಸಲಾಗುತ್ತಿದೆ...", "Saving...")}</> : t("ನವೀಕರಿಸಿ (Update)", "Update")}
+                {saving ? <><Loader2 size={16} className="mr-2 animate-spin" /> {t("ಉಳಿಸಲಾಗುತ್ತಿದೆ", "Saving")}</> : t("ನವೀಕರಿಸಿ (Update)", "Update")}
               </Button>
               <Link href="/profile/listings">
                 <Button type="button" variant="outline" className="h-11 text-sm">{t("ರದ್ದು (Cancel)", "Cancel")}</Button>

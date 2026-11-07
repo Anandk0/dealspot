@@ -116,9 +116,9 @@ export default function LocationFields({
           </div>
         </div>
         {pinError ? (
-          <p className="text-[11px] text-red-500 mt-1">{pinError}</p>
+          <p className="text-xs text-destructive mt-1">{pinError}</p>
         ) : (
-          <p className="text-[11px] text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {t("ಪಿನ್‌ಕೋಡ್ ಹಾಕಿದರೆ ಜಿಲ್ಲೆ/ತಾಲೂಕು/ಪ್ರದೇಶ ತಾನಾಗಿಯೇ ತುಂಬುತ್ತದೆ",
                "Enter a pincode to auto-fill district / taluk / area")}
           </p>
@@ -187,7 +187,7 @@ export default function LocationFields({
           placeholder={t("ಉದಾ: ಮನೆ ನಂ 7, 2ನೇ ಕ್ರಾಸ್, ಗ್ರಾಮ, ಲ್ಯಾಂಡ್‌ಮಾರ್ಕ್", "e.g. House No 7, 2nd Cross, Village, Landmark")}
           className="h-10 sm:h-11"
         />
-        <p className="text-[11px] text-muted-foreground mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           {t("ನಿಮ್ಮ ಪೂರ್ಣ ವಿಳಾಸ ನಮೂದಿಸಿ — ಸಂಪಾದಿಸಬಹುದು", "Enter your full address — you can edit this")}
         </p>
       </div>
