@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { api, AdminCategoryResponse, CategoryRequestData } from "@/lib/api";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, ChevronDown, ChevronRight, Tag, Loader2, X, Check, ArrowUpDown, ChevronUp, GripVertical } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronDown, ChevronRight, Tag, Loader2, X, Check, ArrowUpDown, ChevronUp, GripVertical, Folder, File } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -300,27 +300,27 @@ export default function AdminCategoriesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Categories</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h1 className="text-2xl font-semibold text-foreground">Categories</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             {reordering ? "Drag or use arrows to set the home-page order" : `${topLevel.length} top-level categories`}
           </p>
         </div>
         {reordering ? (
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={cancelReorder} disabled={savingOrder} className="flex items-center gap-2">
-              <X size={16} /> Cancel
+              <X size={16} strokeWidth={1.5} /> Cancel
             </Button>
             <Button onClick={saveOrder} disabled={savingOrder} className="flex items-center gap-2">
-              {savingOrder ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />} Save order
+              {savingOrder ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} strokeWidth={1.5} />} Save order
             </Button>
           </div>
         ) : (
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={enterReorder} disabled={topLevel.length < 2} className="flex items-center gap-2">
-              <ArrowUpDown size={16} /> Reorder
+              <ArrowUpDown size={16} strokeWidth={1.5} /> Reorder
             </Button>
             <Button onClick={openCreateParent} className="flex items-center gap-2">
-              <Plus size={16} /> New Category
+              <Plus size={16} strokeWidth={1.5} /> New category
             </Button>
           </div>
         )}
@@ -328,8 +328,8 @@ export default function AdminCategoriesPage() {
 
       {/* Reorder mode — draggable / arrow-sortable list of top-level categories */}
       {reordering ? (
-        <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-          <div className="px-4 py-3 bg-primary/5 border-b border-border text-xs text-muted-foreground">
+        <div className="bg-card rounded-xl border border-border overflow-hidden">
+          <div className="px-4 py-3 bg-muted border-b border-border text-xs text-muted-foreground">
             The order here is the order every user sees on the home page. Subcategories keep their own order.
           </div>
           <div className="divide-y divide-border">
@@ -340,13 +340,13 @@ export default function AdminCategoriesPage() {
                 onDragStart={() => setDragIndex(idx)}
                 onDragOver={(e) => { e.preventDefault(); if (dragIndex !== null && dragIndex !== idx) { move(dragIndex, idx); setDragIndex(idx); } }}
                 onDragEnd={() => setDragIndex(null)}
-                className={`flex items-center gap-3 px-4 py-3 transition ${dragIndex === idx ? "bg-primary/10" : "hover:bg-muted"}`}
+                className={`flex items-center gap-3 px-4 py-3 transition-colors ${dragIndex === idx ? "bg-primary/10" : "hover:bg-accent"}`}
               >
-                <GripVertical size={16} className="text-muted-foreground cursor-grab shrink-0" />
+                <GripVertical size={16} strokeWidth={1.5} className="text-muted-foreground cursor-grab shrink-0" />
                 <span className="w-6 text-center text-xs font-mono text-muted-foreground shrink-0">{idx + 1}</span>
-                <span className="text-xl w-7 text-center shrink-0">{cat.icon || "📁"}</span>
+                <span className="text-xl w-7 flex items-center justify-center shrink-0">{cat.icon || <Folder size={18} strokeWidth={1.5} className="text-muted-foreground" />}</span>
                 <div className="flex-1 min-w-0">
-                  <span className="font-semibold text-foreground text-sm">{cat.name}</span>
+                  <span className="font-medium text-foreground text-sm">{cat.name}</span>
                   <span className="text-xs text-muted-foreground ml-2">{cat.nameEn}</span>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
@@ -354,17 +354,19 @@ export default function AdminCategoriesPage() {
                     onClick={() => move(idx, idx - 1)}
                     disabled={idx === 0}
                     title="Move up"
-                    className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition disabled:opacity-30"
+                    aria-label="Move up"
+                    className="p-2 rounded-lg text-muted-foreground hover:bg-accent transition-colors disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <ChevronUp size={16} />
+                    <ChevronUp size={16} strokeWidth={1.5} />
                   </button>
                   <button
                     onClick={() => move(idx, idx + 1)}
                     disabled={idx === order.length - 1}
                     title="Move down"
-                    className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition disabled:opacity-30"
+                    aria-label="Move down"
+                    className="p-2 rounded-lg text-muted-foreground hover:bg-accent transition-colors disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <ChevronDown size={16} />
+                    <ChevronDown size={16} strokeWidth={1.5} />
                   </button>
                 </div>
               </div>
@@ -373,53 +375,54 @@ export default function AdminCategoriesPage() {
         </div>
       ) : (
       /* Category Tree */
-      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         {categories.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground/70">
-            <Tag size={40} className="mx-auto mb-3 opacity-30" />
-            <p>No categories yet. Create your first one!</p>
+          <div className="text-center py-16 text-muted-foreground">
+            <Tag size={32} strokeWidth={1.5} className="mx-auto mb-3 opacity-60" />
+            <p>No categories yet. Create the first one.</p>
           </div>
         ) : (
           <div className="divide-y divide-border">
             {categories.map((cat) => (
               <div key={cat.id}>
                 {/* Parent Row */}
-                <div className="flex items-center gap-3 px-4 py-3 hover:bg-muted group">
+                <div className="flex items-center gap-3 px-4 py-3 hover:bg-accent transition-colors group">
                   {/* Expand toggle */}
                   <button
                     onClick={() => toggleExpand(cat.id)}
-                    className="w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-foreground shrink-0"
+                    aria-label={expanded.has(cat.id) ? "Collapse" : "Expand"}
+                    className="w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-foreground shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     {cat.subcategories?.length > 0
-                      ? expanded.has(cat.id) ? <ChevronDown size={16} /> : <ChevronRight size={16} />
+                      ? expanded.has(cat.id) ? <ChevronDown size={16} strokeWidth={1.5} /> : <ChevronRight size={16} strokeWidth={1.5} />
                       : <span className="w-4" />}
                   </button>
 
                   {/* Icon */}
-                  <span className="text-xl w-7 text-center shrink-0">{cat.icon || "📁"}</span>
+                  <span className="text-xl w-7 flex items-center justify-center shrink-0">{cat.icon || <Folder size={18} strokeWidth={1.5} className="text-muted-foreground" />}</span>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-foreground text-sm">{cat.name}</span>
+                      <span className="font-medium text-foreground text-sm">{cat.name}</span>
                       <span className="text-xs text-muted-foreground">{cat.nameEn}</span>
                       {!cat.active && (
-                        <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">Inactive</span>
+                        <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">Inactive</span>
                       )}
-                      <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full font-mono">{cat.slug}</span>
+                      <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-mono">{cat.slug}</span>
                       {cat.subcategories?.length > 0 && (
-                        <span className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">
+                        <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
                           {cat.subcategories.length} sub
                         </span>
                       )}
                       {cat.listingCount > 0 && (
-                        <span className="text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded-full">
+                        <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
                           {cat.listingCount} listings
                         </span>
                       )}
                       {cat.isFree && (
-                        <span className="text-[10px] bg-emerald-100 text-emerald-700 font-semibold px-1.5 py-0.5 rounded-full">
-                          FREE
+                        <span className="text-xs bg-primary/10 text-primary font-medium px-2 py-0.5 rounded-full">
+                          Free
                         </span>
                       )}
                     </div>
@@ -430,24 +433,27 @@ export default function AdminCategoriesPage() {
                     <button
                       onClick={() => openCreateSub(cat.id)}
                       title="Add subcategory"
-                      className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition"
+                      aria-label="Add subcategory"
+                      className="p-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <Plus size={15} />
+                      <Plus size={16} strokeWidth={1.5} />
                     </button>
                     <button
                       onClick={() => openEdit(cat)}
                       title="Edit"
-                      className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition"
+                      aria-label="Edit"
+                      className="p-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <Pencil size={15} />
+                      <Pencil size={16} strokeWidth={1.5} />
                     </button>
                     <button
                       onClick={() => handleDelete(cat)}
                       disabled={deletingId === cat.id}
                       title="Delete"
-                      className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition disabled:opacity-40"
+                      aria-label="Delete"
+                      className="p-2 rounded-lg text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      {deletingId === cat.id ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+                      {deletingId === cat.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} strokeWidth={1.5} />}
                     </button>
                   </div>
                 </div>
@@ -456,24 +462,24 @@ export default function AdminCategoriesPage() {
                 {expanded.has(cat.id) && cat.subcategories?.length > 0 && (
                   <div className="bg-muted border-t border-border">
                     {cat.subcategories.map((sub) => (
-                      <div key={sub.id} className="flex items-center gap-3 px-4 py-2.5 pl-14 hover:bg-muted/70 group border-b border-border last:border-0">
-                        <span className="text-lg w-6 text-center shrink-0">{sub.icon || "📄"}</span>
+                      <div key={sub.id} className="flex items-center gap-3 px-4 py-2.5 pl-14 hover:bg-accent transition-colors group border-b border-border last:border-0">
+                        <span className="text-lg w-6 flex items-center justify-center shrink-0">{sub.icon || <File size={16} strokeWidth={1.5} className="text-muted-foreground" />}</span>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-medium text-foreground text-sm">{sub.name}</span>
                             <span className="text-xs text-muted-foreground">{sub.nameEn}</span>
                             {!sub.active && (
-                              <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">Inactive</span>
+                              <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">Inactive</span>
                             )}
-                            <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full font-mono">{sub.slug}</span>
+                            <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-mono">{sub.slug}</span>
                             {sub.listingCount > 0 && (
-                              <span className="text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded-full">
+                              <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
                                 {sub.listingCount} listings
                               </span>
                             )}
                             {sub.isFree && (
-                              <span className="text-[10px] bg-emerald-100 text-emerald-700 font-semibold px-1.5 py-0.5 rounded-full">
-                                FREE
+                              <span className="text-xs bg-primary/10 text-primary font-medium px-2 py-0.5 rounded-full">
+                                Free
                               </span>
                             )}
                           </div>
@@ -481,16 +487,18 @@ export default function AdminCategoriesPage() {
                         <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
                           <button
                             onClick={() => openEdit(sub)}
-                            className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted/70 transition"
+                            aria-label="Edit"
+                            className="p-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
-                            <Pencil size={14} />
+                            <Pencil size={16} strokeWidth={1.5} />
                           </button>
                           <button
                             onClick={() => handleDelete(sub)}
                             disabled={deletingId === sub.id}
-                            className="p-1.5 rounded-lg text-red-400 hover:bg-red-100 transition disabled:opacity-40"
+                            aria-label="Delete"
+                            className="p-2 rounded-lg text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
-                            {deletingId === sub.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                            {deletingId === sub.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} strokeWidth={1.5} />}
                           </button>
                         </div>
                       </div>
@@ -507,14 +515,14 @@ export default function AdminCategoriesPage() {
       {/* Form Modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-card rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="bg-card rounded-xl border border-border shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-              <h2 className="font-bold text-foreground text-lg">
-                {editingId ? "Edit Category" : form.parentId ? "Add Subcategory" : "New Category"}
+              <h2 className="font-semibold text-foreground text-lg">
+                {editingId ? "Edit category" : form.parentId ? "Add subcategory" : "New category"}
               </h2>
-              <button onClick={closeForm} className="p-2 rounded-lg hover:bg-muted">
-                <X size={18} />
+              <button onClick={closeForm} aria-label="Close" className="p-2 rounded-lg hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <X size={18} strokeWidth={1.5} />
               </button>
             </div>
 
@@ -527,23 +535,23 @@ export default function AdminCategoriesPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => setForm(f => ({ ...f, parentId: null }))}
-                      className={`flex-1 py-2 rounded-lg border text-sm font-medium transition ${
+                      className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                         form.parentId === null
-                          ? "border-primary bg-primary/5 text-primary"
-                          : "border-border text-muted-foreground hover:bg-muted"
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border text-muted-foreground hover:bg-accent"
                       }`}
                     >
-                      Parent Category
+                      Parent category
                     </button>
                     <button
                       onClick={() => {
                         const firstParent = topLevelCategories[0];
                         setForm(f => ({ ...f, parentId: firstParent?.id ?? null }));
                       }}
-                      className={`flex-1 py-2 rounded-lg border text-sm font-medium transition ${
+                      className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                         form.parentId !== null
-                          ? "border-primary bg-primary/5 text-primary"
-                          : "border-border text-muted-foreground hover:bg-muted"
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border text-muted-foreground hover:bg-accent"
                       }`}
                     >
                       Subcategory
@@ -555,7 +563,7 @@ export default function AdminCategoriesPage() {
               {/* Parent dropdown (shown when subcategory selected) */}
               {form.parentId !== null && (
                 <div>
-                  <label className="text-sm font-medium text-foreground mb-1 block">Parent Category *</label>
+                  <label className="text-sm font-medium text-foreground mb-1 block">Parent category *</label>
                   <select
                     value={form.parentId ?? ""}
                     onChange={(e) => setForm(f => ({ ...f, parentId: Number(e.target.value) }))}
@@ -613,7 +621,7 @@ export default function AdminCategoriesPage() {
                   />
                 </div>
                 <div className="w-28">
-                  <label className="text-sm font-medium text-foreground mb-1 block">Sort Order</label>
+                  <label className="text-sm font-medium text-foreground mb-1 block">Sort order</label>
                   <Input
                     type="number"
                     value={form.sortOrder}
@@ -634,10 +642,11 @@ export default function AdminCategoriesPage() {
                     <button
                       type="button"
                       onClick={() => setForm(f => ({ ...f, imageUrl: "" }))}
-                      className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       title="Remove image"
+                      aria-label="Remove image"
                     >
-                      <X size={12} />
+                      <X size={12} strokeWidth={1.5} />
                     </button>
                   </div>
                 ) : null}
@@ -663,12 +672,14 @@ export default function AdminCategoriesPage() {
                     <button
                       key={color}
                       onClick={() => setForm(f => ({ ...f, color }))}
-                      className={`w-8 h-8 rounded-lg ${color} border-2 transition ${
-                        form.color === color ? "border-primary scale-110" : "border-transparent"
+                      className={`w-8 h-8 rounded-lg ${color} border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                        form.color === color ? "border-primary" : "border-transparent"
                       }`}
                       title={color}
+                      aria-label={color}
+                      aria-pressed={form.color === color}
                     >
-                      {form.color === color && <Check size={14} className="mx-auto text-gray-600" />}
+                      {form.color === color && <Check size={16} strokeWidth={1.5} className="mx-auto text-gray-700" />}
                     </button>
                   ))}
                 </div>
@@ -676,7 +687,7 @@ export default function AdminCategoriesPage() {
 
               {/* Moderation Level */}
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">Moderation Level</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">Moderation level</label>
                 <select
                   value={form.moderationLevel}
                   onChange={(e) => setForm(f => ({ ...f, moderationLevel: e.target.value }))}
@@ -692,9 +703,12 @@ export default function AdminCategoriesPage() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setForm(f => ({ ...f, active: !f.active }))}
-                  className={`w-10 h-6 rounded-full transition-colors ${form.active ? "bg-primary" : "bg-gray-300"}`}
+                  role="switch"
+                  aria-checked={form.active}
+                  aria-label="Active"
+                  className={`w-10 h-6 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${form.active ? "bg-primary" : "bg-muted-foreground/40"}`}
                 >
-                  <span className={`block w-4 h-4 bg-white rounded-full shadow transition-transform mx-1 ${form.active ? "translate-x-4" : "translate-x-0"}`} />
+                  <span className={`block w-4 h-4 bg-white rounded-full transition-transform mx-1 ${form.active ? "translate-x-4" : "translate-x-0"}`} />
                 </button>
                 <span className="text-sm text-foreground">{form.active ? "Active" : "Inactive"}</span>
               </div>
@@ -703,13 +717,16 @@ export default function AdminCategoriesPage() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setForm(f => ({ ...f, isFree: !f.isFree }))}
-                  className={`w-10 h-6 rounded-full transition-colors ${form.isFree ? "bg-green-500" : "bg-gray-300"}`}
+                  role="switch"
+                  aria-checked={form.isFree}
+                  aria-label="Free contact"
+                  className={`w-10 h-6 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${form.isFree ? "bg-primary" : "bg-muted-foreground/40"}`}
                 >
-                  <span className={`block w-4 h-4 bg-white rounded-full shadow transition-transform mx-1 ${form.isFree ? "translate-x-4" : "translate-x-0"}`} />
+                  <span className={`block w-4 h-4 bg-white rounded-full transition-transform mx-1 ${form.isFree ? "translate-x-4" : "translate-x-0"}`} />
                 </button>
                 <div>
-                  <span className="text-sm text-foreground">{form.isFree ? "Free Contact" : "Paid Contact"}</span>
-                  <p className="text-[11px] text-muted-foreground/70">{form.isFree ? "Contact shown for free, no payment" : "Users pay to unlock contact"}</p>
+                  <span className="text-sm text-foreground">{form.isFree ? "Free contact" : "Paid contact"}</span>
+                  <p className="text-xs text-muted-foreground">{form.isFree ? "Contact shown for free, no payment" : "Users pay to unlock contact"}</p>
                 </div>
               </div>
 
@@ -718,7 +735,7 @@ export default function AdminCategoriesPage() {
               {!form.isFree && (
                 <div>
                   <label className="text-sm font-medium text-foreground mb-1 block">
-                    Unlock Price (₹) <span className="text-muted-foreground font-normal">— blank uses the global default</span>
+                    Unlock price (₹) <span className="text-muted-foreground font-normal">— blank uses the global default</span>
                   </label>
                   <Input
                     type="number"
@@ -730,7 +747,7 @@ export default function AdminCategoriesPage() {
                     }}
                     placeholder="e.g. 50"
                   />
-                  <p className="text-[11px] text-muted-foreground/70 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Price this category&apos;s buyers pay to unlock a seller&apos;s contact. Leave blank to use the platform default.
                   </p>
                 </div>
@@ -743,7 +760,7 @@ export default function AdminCategoriesPage() {
                 <label className="text-sm font-medium text-foreground mb-1 block">
                   Fields shown to buyers
                 </label>
-                <p className="text-[11px] text-muted-foreground/70 mb-3">
+                <p className="text-xs text-muted-foreground mb-3">
                   Tick the details buyers can see for this category. Owner contact &amp; full
                   address are always hidden until unlock. Leave everything unticked to show all.
                 </p>
@@ -761,7 +778,7 @@ export default function AdminCategoriesPage() {
                     <div className="space-y-3 max-h-56 overflow-y-auto pr-1">
                       {FIELD_CATALOG.map((group) => (
                         <div key={group.label}>
-                          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">{group.label}</p>
+                          <p className="text-xs font-medium text-muted-foreground mb-2">{group.label}</p>
                           <div className="flex flex-wrap gap-1.5">
                             {group.keys.map(({ key, label }) => {
                               const on = isShown(key);
@@ -770,13 +787,13 @@ export default function AdminCategoriesPage() {
                                   key={group.label + key}
                                   type="button"
                                   onClick={() => toggle(key)}
-                                  className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border transition ${
+                                  className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                                     on
                                       ? "border-primary bg-primary/10 text-primary"
                                       : "border-border bg-muted text-muted-foreground"
                                   }`}
                                 >
-                                  {on && <Check size={11} />} {label}
+                                  {on && <Check size={12} strokeWidth={1.5} />} {label}
                                 </button>
                               );
                             })}
@@ -787,7 +804,7 @@ export default function AdminCategoriesPage() {
                         <button
                           type="button"
                           onClick={() => setForm((f) => ({ ...f, visibleFields: [] }))}
-                          className="text-[11px] text-primary hover:underline"
+                          className="text-xs text-primary hover:underline"
                         >
                           Reset (show all fields)
                         </button>

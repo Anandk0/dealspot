@@ -185,11 +185,11 @@ export default function BannersPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Banners & Promotions</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Banners & promotions</h1>
           <p className="text-sm text-muted-foreground">Manage home page banners</p>
         </div>
         <Button className="bg-primary" onClick={openCreate}>
-          <Plus size={16} className="mr-2" /> New Banner
+          <Plus size={16} strokeWidth={1.5} className="mr-2" /> New banner
         </Button>
       </div>
 
@@ -199,23 +199,23 @@ export default function BannersPage() {
         </div>
       ) : banners.length === 0 ? (
         <div className="text-center py-20 text-muted-foreground">
-          <Image size={48} className="mx-auto mb-3 text-muted-foreground/70" />
+          <Image size={32} strokeWidth={1.5} className="mx-auto mb-3 text-muted-foreground/60" />
           <p className="text-lg font-medium">No banners yet</p>
           <p className="text-sm">Create your first banner to display on the home page.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {banners.map((banner) => (
-            <div key={banner.id} className="bg-card rounded-xl overflow-hidden shadow-sm border border-border">
+            <div key={banner.id} className="bg-card rounded-xl overflow-hidden border border-border">
               <div
                 className={`p-6 text-white ${
                   banner.color
                     ? `bg-gradient-to-r ${banner.color}`
-                    : "bg-gradient-to-r from-primary to-primary/80"
+                    : "bg-primary"
                 }`}
               >
-                <h3 className="text-lg font-bold">{banner.title}</h3>
-                {banner.subtitle && <p className="text-sm text-white/80">{banner.subtitle}</p>}
+                <h3 className="text-lg font-semibold">{banner.title}</h3>
+                {banner.subtitle && <p className="text-sm text-white/90">{banner.subtitle}</p>}
               </div>
               {banner.imageUrl && (
                 <div className="px-4 pt-3">
@@ -233,7 +233,7 @@ export default function BannersPage() {
                   </Badge>
                   {banner.startDate && (
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Calendar size={10} />
+                      <Calendar size={12} strokeWidth={1.5} />
                       {new Date(banner.startDate).toLocaleDateString()} – {banner.endDate ? new Date(banner.endDate).toLocaleDateString() : "∞"}
                     </span>
                   )}
@@ -244,9 +244,10 @@ export default function BannersPage() {
                       href={banner.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-foreground"
+                      aria-label="Open banner link"
+                      className="text-muted-foreground hover:text-foreground rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <LinkIcon size={14} />
+                      <LinkIcon size={16} strokeWidth={1.5} />
                     </a>
                   )}
                   {canEditBanner && (
@@ -256,24 +257,24 @@ export default function BannersPage() {
                       className="h-7"
                       onClick={() => openEdit(banner)}
                     >
-                      <Pencil size={12} className="mr-1" /> Edit
+                      <Pencil size={14} strokeWidth={1.5} className="mr-1" /> Edit
                     </Button>
                   )}
                   {canDeleteBanner(banner) && (
                     <Button
                       size="sm"
                       variant="outline"
-                      className="text-red-500 h-7"
+                      className="text-destructive h-7"
                       onClick={() => setDeleteTarget(banner)}
                     >
-                      <Trash2 size={12} className="mr-1" /> Delete
+                      <Trash2 size={14} strokeWidth={1.5} className="mr-1" /> Delete
                     </Button>
                   )}
                 </div>
               </div>
               {banner.createdByName && (
                 <div className="px-4 pb-3 -mt-1">
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     Created by {banner.createdByName}
                     {banner.createdById === user?.id ? " (you)" : ""}
                   </span>
@@ -288,7 +289,7 @@ export default function BannersPage() {
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{editTarget ? "Edit Banner" : "Create Banner"}</DialogTitle>
+            <DialogTitle>{editTarget ? "Edit banner" : "Create banner"}</DialogTitle>
             <DialogDescription>
               {editTarget ? "Update this banner's details." : "Add a new banner to the home page carousel."}
             </DialogDescription>
@@ -312,7 +313,7 @@ export default function BannersPage() {
             </div>
             <div>
               <label className="text-sm font-medium text-foreground">
-                Banner Image {editTarget && <span className="text-muted-foreground font-normal">(choose a file to replace)</span>}
+                Banner image {editTarget && <span className="text-muted-foreground font-normal">(choose a file to replace)</span>}
               </label>
               {editTarget?.imageUrl && !formImage && (
                 <img src={editTarget.imageUrl} alt="" className="w-full h-24 object-cover rounded-lg my-2 border border-border" />
@@ -336,7 +337,7 @@ export default function BannersPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground">Color (Tailwind gradient classes)</label>
+              <label className="text-sm font-medium text-foreground">Color (Tailwind classes)</label>
               <Input
                 value={formColor}
                 onChange={(e) => setFormColor(e.target.value)}
@@ -345,7 +346,7 @@ export default function BannersPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-sm font-medium text-foreground">Start Date</label>
+                <label className="text-sm font-medium text-foreground">Start date</label>
                 <Input
                   type="date"
                   value={formStartDate}
@@ -353,7 +354,7 @@ export default function BannersPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground">End Date</label>
+                <label className="text-sm font-medium text-foreground">End date</label>
                 <Input
                   type="date"
                   value={formEndDate}
@@ -379,7 +380,7 @@ export default function BannersPage() {
             </Button>
             <Button onClick={handleSubmitDialog} disabled={submitting}>
               {submitting && <Loader2 size={14} className="mr-2 animate-spin" />}
-              {editTarget ? "Save Changes" : "Create"}
+              {editTarget ? "Save changes" : "Create"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -389,7 +390,7 @@ export default function BannersPage() {
       <Dialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>Delete Banner</DialogTitle>
+            <DialogTitle>Delete banner</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete &ldquo;{deleteTarget?.title}&rdquo;? This action cannot be undone.
             </DialogDescription>

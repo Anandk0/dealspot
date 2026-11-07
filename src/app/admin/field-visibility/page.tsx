@@ -104,7 +104,7 @@ export default function FieldVisibilityPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground flex items-center gap-2"><Eye size={22} /> Field Visibility</h1>
+        <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2"><Eye size={18} strokeWidth={1.5} /> Field visibility</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Choose which seller-entered details buyers see <strong>before</strong> unlocking (free basic specs)
           and <strong>after</strong> unlocking (paid). Owner contact &amp; exact location are always revealed only after unlock.
@@ -115,15 +115,15 @@ export default function FieldVisibilityPage() {
         {/* Category list */}
         <div className="bg-card rounded-xl border border-border overflow-hidden">
           <div className="px-4 py-3 border-b border-border bg-muted">
-            <p className="text-sm font-semibold text-foreground">Categories</p>
+            <p className="text-sm font-medium text-foreground">Categories</p>
           </div>
           <div className="max-h-[70vh] overflow-y-auto">
             {flat.map((c) => (
               <button
                 key={c.id}
                 onClick={() => selectCategory(c.id)}
-                className={`w-full text-left px-4 py-2.5 text-sm border-b border-border last:border-0 whitespace-pre transition ${
-                  selectedId === c.id ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-muted"
+                className={`w-full text-left px-4 py-2.5 text-sm border-b border-border last:border-0 whitespace-pre transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring ${
+                  selectedId === c.id ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-accent"
                 }`}
               >
                 {c.label}
@@ -142,17 +142,17 @@ export default function FieldVisibilityPage() {
             <div className="bg-card rounded-xl border border-border">
               <div className="px-5 py-4 border-b border-border flex items-center justify-between">
                 <div>
-                  <p className="font-semibold text-foreground">{selected.nameEn}</p>
+                  <p className="font-medium text-foreground">{selected.nameEn}</p>
                   <p className="text-xs text-muted-foreground font-mono">{selected.slug}</p>
                 </div>
                 <Button onClick={save} disabled={saving} className="bg-primary">
-                  {saving ? <Loader2 size={15} className="mr-2 animate-spin" /> : <Save size={15} className="mr-2" />} Save
+                  {saving ? <Loader2 size={16} className="mr-2 animate-spin" /> : <Save size={16} strokeWidth={1.5} className="mr-2" />} Save
                 </Button>
               </div>
 
               <div className="p-5">
                 {/* Header row */}
-                <div className="grid grid-cols-[1fr_auto_auto] gap-3 items-center pb-2 mb-2 border-b border-border text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                <div className="grid grid-cols-[1fr_auto_auto] gap-3 items-center pb-2 mb-2 border-b border-border text-xs font-medium text-muted-foreground">
                   <span>Field</span>
                   <span className="w-20 text-center">Before unlock</span>
                   <span className="w-20 text-center">After unlock</span>
@@ -167,20 +167,24 @@ export default function FieldVisibilityPage() {
                       <button
                         type="button"
                         onClick={() => toggle("free", f.key)}
-                        className={`w-20 h-8 rounded-lg border text-xs font-medium inline-flex items-center justify-center gap-1 transition ${
-                          freeSet.has(f.key) ? "border-green-400 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400" : "border-border text-muted-foreground hover:bg-muted"
+                        aria-pressed={freeSet.has(f.key)}
+                        aria-label={`${f.label}: visible before unlock`}
+                        className={`w-20 h-8 rounded-lg border text-xs font-medium inline-flex items-center justify-center gap-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                          freeSet.has(f.key) ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-accent"
                         }`}
                       >
-                        {freeSet.has(f.key) ? <Eye size={13} /> : <EyeOff size={13} />}
+                        {freeSet.has(f.key) ? <Eye size={16} strokeWidth={1.5} /> : <EyeOff size={16} strokeWidth={1.5} />}
                       </button>
                       <button
                         type="button"
                         onClick={() => toggle("unlock", f.key)}
-                        className={`w-20 h-8 rounded-lg border text-xs font-medium inline-flex items-center justify-center gap-1 transition ${
-                          unlockSet.has(f.key) ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-muted"
+                        aria-pressed={unlockSet.has(f.key)}
+                        aria-label={`${f.label}: visible after unlock`}
+                        className={`w-20 h-8 rounded-lg border text-xs font-medium inline-flex items-center justify-center gap-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                          unlockSet.has(f.key) ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-accent"
                         }`}
                       >
-                        {unlockSet.has(f.key) ? <Check size={13} /> : <EyeOff size={13} />}
+                        {unlockSet.has(f.key) ? <Check size={16} strokeWidth={1.5} /> : <EyeOff size={16} strokeWidth={1.5} />}
                       </button>
                     </div>
                   ))
@@ -188,7 +192,7 @@ export default function FieldVisibilityPage() {
 
                 {/* Always-paid note */}
                 <div className="mt-4 flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg p-3">
-                  <Lock size={13} className="shrink-0 mt-0.5" />
+                  <Lock size={16} strokeWidth={1.5} className="shrink-0" />
                   <span>Owner contact (name, mobile, WhatsApp) and the exact location/address are always hidden until the buyer unlocks — these are not configurable here.</span>
                 </div>
               </div>

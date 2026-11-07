@@ -122,11 +122,11 @@ export default function ModerationPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "PENDING":
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+        return <Badge variant="secondary" className="bg-muted text-muted-foreground">Pending</Badge>;
       case "FLAGGED":
         return <Badge variant="destructive">Flagged</Badge>;
       case "ACTIVE":
-        return <Badge className="bg-green-100 text-green-800">Active</Badge>;
+        return <Badge className="bg-primary/10 text-primary">Active</Badge>;
       case "REJECTED":
         return <Badge variant="destructive">Rejected</Badge>;
       default:
@@ -164,7 +164,7 @@ export default function ModerationPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div>
-          <h1 className="text-lg sm:text-2xl font-bold text-foreground">Moderation Queue</h1>
+          <h1 className="text-lg sm:text-2xl font-semibold text-foreground">Moderation queue</h1>
           <p className="text-xs sm:text-sm text-muted-foreground">
             {queue ? `${queue.totalElements} listings pending review` : "Loading..."}
           </p>
@@ -174,36 +174,36 @@ export default function ModerationPage() {
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
-          <div className="bg-card rounded-xl p-2.5 sm:p-4 shadow-sm border border-border">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-3">
-              <div className="p-1.5 sm:p-2 bg-yellow-100 rounded-lg">
-                <Clock className="text-yellow-600 w-4 h-4 sm:w-5 sm:h-5" />
+          <div className="bg-card rounded-xl p-3 sm:p-4 border border-border">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+              <div className="p-2 bg-muted rounded-lg">
+                <Clock strokeWidth={1.5} className="text-foreground w-4 h-4 sm:w-[18px] sm:h-[18px]" />
               </div>
               <div>
-                <p className="text-lg sm:text-2xl font-bold text-foreground leading-none">{stats.pendingCount}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">Pending</p>
+                <p className="text-lg sm:text-2xl font-semibold text-foreground leading-none">{stats.pendingCount}</p>
+                <p className="text-xs text-muted-foreground mt-1">Pending</p>
               </div>
             </div>
           </div>
-          <div className="bg-card rounded-xl p-2.5 sm:p-4 shadow-sm border border-border">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-3">
-              <div className="p-1.5 sm:p-2 bg-green-100 rounded-lg">
-                <CheckCircle2 className="text-green-600 w-4 h-4 sm:w-5 sm:h-5" />
+          <div className="bg-card rounded-xl p-3 sm:p-4 border border-border">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+              <div className="p-2 bg-muted rounded-lg">
+                <CheckCircle2 strokeWidth={1.5} className="text-foreground w-4 h-4 sm:w-[18px] sm:h-[18px]" />
               </div>
               <div>
-                <p className="text-lg sm:text-2xl font-bold text-foreground leading-none">{stats.approvedToday}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">Approved Today</p>
+                <p className="text-lg sm:text-2xl font-semibold text-foreground leading-none">{stats.approvedToday}</p>
+                <p className="text-xs text-muted-foreground mt-1">Approved today</p>
               </div>
             </div>
           </div>
-          <div className="bg-card rounded-xl p-2.5 sm:p-4 shadow-sm border border-border">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-3">
-              <div className="p-1.5 sm:p-2 bg-red-100 rounded-lg">
-                <XCircle className="text-red-600 w-4 h-4 sm:w-5 sm:h-5" />
+          <div className="bg-card rounded-xl p-3 sm:p-4 border border-border">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+              <div className="p-2 bg-muted rounded-lg">
+                <XCircle strokeWidth={1.5} className="text-foreground w-4 h-4 sm:w-[18px] sm:h-[18px]" />
               </div>
               <div>
-                <p className="text-lg sm:text-2xl font-bold text-foreground leading-none">{stats.rejectedToday}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">Rejected Today</p>
+                <p className="text-lg sm:text-2xl font-semibold text-foreground leading-none">{stats.rejectedToday}</p>
+                <p className="text-xs text-muted-foreground mt-1">Rejected today</p>
               </div>
             </div>
           </div>
@@ -216,9 +216,9 @@ export default function ModerationPage() {
           <Loader2 className="animate-spin text-muted-foreground" size={32} />
         </div>
       ) : !queue || queue.content.length === 0 ? (
-        <div className="bg-card rounded-xl p-8 sm:p-12 text-center shadow-sm border border-border">
-          <CheckCircle2 size={44} className="mx-auto text-green-400 mb-3" />
-          <p className="text-sm sm:text-base text-muted-foreground">All caught up! No pending listings.</p>
+        <div className="bg-card rounded-xl p-8 sm:p-12 text-center border border-border">
+          <CheckCircle2 size={32} strokeWidth={1.5} className="mx-auto text-primary mb-3" />
+          <p className="text-sm sm:text-base text-muted-foreground">All caught up. No pending listings.</p>
         </div>
       ) : (
         <>
@@ -226,7 +226,7 @@ export default function ModerationPage() {
             {queue.content.map((item) => (
               <div
                 key={item.id}
-                className="bg-card rounded-xl p-4 lg:p-5 shadow-sm border border-border flex flex-col sm:flex-row items-start gap-3 sm:gap-4"
+                className="bg-card rounded-xl p-4 lg:p-5 border border-border flex flex-col sm:flex-row items-start gap-3 sm:gap-4"
               >
                 {/* Thumbnail */}
                 {item.images && item.images.length > 0 ? (
@@ -244,7 +244,7 @@ export default function ModerationPage() {
                 {/* Info */}
                 <div className="flex-1 min-w-0 w-full">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="font-semibold text-foreground truncate">{item.title}</p>
+                    <p className="font-medium text-foreground truncate">{item.title}</p>
                     {getStatusBadge(item.status)}
                     <Badge variant="outline" className="text-xs">
                       {item.category}
@@ -262,7 +262,7 @@ export default function ModerationPage() {
                 <div className="flex gap-2 flex-shrink-0 w-full sm:w-auto">
                   <Button
                     size="sm"
-                    className="bg-green-600 hover:bg-green-700 flex-1 sm:flex-none text-xs sm:text-sm"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 flex-1 sm:flex-none text-xs sm:text-sm"
                     onClick={() => handleApprove(item)}
                     disabled={actionLoading === item.id}
                   >
@@ -284,7 +284,8 @@ export default function ModerationPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="text-orange-600 border-orange-200 hover:bg-orange-50 shrink-0"
+                    className="shrink-0"
+                    aria-label="Flag listing"
                     onClick={() => handleFlag(item)}
                     disabled={actionLoading === item.id}
                   >
@@ -330,7 +331,7 @@ export default function ModerationPage() {
       <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reject Listing</DialogTitle>
+            <DialogTitle>Reject listing</DialogTitle>
             <DialogDescription>
               Please provide a reason for rejecting &ldquo;{rejectTarget?.title}&rdquo;. This reason will be shown to the seller.
             </DialogDescription>
@@ -344,7 +345,7 @@ export default function ModerationPage() {
               aria-label="Rejection reason"
             />
             {rejectReason.length === 0 && (
-              <p className="text-xs text-red-500 mt-1">Reason is required</p>
+              <p className="text-xs text-destructive mt-1">Reason is required</p>
             )}
           </div>
           <DialogFooter>
@@ -361,7 +362,7 @@ export default function ModerationPage() {
               ) : (
                 <XCircle size={14} className="mr-1" />
               )}
-              Reject Listing
+              Reject listing
             </Button>
           </DialogFooter>
         </DialogContent>

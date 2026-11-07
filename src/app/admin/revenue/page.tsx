@@ -7,10 +7,10 @@ import { api, type RevenueStats, type TransactionData, type PagedResponse } from
 import { useAdminGuard } from "@/lib/useAdminGuard";
 
 // Category colors for charts
-const CATEGORY_COLORS = [
-  "#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6",
-  "#ec4899", "#06b6d4", "#84cc16", "#f97316", "#6366f1",
-];
+// One accent in decreasing strength, so the chart stays single-hue.
+const CATEGORY_COLORS = [100, 82, 66, 52, 40, 30, 24, 18, 14, 10].map(
+  (pct) => `color-mix(in oklch, var(--primary) ${pct}%, var(--card))`
+);
 
 function formatCurrency(paise: number): string {
   return `₹${(paise / 100).toLocaleString("en-IN")}`;
@@ -106,26 +106,28 @@ export default function RevenuePage() {
     <div>
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-        <h1 className="text-2xl font-bold text-foreground">Revenue & Analytics</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Revenue & analytics</h1>
         <div className="flex items-center gap-2 flex-wrap">
           <input
             type="date"
             value={dateRange.from}
+            aria-label="From date"
             onChange={(e) => setDateRange((d) => ({ ...d, from: e.target.value }))}
-            className="border border-border rounded-lg px-3 py-1.5 text-sm"
+            className="border border-input bg-background rounded-lg px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
           <span className="text-muted-foreground text-sm">to</span>
           <input
             type="date"
             value={dateRange.to}
+            aria-label="To date"
             onChange={(e) => setDateRange((d) => ({ ...d, to: e.target.value }))}
-            className="border border-border rounded-lg px-3 py-1.5 text-sm"
+            className="border border-input bg-background rounded-lg px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
-          <Button size="sm" variant="outline" onClick={loadData} disabled={loading}>
-            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+          <Button size="sm" variant="outline" onClick={loadData} disabled={loading} aria-label="Refresh">
+            <RefreshCw size={16} strokeWidth={1.5} className={loading ? "animate-spin" : ""} />
           </Button>
           <Button size="sm" variant="outline" onClick={handleExportCSV} disabled={exporting}>
-            <Download size={14} className="mr-1" />
+            <Download size={16} strokeWidth={1.5} className="mr-1" />
             {exporting ? "Exporting..." : "CSV"}
           </Button>
         </div>
@@ -133,21 +135,21 @@ export default function RevenuePage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-        <div className="bg-card rounded-xl p-5 shadow-sm border border-border">
+        <div className="bg-card rounded-xl p-5 border border-border">
           <div className="flex items-center gap-2 mb-2">
-            <IndianRupee size={16} className="text-green-600" />
-            <span className="text-xs text-muted-foreground">Total Revenue</span>
+            <IndianRupee size={16} strokeWidth={1.5} className="text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">Total revenue</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">
+          <p className="text-2xl font-semibold text-foreground">
             {loading ? "—" : formatCurrency(revenueStats?.totalRevenue || 0)}
           </p>
         </div>
-        <div className="bg-card rounded-xl p-5 shadow-sm border border-border">
+        <div className="bg-card rounded-xl p-5 border border-border">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp size={16} className="text-blue-600" />
-            <span className="text-xs text-muted-foreground">Daily Average</span>
+            <TrendingUp size={16} strokeWidth={1.5} className="text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">Daily average</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">
+          <p className="text-2xl font-semibold text-foreground">
             {loading || !revenueStats?.dailyRevenue?.length
               ? "—"
               : formatCurrency(
@@ -158,21 +160,21 @@ export default function RevenuePage() {
                 )}
           </p>
         </div>
-        <div className="bg-card rounded-xl p-5 shadow-sm border border-border">
+        <div className="bg-card rounded-xl p-5 border border-border">
           <div className="flex items-center gap-2 mb-2">
-            <CreditCard size={16} className="text-purple-600" />
+            <CreditCard size={16} strokeWidth={1.5} className="text-muted-foreground" />
             <span className="text-xs text-muted-foreground">Refunded</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">
+          <p className="text-2xl font-semibold text-foreground">
             {loading ? "—" : revenueStats?.refundedPayments ?? 0}
           </p>
         </div>
-        <div className="bg-card rounded-xl p-5 shadow-sm border border-border">
+        <div className="bg-card rounded-xl p-5 border border-border">
           <div className="flex items-center gap-2 mb-2">
-            <AlertCircle size={16} className="text-red-500" />
+            <AlertCircle size={16} strokeWidth={1.5} className="text-muted-foreground" />
             <span className="text-xs text-muted-foreground">Failed</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">
+          <p className="text-2xl font-semibold text-foreground">
             {loading ? "—" : revenueStats?.failedPayments ?? 0}
           </p>
         </div>
@@ -183,7 +185,7 @@ export default function RevenuePage() {
         <button
           onClick={() => setActiveTab("overview")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-            activeTab === "overview" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+            activeTab === "overview" ? "bg-card border border-border text-foreground" : "border border-transparent text-muted-foreground hover:text-foreground"
           }`}
         >
           Overview
@@ -191,7 +193,7 @@ export default function RevenuePage() {
         <button
           onClick={() => setActiveTab("transactions")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-            activeTab === "transactions" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+            activeTab === "transactions" ? "bg-card border border-border text-foreground" : "border border-transparent text-muted-foreground hover:text-foreground"
           }`}
         >
           Transactions
@@ -201,8 +203,8 @@ export default function RevenuePage() {
       {activeTab === "overview" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Daily Revenue Bar Chart */}
-          <div className="lg:col-span-2 bg-card rounded-xl shadow-sm border border-border p-5">
-            <h3 className="font-semibold text-foreground mb-4">Daily Revenue</h3>
+          <div className="lg:col-span-2 bg-card rounded-xl border border-border p-5">
+            <h3 className="font-medium text-foreground mb-4">Daily revenue</h3>
             {loading ? (
               <div className="h-48 flex items-center justify-center text-muted-foreground">Loading...</div>
             ) : !revenueStats?.dailyRevenue?.length ? (
@@ -215,15 +217,15 @@ export default function RevenuePage() {
                     <div key={day.date} className="flex flex-col items-center flex-shrink-0 group" style={{ minWidth: "28px" }}>
                       <div className="relative w-full flex justify-center">
                         <div
-                          className="w-5 bg-green-500 rounded-t hover:bg-green-600 transition-colors cursor-default"
+                          className="w-5 bg-primary rounded-t hover:bg-primary/80 transition-colors cursor-default"
                           style={{ height: `${Math.max(heightPct, 2)}%`, minHeight: "2px" }}
                           title={`${day.date}: ${formatCurrency(day.amount)}`}
                         />
-                        <div className="absolute -top-6 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        <div className="absolute -top-6 bg-foreground text-background text-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                           {formatCurrency(day.amount)}
                         </div>
                       </div>
-                      <span className="text-[9px] text-muted-foreground mt-1 rotate-[-45deg] origin-top-left whitespace-nowrap">
+                      <span className="text-[10px] text-muted-foreground mt-1 rotate-[-45deg] origin-top-left whitespace-nowrap">
                         {day.date.slice(5)}
                       </span>
                     </div>
@@ -234,8 +236,8 @@ export default function RevenuePage() {
           </div>
 
           {/* Category Breakdown Donut */}
-          <div className="bg-card rounded-xl shadow-sm border border-border p-5">
-            <h3 className="font-semibold text-foreground mb-4">Category Breakdown</h3>
+          <div className="bg-card rounded-xl border border-border p-5">
+            <h3 className="font-medium text-foreground mb-4">Category breakdown</h3>
             {loading ? (
               <div className="h-48 flex items-center justify-center text-muted-foreground">Loading...</div>
             ) : !revenueStats?.categoryBreakdown?.length ? (
@@ -260,7 +262,7 @@ export default function RevenuePage() {
                     }}
                   >
                     <div className="absolute inset-4 bg-card rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-foreground">{formatCurrency(totalCategoryAmount)}</span>
+                      <span className="text-xs font-semibold text-foreground">{formatCurrency(totalCategoryAmount)}</span>
                     </div>
                   </div>
                 </div>
@@ -289,9 +291,9 @@ export default function RevenuePage() {
       )}
 
       {activeTab === "transactions" && (
-        <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+        <div className="bg-card rounded-xl border border-border overflow-hidden">
           <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-            <h3 className="font-semibold text-foreground">Transaction History</h3>
+            <h3 className="font-medium text-foreground">Transaction history</h3>
             {transactions && (
               <span className="text-xs text-muted-foreground">
                 {transactions.totalElements} total transactions
@@ -320,7 +322,7 @@ export default function RevenuePage() {
                   </thead>
                   <tbody>
                     {transactions.content.map((tx) => (
-                      <tr key={tx.id} className="border-b border-border last:border-0 hover:bg-muted">
+                      <tr key={tx.id} className="border-b border-border last:border-0 hover:bg-accent transition-colors">
                         <td className="px-5 py-3 font-mono text-xs text-muted-foreground">#{tx.id}</td>
                         <td className="px-5 py-3">
                           <div>
@@ -329,17 +331,15 @@ export default function RevenuePage() {
                           </div>
                         </td>
                         <td className="px-5 py-3 text-muted-foreground max-w-[200px] truncate">{tx.listingTitle}</td>
-                        <td className="px-5 py-3 font-semibold">{formatCurrency(tx.amount)}</td>
+                        <td className="px-5 py-3 font-medium">{formatCurrency(tx.amount)}</td>
                         <td className="px-5 py-3">
                           <span
                             className={`text-xs px-2 py-1 rounded font-medium ${
                               tx.status === "PAID"
-                                ? "bg-green-50 text-green-600"
+                                ? "bg-primary/10 text-primary"
                                 : tx.status === "FAILED"
-                                ? "bg-red-50 text-red-600"
-                                : tx.status === "REFUNDED"
-                                ? "bg-yellow-50 text-yellow-600"
-                                : "bg-gray-50 text-gray-600"
+                                ? "bg-destructive/10 text-destructive"
+                                : "bg-muted text-muted-foreground"
                             }`}
                           >
                             {tx.status}

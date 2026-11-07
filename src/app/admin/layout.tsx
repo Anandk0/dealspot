@@ -6,14 +6,12 @@ import { LayoutDashboard, FileCheck, Users, IndianRupee, Image, Settings, Scroll
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { useAdminGuard, hasMinimumRole, type AdminRole } from "@/lib/useAdminGuard";
-
 interface NavItem {
   href: string;
   icon: typeof LayoutDashboard;
   label: string;
   minimumRole: AdminRole;
 }
-
 const adminNav: NavItem[] = [
   { href: "/admin", icon: LayoutDashboard, label: "Dashboard", minimumRole: "ADMIN" },
   { href: "/admin/moderation", icon: FileCheck, label: "Moderation", minimumRole: "CHECKER" },
@@ -22,18 +20,17 @@ const adminNav: NavItem[] = [
   { href: "/admin/revenue", icon: IndianRupee, label: "Revenue", minimumRole: "ADMIN" },
   { href: "/admin/banners", icon: Image, label: "Banners", minimumRole: "CHECKER" },
   { href: "/admin/categories", icon: Tag, label: "Categories", minimumRole: "ADMIN" },
-  { href: "/admin/field-visibility", icon: Eye, label: "Field Visibility", minimumRole: "ADMIN" },
+  { href: "/admin/field-visibility", icon: Eye, label: "Field visibility", minimumRole: "ADMIN" },
   { href: "/admin/settings", icon: Settings, label: "Settings", minimumRole: "SUPER_ADMIN" },
-  { href: "/admin/audit", icon: ScrollText, label: "Audit Logs", minimumRole: "SUPER_ADMIN" },
+  { href: "/admin/audit", icon: ScrollText, label: "Audit logs", minimumRole: "SUPER_ADMIN" },
 ];
-
+const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const router = useRouter();
   const { isAuthorized, isLoading } = useAdminGuard("CHECKER");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -41,56 +38,50 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
     );
   }
-
   if (!isAuthorized) {
     return null;
   }
-
   const visibleNav = adminNav.filter((item) =>
     hasMinimumRole(user?.role, item.minimumRole)
   );
-
   const handleNavClick = () => {
     setSidebarOpen(false);
   };
-
   return (
     <div className="min-h-screen bg-background flex">
       {/* Mobile header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-gray-900 text-white px-4 py-3 flex items-center justify-between">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-card text-foreground border-b border-border px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1 rounded-lg hover:bg-gray-800"
+            className={`p-2 rounded-lg hover:bg-accent transition-colors ${focusRing}`}
             aria-label="Toggle menu"
           >
-            {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
+            {sidebarOpen ? <X size={18} strokeWidth={1.5} /> : <Menu size={18} strokeWidth={1.5} />}
           </button>
-          <h1 className="text-base font-bold flex items-center gap-1.5"><img src="/logo.png" alt="logo" className="w-6 h-6 rounded-full object-cover" /> Dealspot <span className="text-xs font-normal text-gray-400">connect</span></h1>
+          <h1 className="text-base font-semibold flex items-center gap-2"><img src="/logo.png" alt="logo" className="w-6 h-6 rounded-full object-cover" /> Dealspot <span className="text-xs font-normal text-muted-foreground">connect</span></h1>
         </div>
-        <span className="text-xs text-gray-400">Admin</span>
+        <span className="text-xs text-muted-foreground">Admin</span>
       </div>
-
       {/* Overlay */}
       {sidebarOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          className="lg:hidden fixed inset-0 bg-black/40 z-40"
           onClick={() => setSidebarOpen(false)}
         />
       )}
-
       {/* Sidebar */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white flex flex-col
-          transition-transform duration-200 ease-in-out
+          fixed inset-y-0 left-0 z-50 w-64 bg-card text-foreground border-r border-border flex flex-col
+          transition-transform duration-200 ease-out
           lg:translate-x-0 lg:static lg:z-auto
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        <div className="p-5 border-b border-gray-700">
-          <h1 className="text-lg font-bold flex items-center gap-2"><img src="/logo.png" alt="logo" className="w-7 h-7 rounded-full object-cover" /> Dealspot <span className="text-xs font-normal text-gray-400">connect</span></h1>
-          <p className="text-xs text-gray-400">Admin Panel</p>
+        <div className="p-5 border-b border-border">
+          <h1 className="text-lg font-semibold flex items-center gap-2"><img src="/logo.png" alt="logo" className="w-7 h-7 rounded-full object-cover" /> Dealspot <span className="text-xs font-normal text-muted-foreground">connect</span></h1>
+          <p className="text-xs text-muted-foreground mt-1">Admin panel</p>
         </div>
         <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
           {visibleNav.map((item) => {
@@ -100,29 +91,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 key={item.href}
                 href={item.href}
                 onClick={handleNavClick}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors ${
-                  isActive ? "bg-primary text-white" : "text-gray-300 hover:bg-gray-800"
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors ${focusRing} ${
+                  isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
-                <item.icon size={18} />
+                <item.icon size={18} strokeWidth={1.5} />
                 {item.label}
               </Link>
             );
           })}
         </nav>
-        <div className="p-3 border-t border-gray-700">
+        <div className="p-3 border-t border-border">
           <button
             onClick={async () => { await logout(); router.push("/login"); }}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 w-full"
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors w-full ${focusRing}`}
           >
-            <LogOut size={18} />
+            <LogOut size={18} strokeWidth={1.5} />
             Logout
           </button>
         </div>
       </aside>
-
       {/* Main */}
-      <main className="flex-1 lg:ml-0 p-4 lg:p-6 pt-16 lg:pt-6">
+      <main className="flex-1 min-w-0 lg:ml-0 p-4 lg:p-6 pt-16 lg:pt-6">
         {children}
       </main>
     </div>

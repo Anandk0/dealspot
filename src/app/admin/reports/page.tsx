@@ -10,11 +10,8 @@ import { useAdminGuard } from "@/lib/useAdminGuard";
 
 function getReasonBadgeClass(reason: string): string {
   const r = reason.toLowerCase();
-  if (r.includes("fraud") || r.includes("scam")) return "bg-red-100 text-red-700 hover:bg-red-100";
-  if (r.includes("spam")) return "bg-orange-100 text-orange-700 hover:bg-orange-100";
-  if (r.includes("inappropriate") || r.includes("abuse")) return "bg-yellow-100 text-yellow-700 hover:bg-yellow-100";
-  if (r.includes("duplicate")) return "bg-blue-100 text-blue-700 hover:bg-blue-100";
-  return "bg-gray-100 text-gray-700 hover:bg-gray-100";
+  if (r.includes("fraud") || r.includes("scam")) return "bg-destructive/10 text-destructive hover:bg-destructive/10";
+  return "bg-muted text-muted-foreground hover:bg-muted";
 }
 
 function formatTimestamp(dateStr: string): string {
@@ -88,21 +85,21 @@ export default function ReportsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <Flag size={22} className="text-red-500" /> Reports
+          <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2">
+            <Flag size={18} strokeWidth={1.5} /> Reports
           </h1>
           <p className="text-sm text-muted-foreground">{totalElements} pending report{totalElements === 1 ? "" : "s"}</p>
         </div>
       </div>
 
-      <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="animate-spin text-muted-foreground" size={28} />
           </div>
         ) : reports.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-            <Flag size={40} className="mb-3 text-muted-foreground/40" />
+            <Flag size={32} strokeWidth={1.5} className="mb-3 text-muted-foreground/60" />
             <p className="text-base font-medium">No pending reports</p>
             <p className="text-sm">Reported listings will appear here for review.</p>
           </div>
@@ -119,7 +116,7 @@ export default function ReportsPage() {
             </thead>
             <tbody>
               {reports.map((r) => (
-                <tr key={r.id} className="border-b border-border last:border-0 hover:bg-muted">
+                <tr key={r.id} className="border-b border-border last:border-0 hover:bg-accent transition-colors">
                   <td className="px-5 py-3 text-muted-foreground text-xs whitespace-nowrap">
                     {formatTimestamp(r.createdAt)}
                   </td>
@@ -145,13 +142,13 @@ export default function ReportsPage() {
                           href={`/admin/reports/${r.targetId}`}
                           className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
                         >
-                          Review <ExternalLink size={12} />
+                          Review <ExternalLink size={12} strokeWidth={1.5} />
                         </Link>
                       )}
                       <button
                         onClick={() => handleResolve(r.id)}
                         disabled={resolving === r.id}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-green-600 hover:underline disabled:opacity-50"
+                        className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded disabled:opacity-50"
                       >
                         {resolving === r.id ? (
                           <Loader2 size={12} className="animate-spin" />

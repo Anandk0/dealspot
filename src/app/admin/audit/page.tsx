@@ -33,18 +33,12 @@ const ACTION_TYPES = [
 
 function getActionBadgeClass(action: string): string {
   if (action.includes("APPROVE") || action.includes("UNBAN") || action.includes("FEATURE")) {
-    return "bg-green-100 text-green-700 hover:bg-green-100";
+    return "bg-primary/10 text-primary hover:bg-primary/10";
   }
   if (action.includes("REJECT") || action.includes("BAN") || action.includes("DELETE")) {
-    return "bg-red-100 text-red-700 hover:bg-red-100";
+    return "bg-destructive/10 text-destructive hover:bg-destructive/10";
   }
-  if (action.includes("FLAG")) {
-    return "bg-yellow-100 text-yellow-700 hover:bg-yellow-100";
-  }
-  if (action.includes("ROLE") || action.includes("SETTING")) {
-    return "bg-purple-100 text-purple-700 hover:bg-purple-100";
-  }
-  return "bg-gray-100 text-gray-700 hover:bg-gray-100";
+  return "bg-muted text-muted-foreground hover:bg-muted";
 }
 
 function formatTimestamp(dateStr: string): string {
@@ -131,21 +125,21 @@ export default function AuditPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Audit Logs</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Audit logs</h1>
           <p className="text-sm text-muted-foreground">{totalElements} total entries</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-card rounded-xl shadow-sm border border-border p-4 mb-4">
+      <div className="bg-card rounded-xl border border-border p-4 mb-4">
         <div className="flex items-center gap-2 mb-3">
-          <Filter size={16} className="text-muted-foreground" />
+          <Filter size={16} strokeWidth={1.5} className="text-muted-foreground" />
           <span className="text-sm font-medium text-foreground">Filters</span>
         </div>
         <div className="flex flex-wrap items-end gap-3">
           {/* Action type filter */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-muted-foreground">Action Type</label>
+            <label className="text-xs text-muted-foreground">Action type</label>
             <Select value={actionFilter} onValueChange={(val) => setActionFilter(val ?? "ALL")}>
               <SelectTrigger className="w-[180px] h-9">
                 <SelectValue placeholder="All actions" />
@@ -153,7 +147,7 @@ export default function AuditPage() {
               <SelectContent>
                 {ACTION_TYPES.map((action) => (
                   <SelectItem key={action} value={action}>
-                    {action === "ALL" ? "All Actions" : action}
+                    {action === "ALL" ? "All actions" : action}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -194,7 +188,7 @@ export default function AuditPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="animate-spin text-muted-foreground" size={28} />
@@ -216,7 +210,7 @@ export default function AuditPage() {
             </thead>
             <tbody>
               {logs.map((log) => (
-                <tr key={log.id} className="border-b border-border last:border-0 hover:bg-muted">
+                <tr key={log.id} className="border-b border-border last:border-0 hover:bg-accent transition-colors">
                   <td className="px-5 py-3 text-muted-foreground text-xs whitespace-nowrap">
                     {formatTimestamp(log.createdAt)}
                   </td>

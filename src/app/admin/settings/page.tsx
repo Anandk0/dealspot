@@ -77,17 +77,17 @@ export default function SettingsPage() {
   return (
     <div>
       <div className="flex items-center gap-2 mb-6">
-        <Settings className="h-6 w-6 text-foreground" />
-        <h1 className="text-2xl font-bold text-foreground">Platform Settings</h1>
+        <Settings className="h-[18px] w-[18px] text-foreground" strokeWidth={1.5} />
+        <h1 className="text-2xl font-semibold text-foreground">Platform settings</h1>
       </div>
 
-      <div className="bg-card rounded-xl p-6 shadow-sm border border-border max-w-2xl space-y-6">
+      <div className="bg-card rounded-xl p-6 border border-border max-w-2xl space-y-6">
         {/* Contact Unlock Price */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
             <IndianRupee className="h-4 w-4 text-muted-foreground" />
             <label className="text-sm font-medium text-foreground">
-              Contact Unlock Price (in paise)
+              Contact unlock price (in paise)
             </label>
           </div>
           <Input
@@ -112,7 +112,7 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2">
             <Image className="h-4 w-4 text-muted-foreground" />
             <label className="text-sm font-medium text-foreground">
-              Max Images per Listing
+              Max images per listing
             </label>
           </div>
           <Input
@@ -159,7 +159,7 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             <label className="text-sm font-medium text-foreground">
-              Maintenance Mode
+              Maintenance mode
             </label>
           </div>
           <label className="flex items-center gap-3 cursor-pointer select-none">
@@ -190,7 +190,7 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2">
             <Handshake className="h-4 w-4 text-muted-foreground" />
             <label className="text-sm font-medium text-foreground">
-              Agent / Referral System
+              Agent / referral system
             </label>
           </div>
           <label className="flex items-center gap-3 cursor-pointer select-none">
@@ -225,7 +225,7 @@ export default function SettingsPage() {
             className="bg-primary h-11 px-8"
           >
             {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-            {saving ? "Saving..." : "Save Settings"}
+            {saving ? "Saving..." : "Save settings"}
           </Button>
         </div>
       </div>

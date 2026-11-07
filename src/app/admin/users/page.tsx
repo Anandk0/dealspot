@@ -29,15 +29,14 @@ const ROLES = ["USER", "CHECKER", "ADMIN"] as const;
 function getRoleBadgeClass(role: string): string {
   switch (role) {
     case "USER":
-      return "bg-gray-100 text-gray-700 hover:bg-gray-100";
+      return "bg-muted text-muted-foreground hover:bg-muted";
     case "CHECKER":
-      return "bg-blue-100 text-blue-700 hover:bg-blue-100";
+      return "bg-accent text-foreground hover:bg-accent";
     case "ADMIN":
-      return "bg-purple-100 text-purple-700 hover:bg-purple-100";
     case "SUPER_ADMIN":
-      return "bg-red-100 text-red-700 hover:bg-red-100";
+      return "bg-primary/10 text-primary hover:bg-primary/10";
     default:
-      return "bg-gray-100 text-gray-700 hover:bg-gray-100";
+      return "bg-muted text-muted-foreground hover:bg-muted";
   }
 }
 
@@ -240,7 +239,7 @@ export default function UsersPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">User Management</h1>
+          <h1 className="text-2xl font-semibold text-foreground">User management</h1>
           <p className="text-sm text-muted-foreground">{totalElements} total users</p>
         </div>
       </div>
@@ -263,7 +262,7 @@ export default function UsersPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="animate-spin text-muted-foreground" size={28} />
@@ -288,7 +287,7 @@ export default function UsersPage() {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="border-b border-border last:border-0 hover:bg-muted">
+                <tr key={u.id} className="border-b border-border last:border-0 hover:bg-accent transition-colors">
                   <td className="px-5 py-3">
                     <button
                       type="button"
@@ -316,7 +315,7 @@ export default function UsersPage() {
                   <td className="px-5 py-3">
                     {u.banned ? (
                       <div>
-                        <span className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded">Banned</span>
+                        <span className="text-xs text-destructive bg-destructive/10 px-2 py-1 rounded">Banned</span>
                         {u.banReason && (
                           <p className="text-xs text-muted-foreground mt-1 max-w-[120px] truncate" title={u.banReason}>
                             {u.banReason}
@@ -324,7 +323,7 @@ export default function UsersPage() {
                         )}
                       </div>
                     ) : (
-                      <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">Active</span>
+                      <span className="text-xs text-primary bg-primary/10 px-2 py-1 rounded">Active</span>
                     )}
                   </td>
                   <td className="px-5 py-3">
@@ -334,7 +333,7 @@ export default function UsersPage() {
                       className="inline-flex items-center gap-1 text-primary hover:underline"
                       title="View & manage this user's listings"
                     >
-                      <Package size={13} /> {u.listingCount ?? 0}
+                      <Package size={16} strokeWidth={1.5} /> {u.listingCount ?? 0}
                     </button>
                   </td>
                   <td className="px-5 py-3 text-muted-foreground">
@@ -346,19 +345,19 @@ export default function UsersPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-red-600 text-xs h-7"
+                          className="text-destructive text-xs h-7"
                           onClick={() => openBanModal(u)}
                         >
-                          <Ban size={12} className="mr-1" /> Ban
+                          <Ban size={14} strokeWidth={1.5} className="mr-1" /> Ban
                         </Button>
                       ) : (
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-green-600 text-xs h-7"
+                          className="text-primary text-xs h-7"
                           onClick={() => handleUnban(u)}
                         >
-                          <UserCheck size={12} className="mr-1" /> Unban
+                          <UserCheck size={14} strokeWidth={1.5} className="mr-1" /> Unban
                         </Button>
                       )}
                       {isSuperAdmin && (
@@ -368,7 +367,7 @@ export default function UsersPage() {
                           className="text-xs h-7"
                           onClick={() => openRoleModal(u)}
                         >
-                          <Shield size={12} className="mr-1" /> Role
+                          <Shield size={14} strokeWidth={1.5} className="mr-1" /> Role
                         </Button>
                       )}
                     </div>
@@ -412,7 +411,7 @@ export default function UsersPage() {
       <Dialog open={banModalOpen} onOpenChange={setBanModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Ban User</DialogTitle>
+            <DialogTitle>Ban user</DialogTitle>
             <DialogDescription>
               Provide a reason for banning {banTarget?.name}. This action will prevent the user from logging in.
             </DialogDescription>
@@ -440,7 +439,7 @@ export default function UsersPage() {
               disabled={banLoading || !banReason.trim()}
             >
               {banLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
-              Ban User
+              Ban user
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -450,14 +449,14 @@ export default function UsersPage() {
       <Dialog open={roleModalOpen} onOpenChange={setRoleModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Change Role</DialogTitle>
+            <DialogTitle>Change role</DialogTitle>
             <DialogDescription>
               Change the role for {roleTarget?.name}. Current role: {roleTarget?.role}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <label className="text-sm font-medium text-foreground mb-2 block">
-              New Role
+              New role
             </label>
             <Select value={newRole} onValueChange={(val) => setNewRole(val ?? "")}>
               <SelectTrigger>
@@ -505,7 +504,7 @@ export default function UsersPage() {
               </div>
             ) : userListings.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-                <Package size={32} className="mb-2 opacity-50" />
+                <Package size={32} strokeWidth={1.5} className="mb-2 opacity-60" />
                 <p className="text-sm">This user has no listings</p>
               </div>
             ) : (
@@ -520,7 +519,7 @@ export default function UsersPage() {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={l.images[0]} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <Package size={18} className="text-muted-foreground" />
+                        <Package size={18} strokeWidth={1.5} className="text-muted-foreground" />
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -529,20 +528,20 @@ export default function UsersPage() {
                         {l.category}
                         {l.price != null ? ` • ₹${l.price.toLocaleString()}` : ""}
                         {` • `}
-                        <span className="uppercase">{l.status}</span>
+                        <span className="capitalize">{l.status.toLowerCase()}</span>
                       </p>
                     </div>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="text-red-600 text-xs h-8 shrink-0"
+                      className="text-destructive text-xs h-8 shrink-0"
                       onClick={() => handleDeleteListing(l)}
                       disabled={deletingId === l.id || deletingAll}
                     >
                       {deletingId === l.id ? (
-                        <Loader2 size={12} className="animate-spin" />
+                        <Loader2 size={14} className="animate-spin" />
                       ) : (
-                        <><Trash2 size={12} className="mr-1" /> Delete</>
+                        <><Trash2 size={14} strokeWidth={1.5} className="mr-1" /> Delete</>
                       )}
                     </Button>
                   </div>
@@ -564,7 +563,7 @@ export default function UsersPage() {
                 {deletingAll ? (
                   <><Loader2 size={14} className="mr-2 animate-spin" /> Deleting all...</>
                 ) : (
-                  <><Trash2 size={14} className="mr-2" /> Delete all ({userListings.length})</>
+                  <><Trash2 size={14} strokeWidth={1.5} className="mr-2" /> Delete all ({userListings.length})</>
                 )}
               </Button>
             )}
