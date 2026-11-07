@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useLang } from "@/lib/lang-context";
-import { Loader2, MailCheck, LocateFixed, MapPin, Check, AlertCircle } from "lucide-react";
+import { Loader2, MailCheck, LocateFixed, MapPin, Check, AlertCircle, Smartphone } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import { lookupPincode } from "@/lib/pincode";
 
@@ -182,7 +182,7 @@ export default function LoginPage() {
       const res = await api.verifyEmailOtp(form.email.trim(), otp.trim());
       if (res.verified) {
         setEmailVerified(true);
-        toast.success(t("ಇಮೇಲ್ ಪರಿಶೀಲಿಸಲಾಗಿದೆ!", "Email verified!"));
+        toast.success(t("ಇಮೇಲ್ ಪರಿಶೀಲಿಸಲಾಗಿದೆ", "Email verified"));
         await completeRegistration();
       } else {
         toast.error(t("ತಪ್ಪಾದ ಅಥವಾ ಅವಧಿ ಮೀರಿದ OTP", "Invalid or expired OTP"));
@@ -210,7 +210,7 @@ export default function LoginPage() {
         taluk: geo?.taluk || undefined,
       });
       login(res);
-      toast.success(t("ಯಶಸ್ವಿಯಾಗಿ ನೋಂದಣಿ ಆಗಿದೆ!", "Registered successfully!"));
+      toast.success(t("ನೋಂದಣಿ ಆಗಿದೆ", "Registered"));
       router.push("/home");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : t("ಏನೋ ತಪ್ಪಾಗಿದೆ", "Something went wrong"));
@@ -225,7 +225,7 @@ export default function LoginPage() {
     try {
       const res = await api.loginWithGoogle(idToken);
       login(res);
-      toast.success(t("ಯಶಸ್ವಿ!", "Signed in!"));
+      toast.success(t("ಸೈನ್ ಇನ್ ಆಗಿದೆ", "Signed in"));
       // New Google users with no phone yet → onboarding; otherwise home.
       router.push(res.needsOnboarding ? "/onboarding" : "/home");
     } catch (err: unknown) {
@@ -248,7 +248,7 @@ export default function LoginPage() {
     try {
       const res = await api.login(fullPhone, form.password);
       login(res);
-      toast.success(t("ಯಶಸ್ವಿಯಾಗಿ ಲಾಗಿನ್ ಆಗಿದೆ!", "Logged in successfully!"));
+      toast.success(t("ಲಾಗಿನ್ ಆಗಿದೆ", "Logged in"));
       router.push("/home");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : t("ಏನೋ ತಪ್ಪಾಗಿದೆ", "Something went wrong"));
@@ -265,23 +265,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12 overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-green-50 dark:from-background dark:via-background dark:to-background" suppressHydrationWarning>
-      {/* Soft decorative blobs */}
-      <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full bg-primary/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-emerald-400/10 blur-3xl" />
+    <div className="relative min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12 overflow-hidden bg-background" suppressHydrationWarning>
 
       {/* Language toggle — fixed to top-right corner */}
       <div className="absolute top-4 right-4 z-10">
-        <div className="flex items-center gap-1 bg-card border border-border rounded-full p-0.5 shadow-sm">
+        <div className="flex items-center gap-1 bg-card border border-border rounded-full p-0.5">
           <button
             onClick={() => setLang("kn")}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition ${lang === "kn" ? "bg-primary text-white" : "text-muted-foreground"}`}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition ${lang === "kn" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
           >
             ಕನ್ನಡ
           </button>
           <button
             onClick={() => setLang("en")}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition ${lang === "en" ? "bg-primary text-white" : "text-muted-foreground"}`}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition ${lang === "en" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
           >
             English
           </button>
@@ -290,21 +287,19 @@ export default function LoginPage() {
 
       {/* Brand */}
       <div className="relative mb-5 flex flex-col items-center">
-        <div className="p-1.5 rounded-full bg-gradient-to-br from-primary/30 to-emerald-400/20 shadow-lg mb-3">
-          <img src="/logo.png" alt="Dealspot Connect" className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover ring-4 ring-background" />
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+        <img src="/logo.png" alt="Dealspot Connect" className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border border-border mb-4" />
+        <h1 className="text-2xl sm:text-3xl font-semibold text-foreground tracking-tight">
           Dealspot <span className="text-primary">connect</span>
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("ಗ್ರಾಮೀಣ ಮಾರುಕಟ್ಟೆ", "Rural Marketplace")}</p>
       </div>
 
-      <div className="relative w-full max-w-sm space-y-4 bg-card/95 backdrop-blur p-6 sm:p-7 rounded-3xl shadow-xl border border-border" suppressHydrationWarning>
+      <div className="relative w-full max-w-sm space-y-4 bg-card p-6 sm:p-8 rounded-2xl shadow-md border border-border" suppressHydrationWarning>
 
         {/* ─── GOOGLE — the hero sign-in (always the main attraction) ─── */}
         <div className="text-center space-y-1.5">
-          <h2 className="font-bold text-foreground text-xl">
-            {t("ಸ್ವಾಗತ 👋", "Welcome 👋")}
+          <h2 className="font-semibold text-foreground text-xl">
+            {t("ಸ್ವಾಗತ", "Welcome")}
           </h2>
           <p className="text-sm text-muted-foreground px-2">
             {t("Google ಖಾತೆಯೊಂದಿಗೆ ಕ್ಷಣದಲ್ಲಿ ಪ್ರಾರಂಭಿಸಿ", "Sign in instantly with your Google account")}
@@ -322,7 +317,7 @@ export default function LoginPage() {
                 <Loader2 size={13} className="animate-spin" /> {t("ಸೈನ್ ಇನ್ ಆಗುತ್ತಿದೆ...", "Signing in...")}
               </p>
             )}
-            <p className="text-center text-[11px] text-muted-foreground px-4 leading-relaxed">
+            <p className="text-center text-xs text-muted-foreground px-4 leading-relaxed">
               {t("ಮುಂದುವರಿಯುವ ಮೂಲಕ ನೀವು ನಮ್ಮ ನಿಯಮಗಳನ್ನು ಒಪ್ಪುತ್ತೀರಿ", "By continuing you agree to our Terms & Privacy Policy")}
             </p>
 
@@ -330,14 +325,14 @@ export default function LoginPage() {
             <div className="pt-1">
               <div className="flex items-center gap-3 mb-3">
                 <div className="flex-1 h-px bg-border" />
-                <span className="text-[11px] text-muted-foreground uppercase tracking-wide">{t("ಅಥವಾ", "or")}</span>
+                <span className="text-xs text-muted-foreground">{t("ಅಥವಾ", "or")}</span>
                 <div className="flex-1 h-px bg-border" />
               </div>
               <button
                 onClick={() => setShowPasswordAuth(true)}
-                className="w-full h-11 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-muted/50 hover:border-primary/40 transition flex items-center justify-center gap-2"
+                className="w-full h-11 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted/50 transition-colors flex items-center justify-center gap-2"
               >
-                📱 {t("ಫೋನ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್‌ನೊಂದಿಗೆ ಲಾಗಿನ್", "Use phone & password instead")}
+                <Smartphone size={16} strokeWidth={1.5} /> {t("ಫೋನ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್‌ನೊಂದಿಗೆ ಲಾಗಿನ್", "Use phone & password instead")}
               </button>
             </div>
           </div>
@@ -378,7 +373,7 @@ export default function LoginPage() {
               onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
               placeholder="000000"
               maxLength={6}
-              className="w-full h-14 rounded-xl border border-input bg-background text-center text-3xl font-bold tracking-[0.4em] text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/40 placeholder:tracking-[0.4em]"
+              className="w-full h-14 rounded-lg border border-input bg-background text-center text-3xl font-semibold tracking-[0.4em] text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/40 placeholder:tracking-[0.4em]"
             />
 
             <Button
@@ -442,12 +437,12 @@ export default function LoginPage() {
             {isRegister && (
               <div>
                 <label className="text-sm text-muted-foreground mb-1 block">
-                  {t("ಸ್ಥಳ", "Location")} <span className="text-red-500">*</span>
+                  {t("ಸ್ಥಳ", "Location")} <span className="text-destructive">*</span>
                 </label>
                 {geo ? (
-                  <div className="rounded-xl border border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-950/30 p-3">
+                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
                     <div className="flex items-start gap-2">
-                      <Check size={16} className="text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+                      <Check size={16} className="text-primary shrink-0 mt-0.5" />
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-foreground">
                           {geo.district}
@@ -470,7 +465,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={detectLocation}
                     disabled={geoLoading}
-                    className="w-full h-11 rounded-xl border border-primary/40 text-primary hover:bg-primary/5 transition flex items-center justify-center gap-2 text-sm font-medium disabled:opacity-60"
+                    className="w-full h-11 rounded-lg border border-primary/40 text-primary hover:bg-primary/5 transition flex items-center justify-center gap-2 text-sm font-medium disabled:opacity-60"
                   >
                     {geoLoading ? (
                       <><Loader2 size={16} className="animate-spin" /> {t("ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...", "Detecting...")}</>
@@ -480,12 +475,12 @@ export default function LoginPage() {
                   </button>
                 )}
                 {geoError && (
-                  <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+                  <p className="text-xs text-destructive mt-1.5 flex items-center gap-1">
                     <AlertCircle size={12} className="shrink-0" /> {geoError}
                   </p>
                 )}
                 {!geo && !geoError && (
-                  <p className="text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1">
+                  <p className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1">
                     <MapPin size={11} className="shrink-0" />
                     {t("ನಿಮ್ಮ ಜಿಲ್ಲೆ/ತಾಲೂಕು ಸ್ವಯಂ ತುಂಬಲು GPS ಬಳಸಲಾಗುತ್ತದೆ", "We use GPS to auto-fill your district & taluk")}
                   </p>

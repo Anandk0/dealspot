@@ -11,8 +11,8 @@ export default function PrivacyPolicyPage() {
           <ArrowLeft size={16} /> Back to Settings
         </Link>
 
-        <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-sm border border-border">
-          <h1 className="text-2xl font-bold text-foreground mb-1">Privacy Policy</h1>
+        <div className="bg-card rounded-2xl p-6 sm:p-8 border border-border">
+          <h1 className="text-2xl font-semibold text-foreground mb-1">Privacy Policy</h1>
           <p className="text-sm text-muted-foreground mb-6">Last updated: September 2026</p>
 
           <div className="space-y-6 text-sm leading-relaxed text-foreground/90">

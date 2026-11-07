@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ChevronRight, ListOrdered, Heart, Settings, HelpCircle, Info, LogOut, Edit, MapPin } from "lucide-react";
+import { ChevronRight, ListOrdered, Heart, Settings, HelpCircle, Info, LogOut, Edit, MapPin, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AppLayout from "@/components/AppLayout";
@@ -41,13 +41,13 @@ export default function ProfilePage() {
     <AppLayout>
       <div className="max-w-3xl mx-auto px-4 py-5 sm:p-6 pb-28 lg:pb-8">
         {/* Profile Card */}
-        <div className="bg-card rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm border border-border mb-4 sm:mb-6">
+        <div className="bg-card rounded-2xl p-4 sm:p-6 md:p-8 border border-border mb-4 sm:mb-6">
           <div className="flex items-center gap-3.5 sm:gap-6 min-w-0">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-primary/10 rounded-full flex items-center justify-center text-3xl sm:text-4xl md:text-5xl shrink-0">
-              👤
+            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-muted rounded-full flex items-center justify-center text-muted-foreground shrink-0">
+              <User size={28} strokeWidth={1.5} />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground truncate">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-foreground truncate">
                 {user?.name || "—"}
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 truncate">
@@ -62,7 +62,7 @@ export default function ProfilePage() {
             </div>
             <Link
               href="/profile/edit"
-              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-primary font-medium px-2.5 py-1.5 sm:px-4 sm:py-2 border border-primary/30 rounded-xl hover:bg-primary/10 transition shrink-0 self-center"
+              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-primary font-medium px-2.5 py-1.5 sm:px-4 sm:py-2 border border-primary/30 rounded-lg hover:bg-primary/10 transition-colors shrink-0 self-center"
             >
               <Edit size={14} className="shrink-0" />
               <span>ಬದಲಾಯಿಸಿ</span>
@@ -74,33 +74,33 @@ export default function ProfilePage() {
         <div className="grid grid-cols-3 gap-2.5 sm:gap-4 mb-4 sm:mb-6">
           <Link
             href="/profile/listings"
-            className="bg-card rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center shadow-sm border border-border hover:shadow-md hover:border-primary/30 transition block min-w-0"
+            className="bg-card rounded-2xl p-3 sm:p-4 text-center border border-border hover:border-primary/30 transition-colors block min-w-0"
           >
-            <p className="text-xl sm:text-2xl font-bold text-primary truncate">{listingCount ?? "—"}</p>
+            <p className="text-xl sm:text-2xl font-semibold text-primary truncate">{listingCount ?? "—"}</p>
             <p className="text-[11px] sm:text-xs text-muted-foreground mt-1 truncate">ಜಾಹೀರಾತುಗಳು</p>
           </Link>
-          <div className="bg-card rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center shadow-sm border border-border min-w-0">
-            <p className="text-xl sm:text-2xl font-bold text-primary truncate">—</p>
+          <div className="bg-card rounded-2xl p-3 sm:p-4 text-center border border-border min-w-0">
+            <p className="text-xl sm:text-2xl font-semibold text-primary truncate">—</p>
             <p className="text-[11px] sm:text-xs text-muted-foreground mt-1 truncate">ವೀಕ್ಷಣೆಗಳು</p>
           </div>
           <Link
             href="/favorites"
-            className="bg-card rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center shadow-sm border border-border hover:shadow-md hover:border-primary/30 transition block min-w-0"
+            className="bg-card rounded-2xl p-3 sm:p-4 text-center border border-border hover:border-primary/30 transition-colors block min-w-0"
           >
-            <p className="text-xl sm:text-2xl font-bold text-primary truncate">{favoritesCount ?? "—"}</p>
+            <p className="text-xl sm:text-2xl font-semibold text-primary truncate">{favoritesCount ?? "—"}</p>
             <p className="text-[11px] sm:text-xs text-muted-foreground mt-1 truncate">ಇಷ್ಟಪಟ್ಟಿ</p>
           </Link>
         </div>
 
         {/* Menu */}
-        <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden mb-4">
+        <div className="bg-card rounded-2xl border border-border overflow-hidden mb-4">
           {menuItems.map((item, i) => (
             <div key={item.href}>
               <Link
                 href={item.href}
                 className="flex items-center gap-3.5 sm:gap-4 px-4 py-3.5 sm:px-6 sm:py-4 hover:bg-muted/50 active:bg-muted transition-colors"
               >
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary/80 shrink-0">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0">
                   <item.icon size={18} />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -117,14 +117,14 @@ export default function ProfilePage() {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3.5 sm:gap-4 px-4 py-3.5 sm:px-6 sm:py-4 w-full text-left bg-card rounded-2xl border border-border hover:bg-red-50 dark:hover:bg-red-950/20 hover:border-red-200 dark:hover:border-red-900 transition-colors shadow-sm"
+          className="flex items-center gap-3.5 sm:gap-4 px-4 py-3.5 sm:px-6 sm:py-4 w-full text-left bg-card rounded-2xl border border-border hover:bg-destructive/10 transition-colors"
         >
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-red-500 shrink-0">
-            <LogOut size={18} />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-muted flex items-center justify-center text-destructive shrink-0">
+            <LogOut size={18} strokeWidth={1.5} />
           </div>
           <div className="flex-1 min-w-0">
-            <span className="text-sm text-red-600 dark:text-red-400 font-medium block truncate">ಲಾಗ್ ಔಟ್</span>
-            <span className="text-[11px] sm:text-xs text-red-400/80 block truncate">Logout</span>
+            <span className="text-sm text-destructive font-medium block truncate">ಲಾಗ್ ಔಟ್</span>
+            <span className="text-xs text-muted-foreground block truncate">Log out</span>
           </div>
         </button>
       </div>

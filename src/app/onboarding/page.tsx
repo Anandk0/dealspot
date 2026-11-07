@@ -56,7 +56,7 @@ export default function OnboardingPage() {
         location: location.trim(),
       });
       await refreshProfile();
-      toast.success(t("ಸ್ವಾಗತ!", "Welcome!"));
+      toast.success(t("ಸ್ವಾಗತ", "Welcome"));
       router.replace("/home");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : t("ಉಳಿಸಲು ವಿಫಲ", "Could not save"));
@@ -66,13 +66,13 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10 bg-gradient-to-b from-green-50 to-white dark:from-background dark:to-background">
-      <img src="/logo.png" alt="Dealspot" className="w-16 h-16 rounded-full object-cover mb-3 shadow" />
-      <div className="w-full max-w-sm bg-card p-6 rounded-2xl shadow-sm border border-border space-y-4">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10 bg-background">
+      <img src="/logo.png" alt="Dealspot" className="w-16 h-16 rounded-full object-cover border border-border mb-4" />
+      <div className="w-full max-w-sm bg-card p-6 rounded-2xl shadow-md border border-border space-y-4">
         <div className="text-center">
-          <CheckCircle2 className="mx-auto text-primary mb-2" size={34} />
-          <h1 className="text-lg font-bold text-foreground">{t("ಬಹುತೇಕ ಮುಗಿದಿದೆ!", "Almost done!")}</h1>
-          <p className="text-xs text-muted-foreground mt-1">
+          <CheckCircle2 className="mx-auto text-primary mb-3" size={24} strokeWidth={1.5} />
+          <h1 className="text-lg font-semibold text-foreground">{t("ಬಹುತೇಕ ಮುಗಿದಿದೆ", "Almost done")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             {t("ಮುಂದುವರಿಯಲು ನಿಮ್ಮ ವಿವರ ಪೂರ್ಣಗೊಳಿಸಿ", "Complete your details to continue")}
           </p>
         </div>
@@ -83,9 +83,9 @@ export default function OnboardingPage() {
         </div>
 
         <div>
-          <label className="text-sm text-muted-foreground mb-1 block">{t("ಫೋನ್ ನಂಬರ್", "Phone Number")} *</label>
+          <label className="text-sm text-muted-foreground mb-1 block">{t("ಫೋನ್ ನಂಬರ್", "Phone number")} *</label>
           <div className="flex gap-2">
-            <div className="w-14 h-11 border rounded-md flex items-center justify-center text-sm bg-muted">+91</div>
+            <div className="w-14 h-11 border border-input rounded-md flex items-center justify-center text-sm bg-muted">+91</div>
             <Input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="98765 43210" className="h-11 flex-1" maxLength={10} />
           </div>
         </div>

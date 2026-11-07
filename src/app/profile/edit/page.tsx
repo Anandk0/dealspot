@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Loader2, User } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,7 +54,7 @@ export default function EditProfilePage() {
     try {
       await api.updateProfile({ name, location, district });
       await refreshProfile();
-      toast.success("ಪ್ರೊಫೈಲ್ ಉಳಿಸಲಾಗಿದೆ! (Profile Saved)");
+      toast.success("ಪ್ರೊಫೈಲ್ ಉಳಿಸಲಾಗಿದೆ (Profile saved)");
       router.push("/profile");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to save profile";
@@ -67,18 +67,18 @@ export default function EditProfilePage() {
   return (
     <AppLayout>
       <div className="max-w-2xl mx-auto px-4 py-5 sm:p-6 pb-28 lg:pb-8">
-        <h1 className="text-xl font-bold text-foreground mb-4 sm:mb-6">ಪ್ರೊಫೈಲ್ ಬದಲಾಯಿಸಿ (Edit Profile)</h1>
+        <h1 className="text-xl font-semibold text-foreground mb-4 sm:mb-6">ಪ್ರೊಫೈಲ್ ಬದಲಾಯಿಸಿ (Edit Profile)</h1>
 
-        <div className="bg-card rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm border border-border">
+        <div className="bg-card rounded-2xl p-4 sm:p-6 md:p-8 border border-border">
           <form onSubmit={handleSave} className="space-y-6">
             <div className="flex justify-center">
               <div className="relative">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-primary/10 rounded-full flex items-center justify-center text-4xl sm:text-5xl overflow-hidden">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-muted rounded-full flex items-center justify-center text-muted-foreground overflow-hidden">
                   {imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={imageUrl} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
-                    "👤"
+                    <User size={40} strokeWidth={1.5} />
                   )}
                   {uploading && (
                     <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
@@ -97,10 +97,10 @@ export default function EditProfilePage() {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="absolute bottom-1 right-1 w-8 h-8 sm:w-9 sm:h-9 bg-primary rounded-full flex items-center justify-center shadow-md disabled:opacity-60"
+                  className="absolute bottom-1 right-1 w-8 h-8 sm:w-9 sm:h-9 bg-primary rounded-full flex items-center justify-center border-2 border-card disabled:opacity-60"
                   aria-label="Change profile photo"
                 >
-                  <Camera size={16} className="text-white" />
+                  <Camera size={16} strokeWidth={1.5} className="text-primary-foreground" />
                 </button>
               </div>
             </div>
