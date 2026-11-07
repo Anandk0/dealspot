@@ -18,17 +18,17 @@ export default function SplashScreen() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-green-600 to-green-800 text-white">
-      <div className="animate-pulse flex flex-col items-center">
-        <img src="/logo.png" alt="Deal Spot Connect" className="w-32 h-32 rounded-full object-cover mb-4 shadow-2xl" />
-        <h1 className="text-4xl font-bold text-center">Deal Spot</h1>
-        <p className="text-xl text-center mt-2 text-green-200">ಡೀಲ್ ಸ್ಪಾಟ್</p>
-        <p className="text-sm text-center mt-4 text-green-300">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-primary text-primary-foreground">
+      <div className="flex flex-col items-center">
+        <img src="/logo.png" alt="Deal Spot Connect" className="w-32 h-32 rounded-full object-cover mb-4" />
+        <h1 className="text-4xl font-semibold text-center">Deal Spot</h1>
+        <p className="text-xl text-center mt-2 opacity-90">ಡೀಲ್ ಸ್ಪಾಟ್</p>
+        <p className="text-sm text-center mt-4 opacity-80">
           ಗ್ರಾಮೀಣ ಮಾರುಕಟ್ಟೆ
         </p>
       </div>
       <div className="absolute bottom-10">
-        <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-current/30 border-t-current rounded-full animate-spin" />
       </div>
     </div>
   );
