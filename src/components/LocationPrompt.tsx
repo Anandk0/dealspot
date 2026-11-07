@@ -116,16 +116,16 @@ export default function LocationPrompt() {
   if (!needsPrompt) return null;
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center bg-black/50 p-0 sm:p-4">
-      <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl shadow-xl border border-border max-h-[85vh] flex flex-col">
+    <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4">
+      <div className="w-full sm:max-w-md bg-card rounded-t-xl sm:rounded-xl shadow-lg border border-border max-h-[85vh] flex flex-col">
         {/* Header */}
         <div className="flex items-start justify-between p-5 pb-3">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <MapPin className="text-primary" size={22} />
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <MapPin className="text-primary" size={20} strokeWidth={1.5} />
             </div>
             <div>
-              <h2 className="font-bold text-foreground leading-tight">
+              <h2 className="font-semibold text-foreground leading-tight">
                 {step === "taluk"
                   ? t("ತಾಲೂಕು ಆಯ್ಕೆಮಾಡಿ", "Choose your taluk")
                   : t("ನಿಮ್ಮ ಜಿಲ್ಲೆ ಆಯ್ಕೆಮಾಡಿ", "Choose your district")}
@@ -139,10 +139,10 @@ export default function LocationPrompt() {
           </div>
           <button
             onClick={dismissPrompt}
-            className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition"
+            className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="Close"
           >
-            <X size={18} />
+            <X size={18} strokeWidth={1.5} />
           </button>
         </div>
 
@@ -194,9 +194,9 @@ export default function LocationPrompt() {
                 <button
                   key={d.id}
                   onClick={() => chooseDistrict(d)}
-                  className="flex items-center gap-2 p-3 rounded-xl border border-border bg-background hover:border-primary/50 hover:bg-primary/5 transition text-left"
+                  className="flex items-center gap-2 p-3 rounded-lg border border-border bg-background hover:border-primary/50 hover:bg-primary/5 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <span className="text-base shrink-0">{d.icon}</span>
+                  <MapPin size={16} strokeWidth={1.5} className="shrink-0 text-muted-foreground" aria-hidden="true" />
                   <span className="min-w-0">
                     <span className="block text-sm font-medium text-foreground truncate">{d.name}</span>
                     <span className="block text-[11px] text-muted-foreground truncate">{d.nameEn}</span>
@@ -214,7 +214,7 @@ export default function LocationPrompt() {
           <div className="flex-1 overflow-y-auto px-5 pb-4">
             <button
               onClick={() => chooseTaluk(null)}
-              className="w-full mb-2 p-3 rounded-xl border border-primary/40 bg-primary/5 text-primary text-sm font-medium hover:bg-primary/10 transition"
+              className="w-full mb-2 p-3 rounded-lg border border-primary/40 bg-primary/5 text-primary text-sm font-medium hover:bg-primary/10 transition-colors"
             >
               {t("ಇಡೀ ಜಿಲ್ಲೆ (ಎಲ್ಲಾ ತಾಲೂಕು)", "All of district (any taluk)")}
             </button>
@@ -232,7 +232,7 @@ export default function LocationPrompt() {
                   <button
                     key={tk}
                     onClick={() => chooseTaluk(tk)}
-                    className="p-3 rounded-xl border border-border bg-background hover:border-primary/50 hover:bg-primary/5 transition text-left text-sm font-medium text-foreground truncate"
+                    className="p-3 rounded-lg border border-border bg-background hover:border-primary/50 hover:bg-primary/5 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-sm font-medium text-foreground truncate"
                   >
                     {tk}
                   </button>

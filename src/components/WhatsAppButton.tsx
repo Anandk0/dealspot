@@ -45,7 +45,7 @@ export default function WhatsAppButton({ trigger }: { trigger?: React.ReactNode 
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-2 text-sm font-medium text-green-600 hover:text-green-700 transition"
+          className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
           aria-label="WhatsApp"
         >
           <MessageCircle size={18} /> WhatsApp
@@ -56,7 +56,7 @@ export default function WhatsAppButton({ trigger }: { trigger?: React.ReactNode 
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <MessageCircle size={18} className="text-green-600" />
+              <MessageCircle size={18} className="text-primary" />
               {t("ವಾಟ್ಸಾಪ್ ಸಂಪರ್ಕ", "WhatsApp Support")}
             </DialogTitle>
             <DialogDescription>
@@ -68,17 +68,17 @@ export default function WhatsAppButton({ trigger }: { trigger?: React.ReactNode 
             {WHATSAPP_NUMBERS.map((n) => (
               <div
                 key={n.dial}
-                className="flex items-center justify-between gap-3 p-3 rounded-xl border border-border bg-muted/30"
+                className="flex items-center justify-between gap-3 p-3 rounded-xl border border-border bg-background"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-9 h-9 rounded-full bg-green-50 dark:bg-green-950/40 flex items-center justify-center shrink-0">
-                    <MessageCircle size={16} className="text-green-600" />
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <MessageCircle size={16} className="text-primary" />
                   </div>
                   <span className="text-sm font-medium text-foreground truncate">{n.display}</span>
                 </div>
                 <Button
                   size="sm"
-                  className="bg-green-600 hover:bg-green-700 text-white shrink-0"
+                  className="shrink-0"
                   onClick={() => openChat(n.dial)}
                 >
                   <MessageCircle size={14} className="mr-1" /> {t("ಚಾಟ್", "Chat")}

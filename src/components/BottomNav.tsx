@@ -34,16 +34,16 @@ export default function Sidebar() {
       <Link
         key={item.href}
         href={item.href}
-        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
+        className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
           isActive
             ? "bg-primary/10 text-primary font-medium"
             : "text-muted-foreground hover:bg-accent"
         }`}
       >
-        <item.icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
+        <item.icon size={18} strokeWidth={1.5} />
         <div>
           <span className="text-sm block">{lang === "en" ? item.labelEn : item.label}</span>
-          <span className="text-[10px] text-muted-foreground/70">{lang === "en" ? item.label : item.labelEn}</span>
+          <span className="text-xs text-muted-foreground">{lang === "en" ? item.label : item.labelEn}</span>
         </div>
       </Link>
     );
@@ -57,7 +57,7 @@ export default function Sidebar() {
         {isStaff && (
           <>
             <div className="px-4 pt-4 pb-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">
+              <span className="text-xs font-medium text-muted-foreground">
                 {lang === "en" ? "Staff" : "ಸಿಬ್ಬಂದಿ"}
               </span>
             </div>

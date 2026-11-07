@@ -139,7 +139,7 @@ export default function ContactUnlockModal({ listingId, onUnlocked }: Props) {
           }
         },
         prefill: { contact: user?.phone },
-        theme: { color: "#16a34a" },
+        theme: { color: "#2f7d3b" },
       };
 
       if (!window.Razorpay) {
@@ -167,47 +167,47 @@ export default function ContactUnlockModal({ listingId, onUnlocked }: Props) {
     const whatsapp = contact?.whatsapp;
     const fullAddress = contact?.fullAddress;
     return (
-      <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-xl p-4 space-y-3">
+      <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 space-y-3">
         <div className="text-center">
-          <CheckCircle2 className="mx-auto mb-1 text-green-500" size={26} />
-          <p className="text-sm text-green-700 dark:text-green-400 font-medium">
+          <CheckCircle2 className="mx-auto mb-1 text-primary" strokeWidth={1.5} size={24} />
+          <p className="text-sm text-primary font-medium">
             {isFree ? "ಉಚಿತ ಕಾಂಟ್ಯಾಕ್ಟ್ (Free Contact)" : "ಕಾಂಟ್ಯಾಕ್ಟ್ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ (Unlocked)"}
           </p>
         </div>
 
         {name && (
-          <div className="flex items-center gap-2 bg-white/60 dark:bg-black/20 rounded-lg px-3 py-2">
-            <User size={15} className="text-green-700 dark:text-green-400 shrink-0" />
+          <div className="flex items-center gap-2 bg-background border border-border rounded-lg px-3 py-2">
+            <User size={15} className="text-primary shrink-0" />
             <div className="min-w-0">
               <p className="text-[11px] text-muted-foreground">ಹೆಸರು (Name)</p>
-              <p className="text-sm font-semibold text-foreground truncate">{name}</p>
+              <p className="text-sm font-medium text-foreground truncate">{name}</p>
             </div>
           </div>
         )}
 
         {mobile && (
-          <a href={`tel:${mobile}`} className="flex items-center gap-2 bg-white/60 dark:bg-black/20 rounded-lg px-3 py-2">
-            <Phone size={15} className="text-green-700 dark:text-green-400 shrink-0" />
+          <a href={`tel:${mobile}`} className="flex items-center gap-2 bg-background border border-border rounded-lg px-3 py-2">
+            <Phone size={15} className="text-primary shrink-0" />
             <div className="min-w-0">
               <p className="text-[11px] text-muted-foreground">ಮೊಬೈಲ್ (Mobile)</p>
-              <p className="text-sm font-bold text-green-800 dark:text-green-300 truncate">{mobile}</p>
+              <p className="text-sm font-medium text-foreground truncate">{mobile}</p>
             </div>
           </a>
         )}
 
         {whatsapp && (
-          <a href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-white/60 dark:bg-black/20 rounded-lg px-3 py-2">
-            <Phone size={15} className="text-green-700 dark:text-green-400 shrink-0" />
+          <a href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-background border border-border rounded-lg px-3 py-2">
+            <Phone size={15} className="text-primary shrink-0" />
             <div className="min-w-0">
               <p className="text-[11px] text-muted-foreground">WhatsApp</p>
-              <p className="text-sm font-bold text-green-800 dark:text-green-300 truncate">{whatsapp}</p>
+              <p className="text-sm font-medium text-foreground truncate">{whatsapp}</p>
             </div>
           </a>
         )}
 
         {fullAddress && (
-          <div className="flex items-center gap-2 bg-white/60 dark:bg-black/20 rounded-lg px-3 py-2">
-            <User size={15} className="text-green-700 dark:text-green-400 shrink-0" />
+          <div className="flex items-center gap-2 bg-background border border-border rounded-lg px-3 py-2">
+            <User size={15} className="text-primary shrink-0" />
             <div className="min-w-0">
               <p className="text-[11px] text-muted-foreground">ವಿಳಾಸ (Address)</p>
               <p className="text-sm font-medium text-foreground">{fullAddress}</p>
@@ -217,7 +217,7 @@ export default function ContactUnlockModal({ listingId, onUnlocked }: Props) {
 
         {mobile && (
           <a href={`tel:${mobile}`} className="block">
-            <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+            <Button className="w-full">
               <Phone size={14} className="mr-1.5" /> ಕರೆ ಮಾಡಿ (Call)
             </Button>
           </a>
@@ -254,7 +254,7 @@ export default function ContactUnlockModal({ listingId, onUnlocked }: Props) {
       <Button
         onClick={handleFreeUnlock}
         disabled={loading}
-        className="w-full bg-primary hover:bg-primary/90 h-auto py-2.5 whitespace-normal"
+        className="w-full h-auto py-2.5 whitespace-normal"
       >
         {loading ? (
           <><Loader2 size={16} className="mr-2 shrink-0 animate-spin" /> ಲೋಡ್ ಆಗುತ್ತಿದೆ...</>
@@ -273,14 +273,14 @@ export default function ContactUnlockModal({ listingId, onUnlocked }: Props) {
 
   return (
     <Dialog>
-      <DialogTrigger render={<Button className="w-full bg-primary" />}>
+      <DialogTrigger render={<Button className="w-full" />}>
         <Lock size={16} className="mr-2" />
         ಕಾಂಟ್ಯಾಕ್ಟ್ ನೋಡಿ (View Contact) - {priceDisplay}
       </DialogTrigger>
       <DialogContent className="max-w-sm mx-auto">
         <DialogHeader>
           <DialogTitle className="text-center">
-            <Lock className="mx-auto mb-2 text-primary" size={32} />
+            <Lock className="mx-auto mb-2 text-primary" strokeWidth={1.5} size={28} />
             ಕಾಂಟ್ಯಾಕ್ಟ್ ಅನ್‌ಲಾಕ್ ಮಾಡಿ
           </DialogTitle>
         </DialogHeader>
@@ -289,13 +289,13 @@ export default function ContactUnlockModal({ listingId, onUnlocked }: Props) {
             ಮಾಲೀಕರ ಫೋನ್ ನಂಬರ್ ನೋಡಲು {priceDisplay} ಪಾವತಿಸಿ
           </p>
           <div className="bg-muted p-4 rounded-lg">
-            <p className="text-2xl font-bold text-primary">{priceDisplay}</p>
+            <p className="text-2xl font-semibold text-primary">{priceDisplay}</p>
             <p className="text-xs text-muted-foreground">ಒಂದು ಕಾಂಟ್ಯಾಕ್ಟ್ ಅನ್‌ಲಾಕ್ (UPI / Card / Net Banking)</p>
           </div>
           <Button
             onClick={handleUnlock}
             disabled={loading}
-            className="w-full bg-primary hover:bg-primary/90"
+            className="w-full"
           >
             {loading ? (
               <><Loader2 size={16} className="mr-2 animate-spin" /> ಪ್ರಕ್ರಿಯೆ ಮಾಡಲಾಗುತ್ತಿದೆ...</>

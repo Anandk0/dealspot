@@ -33,7 +33,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="animate-spin text-primary" size={32} />
       </div>
     );
@@ -62,12 +62,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${
+              className={`flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 isActive ? "text-primary" : "text-muted-foreground"
               }`}
             >
-              <item.icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
-              <span className="text-[10px]">{lang === "en" ? item.labelEn : item.label}</span>
+              <item.icon size={20} strokeWidth={1.5} />
+              <span className={`text-[11px] ${isActive ? "font-medium" : ""}`}>{lang === "en" ? item.labelEn : item.label}</span>
             </Link>
           );
         })}

@@ -63,26 +63,26 @@ export default function TopHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
+      <header className="sticky top-0 z-50 bg-background border-b border-border">
         {/* Main Bar */}
         <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between">
           {/* Left: Hamburger (mobile only) + Logo */}
           <div className="flex items-center gap-2">
             {/* Hamburger — visible only on mobile (lg hides sidebar triggers this) */}
             <button
-              className="lg:hidden p-2 -ml-1 rounded-lg text-foreground/70 hover:text-primary hover:bg-accent transition"
+              className="lg:hidden p-2 -ml-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
             >
-              <Menu size={22} />
+              <Menu size={20} strokeWidth={1.5} />
             </button>
 
             {/* Logo */}
             <Link href="/home" className="flex items-center gap-2 shrink-0">
               <img src="/logo.png" alt="Deal Spot Connect" className="w-9 h-9 rounded-full object-cover" />
               <div>
-                <h1 className="text-lg font-bold text-primary leading-tight">
-                  Dealspot <span className="text-[10px] font-normal text-muted-foreground">connect</span>
+                <h1 className="text-lg font-semibold text-primary leading-tight">
+                  Dealspot <span className="text-xs font-normal text-muted-foreground">connect</span>
                 </h1>
               </div>
             </Link>
@@ -90,19 +90,19 @@ export default function TopHeader() {
             {/* Location selector (Swiggy-style) — opens the district/taluk picker */}
             <button
               onClick={openPrompt}
-              className="flex items-center gap-1 max-w-[150px] sm:max-w-[220px] pl-2 pr-1.5 py-1 rounded-lg hover:bg-accent transition group"
+              className="flex items-center gap-1 max-w-[150px] sm:max-w-[220px] pl-2 pr-1.5 py-1 rounded-lg hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               title={lang === "en" ? "Change location" : "ಸ್ಥಳ ಬದಲಾಯಿಸಿ"}
             >
-              <MapPin size={15} className="text-primary shrink-0" />
+              <MapPin size={16} strokeWidth={1.5} className="text-primary shrink-0" />
               <span className="min-w-0 text-left leading-tight">
-                <span className="block text-[9px] text-muted-foreground">{lang === "en" ? "Location" : "ಸ್ಥಳ"}</span>
-                <span className="block text-xs font-semibold text-foreground truncate">
+                <span className="block text-[11px] text-muted-foreground">{lang === "en" ? "Location" : "ಸ್ಥಳ"}</span>
+                <span className="block text-xs font-medium text-foreground truncate">
                   {district
                     ? `${taluk ? taluk + ", " : ""}${lang === "en" ? district : (districtKn || district)}`
                     : (lang === "en" ? "Select" : "ಆಯ್ಕೆ")}
                 </span>
               </span>
-              <ChevronDown size={13} className="text-muted-foreground shrink-0" />
+              <ChevronDown size={16} strokeWidth={1.5} className="text-muted-foreground shrink-0" />
             </button>
           </div>
 
@@ -123,19 +123,19 @@ export default function TopHeader() {
               + ಜಾಹೀರಾತು ಹಾಕಿ
             </Link> */}
 
-            <Link href="/notifications" className="relative p-2 text-gray-600 hover:text-primary transition">
-              <Bell size={18} />
+            <Link href="/notifications" aria-label="Notifications" className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <Bell size={18} strokeWidth={1.5} />
               {isLoggedIn && unreadCount > 0 && (
-                <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white text-[9px] flex items-center justify-center rounded-full">
+                <span className="absolute top-0.5 right-0.5 min-w-4 h-4 px-1 bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center rounded-full">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
             </Link>
 
 
-            <Link href="/profile" className="p-1 text-gray-600 hover:text-primary transition">
+            <Link href="/profile" aria-label="Profile" className="p-1 rounded-full text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <div className="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center">
-                <User size={14} className="text-primary" />
+                <User size={16} strokeWidth={1.5} className="text-primary" />
               </div>
             </Link>
           </div>
@@ -145,14 +145,14 @@ export default function TopHeader() {
       {/* Mobile Drawer Overlay */}
       {menuOpen && (
         <div
-          className="fixed inset-0 z-[60] bg-black/50 lg:hidden"
+          className="fixed inset-0 z-[60] bg-black/40 lg:hidden"
           onClick={() => setMenuOpen(false)}
         />
       )}
 
       {/* Mobile Drawer */}
       <div
-        className={`fixed top-0 left-0 z-[70] h-full w-72 bg-background shadow-xl flex flex-col transition-transform duration-300 ease-in-out lg:hidden ${
+        className={`fixed top-0 left-0 z-[70] h-full w-72 bg-background border-r border-border shadow-lg flex flex-col transition-transform duration-200 ease-out lg:hidden ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -161,7 +161,7 @@ export default function TopHeader() {
           <div className="flex items-center gap-2">
             <img src="/logo.png" alt="Deal Spot" className="w-8 h-8 rounded-full object-cover" />
             <div>
-              <p className="text-sm font-bold text-primary">Dealspot</p>
+              <p className="text-sm font-semibold text-primary">Dealspot</p>
               {user && <p className="text-xs text-muted-foreground truncate max-w-[160px]">{user.name}</p>}
             </div>
           </div>
@@ -170,7 +170,7 @@ export default function TopHeader() {
             className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition"
             aria-label="Close menu"
           >
-            <X size={20} />
+            <X size={20} strokeWidth={1.5} />
           </button>
         </div>
 
@@ -182,23 +182,23 @@ export default function TopHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-colors ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   isActive
                     ? "bg-primary/10 text-primary font-medium"
                     : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
                 <div className="relative">
-                  <item.icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
+                  <item.icon size={20} strokeWidth={1.5} />
                   {item.href === "/notifications" && unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 text-white text-[8px] flex items-center justify-center rounded-full">
+                    <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center rounded-full">
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
                   )}
                 </div>
                 <div>
                   <span className="text-sm block">{lang === "en" ? item.labelEn : item.label}</span>
-                  <span className="text-[10px] text-muted-foreground/70">{lang === "en" ? item.label : item.labelEn}</span>
+                  <span className="text-xs text-muted-foreground">{lang === "en" ? item.label : item.labelEn}</span>
                 </div>
               </Link>
             );
@@ -207,7 +207,7 @@ export default function TopHeader() {
           {isStaff && (
             <>
               <div className="px-4 pt-3 pb-1 mt-1 border-t border-border">
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">
+                <span className="text-xs font-medium text-muted-foreground">
                   {lang === "en" ? "Staff" : "ಸಿಬ್ಬಂದಿ"}
                 </span>
               </div>
@@ -217,16 +217,16 @@ export default function TopHeader() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-colors ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                       isActive
                         ? "bg-primary/10 text-primary font-medium"
                         : "text-muted-foreground hover:bg-accent hover:text-foreground"
                     }`}
                   >
-                    <item.icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
+                    <item.icon size={20} strokeWidth={1.5} />
                     <div>
                       <span className="text-sm block">{lang === "en" ? item.labelEn : item.label}</span>
-                      <span className="text-[10px] text-muted-foreground/70">{lang === "en" ? item.label : item.labelEn}</span>
+                      <span className="text-xs text-muted-foreground">{lang === "en" ? item.label : item.labelEn}</span>
                     </div>
                   </Link>
                 );
@@ -240,12 +240,12 @@ export default function TopHeader() {
           <div className="border-t border-border p-3">
             <button
               onClick={() => { logout(); setMenuOpen(false); }}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+              className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
             >
-              <LogOut size={20} />
+              <LogOut size={20} strokeWidth={1.5} />
               <div>
                 <span className="text-sm block">{lang === "en" ? "Logout" : "ಲಾಗ್ ಔಟ್"}</span>
-                <span className="text-[10px] text-gray-400">{lang === "en" ? "ಲಾಗ್ ಔಟ್" : "Logout"}</span>
+                <span className="text-xs text-muted-foreground">{lang === "en" ? "ಲಾಗ್ ಔಟ್" : "Logout"}</span>
               </div>
             </button>
           </div>
