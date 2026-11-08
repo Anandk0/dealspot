@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, LocateFixed, Check } from "lucide-react";
+import { LocateFixed, Check } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -299,7 +300,7 @@ export default function PropertyForm({
             coords ? "border-primary/40 bg-primary/10 text-primary" : "border-border bg-background text-foreground hover:border-primary/50"
           }`}
         >
-          {pinning ? <><Loader2 size={16} className="animate-spin" /> {t("ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...", "Detecting...")}</>
+          {pinning ? <><LeafLoader size={16} className="" /> {t("ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...", "Detecting...")}</>
             : coords ? <><Check size={16} /> {t("ಲೊಕೇಶನ್ ಪಿನ್ ಆಗಿದೆ", "Location pinned")}</>
             : <><LocateFixed size={16} /> {t("ಆಸ್ತಿಯ ಲೊಕೇಶನ್ ಪಿನ್ ಮಾಡಿ", "Pin property location")}</>}
         </button>
@@ -313,7 +314,7 @@ export default function PropertyForm({
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
         <Button type="submit" disabled={loading} className="bg-primary w-full sm:w-auto px-8 h-11 text-sm font-medium">
           {loading
-            ? <><Loader2 size={16} className="mr-2 animate-spin" /> {isEdit ? t("ನವೀಕರಿಸಲಾಗುತ್ತಿದೆ...", "Updating...") : t("ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...", "Submitting...")}</>
+            ? <><LeafLoader size={16} className="mr-2" /> {isEdit ? t("ನವೀಕರಿಸಲಾಗುತ್ತಿದೆ...", "Updating...") : t("ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...", "Submitting...")}</>
             : isEdit ? t("ನವೀಕರಿಸಿ (Update Listing)", "Update Listing") : t("ಸಲ್ಲಿಸಿ (Submit Listing)", "Submit Listing")}
         </Button>
       </div>

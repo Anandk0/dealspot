@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Eye, EyeOff, Lock, Check, Save } from "lucide-react";
+import { Eye, EyeOff, Lock, Check, Save } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { api, AdminCategoryResponse } from "@/lib/api";
@@ -97,7 +98,7 @@ export default function FieldVisibilityPage() {
   };
 
   if (guardLoading || loading) {
-    return <div className="flex items-center justify-center min-h-[400px]"><Loader2 className="animate-spin text-muted-foreground" size={32} /></div>;
+    return <div className="flex items-center justify-center min-h-[400px]"><LeafLoader className=" text-muted-foreground" size={32} /></div>;
   }
   if (!isAuthorized) return null;
 
@@ -146,7 +147,7 @@ export default function FieldVisibilityPage() {
                   <p className="text-xs text-muted-foreground font-mono">{selected.slug}</p>
                 </div>
                 <Button onClick={save} disabled={saving} className="bg-primary">
-                  {saving ? <Loader2 size={16} className="mr-2 animate-spin" /> : <Save size={16} strokeWidth={1.5} className="mr-2" />} Save
+                  {saving ? <LeafLoader size={16} className="mr-2" /> : <Save size={16} strokeWidth={1.5} className="mr-2" />} Save
                 </Button>
               </div>
 

@@ -7,29 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Link from "next/link";
-import {
-  ShieldCheck,
-  Award,
-  Copy,
-  Check,
-  Share2,
-  RefreshCw,
-  Sparkles,
-  Users,
-  TrendingUp,
-  Wallet,
-  Camera,
-  Plus,
-  X,
-  Loader2,
-  ArrowRight,
-  UserCheck,
-  Phone,
-  MapPin,
-  Briefcase,
-  Handshake,
-  Fingerprint
-} from "lucide-react";
+import { ShieldCheck, Award, Copy, Check, Share2, RefreshCw, Sparkles, Users, TrendingUp, Wallet, Camera, Plus, X, ArrowRight, UserCheck, Phone, MapPin, Briefcase, Handshake, Fingerprint } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 
 interface AgentProfile {
   name: string;
@@ -601,7 +580,7 @@ export default function AgentRegistration() {
               >
                 {loading ? (
                   <>
-                    <Loader2 size={18} className="animate-spin" /> ನೋಂದಾಯಿಸಲಾಗುತ್ತಿದೆ...
+                    <LeafLoader size={18} className="" /> ನೋಂದಾಯಿಸಲಾಗುತ್ತಿದೆ...
                   </>
                 ) : (
                   <>

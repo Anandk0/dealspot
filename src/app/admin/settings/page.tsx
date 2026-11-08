@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Loader2, Settings, IndianRupee, Image, Calendar, AlertTriangle, Handshake } from "lucide-react";
+import { Settings, IndianRupee, Image, Calendar, AlertTriangle, Handshake } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -61,7 +62,7 @@ export default function SettingsPage() {
   if (guardLoading || loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <LeafLoader className="h-8 w-8 text-primary" />
       </div>
     );
   }
@@ -224,7 +225,7 @@ export default function SettingsPage() {
             disabled={saving}
             className="bg-primary h-11 px-8"
           >
-            {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+            {saving && <LeafLoader className="h-4 w-4 mr-2" />}
             {saving ? "Saving..." : "Save settings"}
           </Button>
         </div>

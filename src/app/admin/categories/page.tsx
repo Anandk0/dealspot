@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import { api, AdminCategoryResponse, CategoryRequestData } from "@/lib/api";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, ChevronDown, ChevronRight, Tag, Loader2, X, Check, ArrowUpDown, ChevronUp, GripVertical, Folder, File } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronDown, ChevronRight, Tag, X, Check, ArrowUpDown, ChevronUp, GripVertical, Folder, File } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -290,7 +291,7 @@ export default function AdminCategoriesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-muted-foreground" size={28} />
+        <LeafLoader className=" text-muted-foreground" size={28} />
       </div>
     );
   }
@@ -311,7 +312,7 @@ export default function AdminCategoriesPage() {
               <X size={16} strokeWidth={1.5} /> Cancel
             </Button>
             <Button onClick={saveOrder} disabled={savingOrder} className="flex items-center gap-2">
-              {savingOrder ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} strokeWidth={1.5} />} Save order
+              {savingOrder ? <LeafLoader size={16} className="" /> : <Check size={16} strokeWidth={1.5} />} Save order
             </Button>
           </div>
         ) : (
@@ -453,7 +454,7 @@ export default function AdminCategoriesPage() {
                       aria-label="Delete"
                       className="p-2 rounded-lg text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      {deletingId === cat.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} strokeWidth={1.5} />}
+                      {deletingId === cat.id ? <LeafLoader size={16} className="" /> : <Trash2 size={16} strokeWidth={1.5} />}
                     </button>
                   </div>
                 </div>
@@ -498,7 +499,7 @@ export default function AdminCategoriesPage() {
                             aria-label="Delete"
                             className="p-2 rounded-lg text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
-                            {deletingId === sub.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} strokeWidth={1.5} />}
+                            {deletingId === sub.id ? <LeafLoader size={16} className="" /> : <Trash2 size={16} strokeWidth={1.5} />}
                           </button>
                         </div>
                       </div>
@@ -659,7 +660,7 @@ export default function AdminCategoriesPage() {
                 />
                 {uploadingImage && (
                   <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                    <Loader2 size={12} className="animate-spin" /> Uploading...
+                    <LeafLoader size={12} className="" /> Uploading...
                   </p>
                 )}
               </div>
@@ -819,7 +820,7 @@ export default function AdminCategoriesPage() {
             <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border">
               <Button variant="outline" onClick={closeForm} disabled={saving}>Cancel</Button>
               <Button onClick={handleSave} disabled={saving} className="min-w-[90px]">
-                {saving ? <Loader2 size={16} className="animate-spin" /> : editingId ? "Update" : "Create"}
+                {saving ? <LeafLoader size={16} className="" /> : editingId ? "Update" : "Create"}
               </Button>
             </div>
           </div>

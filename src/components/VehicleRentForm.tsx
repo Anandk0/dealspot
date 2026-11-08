@@ -1,7 +1,8 @@
 "use client";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Plus, X, Loader2, Lock } from "lucide-react";
+import { Camera, Plus, X, Lock } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -178,7 +179,7 @@ export default function VehicleRentForm({ categoryId }: { categoryId: string }) 
 
       <div className="flex gap-3 pt-2">
         <Button type="submit" disabled={loading} className="bg-primary px-8 h-11 font-medium">
-          {loading ? <><Loader2 size={16} className="mr-2 animate-spin" />{t("ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...", "Posting...")}</> : t("ಪೋಸ್ಟ್ ಮಾಡಿ", "Post Vehicle")}
+          {loading ? <><LeafLoader size={16} className="mr-2" />{t("ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...", "Posting...")}</> : t("ಪೋಸ್ಟ್ ಮಾಡಿ", "Post Vehicle")}
         </Button>
       </div>
     </form>

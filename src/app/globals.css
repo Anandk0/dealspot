@@ -98,3 +98,51 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ─── Deal Spot leaf loader (Orbit) ─── */
+.dsl {
+  display: inline-block;
+  position: relative;
+  width: var(--s, 48px);
+  height: var(--s, 48px);
+  flex: none;
+  vertical-align: middle;
+}
+.dsl svg { display: block; overflow: visible; }
+.dsl-orbit::before {
+  content: "";
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  border: 1.5px solid rgb(92 151 10 / 0.2);
+}
+.dsl-orbit .arm {
+  position: absolute;
+  inset: 0;
+  animation: dsl-spin 1.6s linear infinite;
+}
+.dsl-orbit .arm svg {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 54%;
+  height: 54%;
+  translate: -50% 0;
+  animation: dsl-breathe 1.6s ease-in-out infinite;
+}
+.dsl-orbit .arm:nth-child(3),
+.dsl-orbit .arm:nth-child(3) svg { animation-delay: -0.533s; }
+.dsl-orbit .arm:nth-child(4),
+.dsl-orbit .arm:nth-child(4) svg { animation-delay: -1.066s; }
+@keyframes dsl-spin { to { rotate: 360deg; } }
+@keyframes dsl-breathe {
+  0%, 100% { scale: 0.62; opacity: 0.42; }
+  50% { scale: 1; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dsl-orbit .arm { animation: none !important; }
+  .dsl-orbit .arm:nth-child(3) { rotate: 120deg; }
+  .dsl-orbit .arm:nth-child(4) { rotate: 240deg; }
+  .dsl-orbit .arm svg { animation: dsl-fade 1.8s ease-in-out infinite !important; }
+  @keyframes dsl-fade { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+}

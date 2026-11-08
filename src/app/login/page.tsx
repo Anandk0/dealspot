@@ -7,7 +7,8 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useLang } from "@/lib/lang-context";
-import { Loader2, MailCheck, LocateFixed, MapPin, Check, AlertCircle, Smartphone } from "lucide-react";
+import { MailCheck, LocateFixed, MapPin, Check, AlertCircle, Smartphone } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import { lookupPincode } from "@/lib/pincode";
 
@@ -314,7 +315,7 @@ export default function LoginPage() {
             </div>
             {loading && (
               <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
-                <Loader2 size={13} className="animate-spin" /> {t("ಸೈನ್ ಇನ್ ಆಗುತ್ತಿದೆ...", "Signing in...")}
+                <LeafLoader size={13} className="" /> {t("ಸೈನ್ ಇನ್ ಆಗುತ್ತಿದೆ...", "Signing in...")}
               </p>
             )}
             <p className="text-center text-xs text-muted-foreground px-4 leading-relaxed">
@@ -382,7 +383,7 @@ export default function LoginPage() {
               className="w-full h-11 bg-primary text-sm sm:text-base"
             >
               {(otpVerifying || loading) ? (
-                <><Loader2 size={16} className="mr-2 animate-spin shrink-0" /> {t("ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...", "Verifying...")}</>
+                <><LeafLoader size={16} className="mr-2 shrink-0" /> {t("ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...", "Verifying...")}</>
               ) : (
                 <span className="truncate">{t("ಪರಿಶೀಲಿಸಿ & ನೋಂದಾಯಿಸಿ", "Verify & Register")}</span>
               )}
@@ -468,7 +469,7 @@ export default function LoginPage() {
                     className="w-full h-11 rounded-lg border border-primary/40 text-primary hover:bg-primary/5 transition flex items-center justify-center gap-2 text-sm font-medium disabled:opacity-60"
                   >
                     {geoLoading ? (
-                      <><Loader2 size={16} className="animate-spin" /> {t("ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...", "Detecting...")}</>
+                      <><LeafLoader size={16} className="" /> {t("ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...", "Detecting...")}</>
                     ) : (
                       <><LocateFixed size={16} /> {t("ನನ್ನ ಲೊಕೇಶನ್ ಪತ್ತೆ ಮಾಡಿ", "Detect my location")}</>
                     )}
@@ -495,7 +496,7 @@ export default function LoginPage() {
               className="w-full h-11 bg-primary text-base"
             >
               {(loading || otpSending) ? (
-                <><Loader2 size={16} className="mr-2 animate-spin" /> {t("ದಯವಿಟ್ಟು ನಿರೀಕ್ಷಿಸಿ...", "Please wait...")}</>
+                <><LeafLoader size={16} className="mr-2" /> {t("ದಯವಿಟ್ಟು ನಿರೀಕ್ಷಿಸಿ...", "Please wait...")}</>
               ) : (
                 isRegister ? t("OTP ಕಳುಹಿಸಿ", "Send OTP") : t("ಲಾಗಿನ್", "Login")
               )}

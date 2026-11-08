@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Trash2, Loader2, Image, Link as LinkIcon, Calendar, Pencil } from "lucide-react";
+import { Plus, Trash2, Image, Link as LinkIcon, Calendar, Pencil } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -174,7 +175,7 @@ export default function BannersPage() {
   if (guardLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-muted-foreground" size={32} />
+        <LeafLoader className=" text-muted-foreground" size={32} />
       </div>
     );
   }
@@ -195,7 +196,7 @@ export default function BannersPage() {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-muted-foreground" size={32} />
+          <LeafLoader className=" text-muted-foreground" size={32} />
         </div>
       ) : banners.length === 0 ? (
         <div className="text-center py-20 text-muted-foreground">
@@ -379,7 +380,7 @@ export default function BannersPage() {
               Cancel
             </Button>
             <Button onClick={handleSubmitDialog} disabled={submitting}>
-              {submitting && <Loader2 size={14} className="mr-2 animate-spin" />}
+              {submitting && <LeafLoader size={14} className="mr-2" />}
               {editTarget ? "Save changes" : "Create"}
             </Button>
           </DialogFooter>
@@ -400,7 +401,7 @@ export default function BannersPage() {
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={submitting}>
-              {submitting && <Loader2 size={14} className="mr-2 animate-spin" />}
+              {submitting && <LeafLoader size={14} className="mr-2" />}
               Delete
             </Button>
           </DialogFooter>

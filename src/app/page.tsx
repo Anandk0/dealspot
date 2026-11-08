@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import LeafLoader from "@/components/LeafLoader";
 
 export default function SplashScreen() {
   const router = useRouter();
@@ -28,7 +29,9 @@ export default function SplashScreen() {
         </p>
       </div>
       <div className="absolute bottom-10">
-        <div className="w-8 h-8 border-2 border-current/30 border-t-current rounded-full animate-spin" />
+        <div className="rounded-full bg-white p-2 shadow-lg">
+          <LeafLoader size={36} />
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
-import { Camera, Plus, X, Loader2, MapPin, LocateFixed, Check, Handshake } from "lucide-react";
+import { Camera, Plus, X, MapPin, LocateFixed, Check, Handshake } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,7 +74,7 @@ export default function CreateListingPage() {
     return (
       <AppLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="animate-spin text-primary" size={28} />
+          <LeafLoader className=" text-primary" size={28} />
         </div>
       </AppLayout>
     );
@@ -484,7 +485,7 @@ export default function CreateListingPage() {
                 }`}
               >
                 {pinning ? (
-                  <><Loader2 size={16} className="animate-spin" /> ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...</>
+                  <><LeafLoader size={16} className="" /> ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...</>
                 ) : coords ? (
                   <><Check size={16} /> ಲೊಕೇಶನ್ ಪಿನ್ ಆಗಿದೆ (Location pinned)</>
                 ) : (
@@ -513,7 +514,7 @@ export default function CreateListingPage() {
             <div className="flex flex-col sm:flex-row gap-3 pt-3">
               <Button type="submit" disabled={loading} className="bg-primary w-full sm:w-auto px-8 h-11 text-sm font-medium">
                 {loading ? (
-                  <><Loader2 size={16} className="mr-2 animate-spin" /> ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...</>
+                  <><LeafLoader size={16} className="mr-2" /> ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...</>
                 ) : (
                   "ಸಲ್ಲಿಸಿ (Submit Listing)"
                 )}

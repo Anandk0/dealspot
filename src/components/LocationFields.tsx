@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Loader2, Lock, X } from "lucide-react";
+import { Lock, X } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Input } from "@/components/ui/input";
 import { api, type DistrictOption } from "@/lib/api";
 import { lookupPincode } from "@/lib/pincode";
@@ -107,7 +108,7 @@ export default function LocationFields({
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
             {looking ? (
-              <Loader2 size={16} className="animate-spin" />
+              <LeafLoader size={16} className="" />
             ) : value.pincode ? (
               <button type="button" onClick={clearPincode} aria-label="Clear pincode" className="hover:text-foreground">
                 <X size={16} />

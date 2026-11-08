@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { CheckCircle2, XCircle, Flag, Clock, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { CheckCircle2, XCircle, Flag, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -150,7 +151,7 @@ export default function ModerationPage() {
   if (guardLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-muted-foreground" size={32} />
+        <LeafLoader className=" text-muted-foreground" size={32} />
       </div>
     );
   }
@@ -213,7 +214,7 @@ export default function ModerationPage() {
       {/* Queue Content */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="animate-spin text-muted-foreground" size={32} />
+          <LeafLoader className=" text-muted-foreground" size={32} />
         </div>
       ) : !queue || queue.content.length === 0 ? (
         <div className="bg-card rounded-xl p-8 sm:p-12 text-center border border-border">
@@ -267,7 +268,7 @@ export default function ModerationPage() {
                     disabled={actionLoading === item.id}
                   >
                     {actionLoading === item.id
-                      ? <Loader2 size={14} className="animate-spin mr-1" />
+                      ? <LeafLoader size={14} className=" mr-1" />
                       : <CheckCircle2 size={14} className="mr-1" />}
                     <span>Approve</span>
                   </Button>
@@ -358,7 +359,7 @@ export default function ModerationPage() {
               disabled={!rejectReason.trim() || rejectSubmitting}
             >
               {rejectSubmitting ? (
-                <Loader2 size={14} className="mr-1 animate-spin" />
+                <LeafLoader size={14} className="mr-1" />
               ) : (
                 <XCircle size={14} className="mr-1" />
               )}

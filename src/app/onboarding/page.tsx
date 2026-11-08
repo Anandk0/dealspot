@@ -7,7 +7,8 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useLang } from "@/lib/lang-context";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 
 /**
  * One-time onboarding after Google sign-in: collect the phone number (required)
@@ -96,7 +97,7 @@ export default function OnboardingPage() {
         </div>
 
         <Button onClick={save} disabled={saving} className="w-full h-11 bg-primary">
-          {saving ? <><Loader2 size={16} className="mr-2 animate-spin" /> {t("ಉಳಿಸಲಾಗುತ್ತಿದೆ...", "Saving...")}</> : t("ಮುಂದುವರಿಸಿ", "Continue")}
+          {saving ? <><LeafLoader size={16} className="mr-2" /> {t("ಉಳಿಸಲಾಗುತ್ತಿದೆ...", "Saving...")}</> : t("ಮುಂದುವರಿಸಿ", "Continue")}
         </Button>
       </div>
     </div>

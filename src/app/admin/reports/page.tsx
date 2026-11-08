@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Loader2, Flag, ExternalLink, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flag, ExternalLink, Check } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -74,7 +75,7 @@ export default function ReportsPage() {
   if (guardLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-muted-foreground" size={32} />
+        <LeafLoader className=" text-muted-foreground" size={32} />
       </div>
     );
   }
@@ -95,7 +96,7 @@ export default function ReportsPage() {
       <div className="bg-card rounded-xl border border-border overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-muted-foreground" size={28} />
+            <LeafLoader className=" text-muted-foreground" size={28} />
           </div>
         ) : reports.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
@@ -151,7 +152,7 @@ export default function ReportsPage() {
                         className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded disabled:opacity-50"
                       >
                         {resolving === r.id ? (
-                          <Loader2 size={12} className="animate-spin" />
+                          <LeafLoader size={12} className="" />
                         ) : (
                           <Check size={12} />
                         )}

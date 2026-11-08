@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Phone, Lock, CheckCircle2, Loader2, User } from "lucide-react";
+import { Phone, Lock, CheckCircle2, User } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
@@ -229,7 +230,7 @@ export default function ContactUnlockModal({ listingId, onUnlocked }: Props) {
   if (checking) {
     return (
       <Button disabled className="w-full">
-        <Loader2 size={16} className="mr-2 animate-spin" /> ಲೋಡ್ ಆಗುತ್ತಿದೆ...
+        <LeafLoader size={16} className="mr-2" /> ಲೋಡ್ ಆಗುತ್ತಿದೆ...
       </Button>
     );
   }
@@ -257,7 +258,7 @@ export default function ContactUnlockModal({ listingId, onUnlocked }: Props) {
         className="w-full h-auto py-2.5 whitespace-normal"
       >
         {loading ? (
-          <><Loader2 size={16} className="mr-2 shrink-0 animate-spin" /> ಲೋಡ್ ಆಗುತ್ತಿದೆ...</>
+          <><LeafLoader size={16} className="mr-2 shrink-0" /> ಲೋಡ್ ಆಗುತ್ತಿದೆ...</>
         ) : (
           <span className="flex items-center justify-center gap-2 leading-tight">
             <Lock size={16} className="shrink-0" />
@@ -298,7 +299,7 @@ export default function ContactUnlockModal({ listingId, onUnlocked }: Props) {
             className="w-full"
           >
             {loading ? (
-              <><Loader2 size={16} className="mr-2 animate-spin" /> ಪ್ರಕ್ರಿಯೆ ಮಾಡಲಾಗುತ್ತಿದೆ...</>
+              <><LeafLoader size={16} className="mr-2" /> ಪ್ರಕ್ರಿಯೆ ಮಾಡಲಾಗುತ್ತಿದೆ...</>
             ) : (
               `${priceDisplay} ಪಾವತಿಸಿ (Pay ${priceDisplay})`
             )}

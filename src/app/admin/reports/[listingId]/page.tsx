@@ -2,10 +2,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import {
-  ArrowLeft, Loader2, Ban, ShieldCheck, Flag, MapPin, Phone, Mail,
-  EyeOff, AlertTriangle, Package, User,
-} from "lucide-react";
+import { ArrowLeft, Ban, ShieldCheck, Flag, MapPin, Phone, Mail, EyeOff, AlertTriangle, Package, User } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -95,7 +93,7 @@ export default function ReportedOwnerPage() {
   if (guardLoading || loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-muted-foreground" size={32} />
+        <LeafLoader className=" text-muted-foreground" size={32} />
       </div>
     );
   }
@@ -222,7 +220,7 @@ export default function ReportedOwnerPage() {
               ? "bg-primary hover:bg-primary/90 text-primary-foreground"
               : "bg-destructive hover:bg-destructive/90 text-destructive-foreground"}
           >
-            {busy ? <Loader2 size={16} className="mr-2 animate-spin" /> : owner.banned ? <ShieldCheck size={16} strokeWidth={1.5} className="mr-2" /> : <Ban size={16} strokeWidth={1.5} className="mr-2" />}
+            {busy ? <LeafLoader size={16} className="mr-2" /> : owner.banned ? <ShieldCheck size={16} strokeWidth={1.5} className="mr-2" /> : <Ban size={16} strokeWidth={1.5} className="mr-2" />}
             {owner.banned ? "Unban user" : "Ban user"}
           </Button>
         </div>

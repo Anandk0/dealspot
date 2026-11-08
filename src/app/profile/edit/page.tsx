@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
-import { Camera, Loader2, User } from "lucide-react";
+import { Camera, User } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -82,7 +83,7 @@ export default function EditProfilePage() {
                   )}
                   {uploading && (
                     <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
-                      <Loader2 size={22} className="text-white animate-spin" />
+                      <LeafLoader size={22} className="text-white" />
                     </div>
                   )}
                 </div>

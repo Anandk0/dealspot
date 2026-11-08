@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
-import { MapPin, Loader2, X, LocateFixed, Search } from "lucide-react";
+import { MapPin, X, LocateFixed, Search } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api, type DistrictOption } from "@/lib/api";
@@ -158,7 +159,7 @@ export default function LocationPrompt() {
             className="w-full border-primary/40 text-primary hover:bg-primary/5"
           >
             {detecting ? (
-              <><Loader2 size={16} className="mr-2 animate-spin" /> {t("ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...", "Detecting...")}</>
+              <><LeafLoader size={16} className="mr-2" /> {t("ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...", "Detecting...")}</>
             ) : (
               <><LocateFixed size={16} className="mr-2" /> {t("ನನ್ನ ಲೊಕೇಶನ್ ಬಳಸಿ", "Use my location")}</>
             )}
@@ -182,7 +183,7 @@ export default function LocationPrompt() {
         <div className="flex-1 overflow-y-auto px-3 pb-4">
           {loadingList ? (
             <div className="flex items-center justify-center py-10">
-              <Loader2 className="animate-spin text-muted-foreground" size={24} />
+              <LeafLoader className=" text-muted-foreground" size={24} />
             </div>
           ) : filtered.length === 0 ? (
             <p className="text-center text-sm text-muted-foreground py-8">
@@ -220,7 +221,7 @@ export default function LocationPrompt() {
             </button>
             {loadingTaluks ? (
               <div className="flex items-center justify-center py-10">
-                <Loader2 className="animate-spin text-muted-foreground" size={24} />
+                <LeafLoader className=" text-muted-foreground" size={24} />
               </div>
             ) : taluks.length === 0 ? (
               <p className="text-center text-sm text-muted-foreground py-6">

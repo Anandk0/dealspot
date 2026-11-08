@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Ban, UserCheck, Shield, Search, ChevronLeft, ChevronRight, Loader2, Trash2, Package } from "lucide-react";
+import { Ban, UserCheck, Shield, Search, ChevronLeft, ChevronRight, Trash2, Package } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -226,7 +227,7 @@ export default function UsersPage() {
   if (guardLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-muted-foreground" size={32} />
+        <LeafLoader className=" text-muted-foreground" size={32} />
       </div>
     );
   }
@@ -265,7 +266,7 @@ export default function UsersPage() {
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-muted-foreground" size={28} />
+            <LeafLoader className=" text-muted-foreground" size={28} />
           </div>
         ) : users.length === 0 ? (
           <div className="flex items-center justify-center py-20 text-muted-foreground">
@@ -438,7 +439,7 @@ export default function UsersPage() {
               onClick={handleBan}
               disabled={banLoading || !banReason.trim()}
             >
-              {banLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
+              {banLoading && <LeafLoader size={14} className="mr-2" />}
               Ban user
             </Button>
           </DialogFooter>
@@ -479,7 +480,7 @@ export default function UsersPage() {
               onClick={handleRoleChange}
               disabled={roleLoading || newRole === roleTarget?.role}
             >
-              {roleLoading && <Loader2 size={14} className="mr-2 animate-spin" />}
+              {roleLoading && <LeafLoader size={14} className="mr-2" />}
               Save
             </Button>
           </DialogFooter>
@@ -500,7 +501,7 @@ export default function UsersPage() {
           <div className="flex-1 overflow-y-auto -mx-1 px-1">
             {listingsLoading ? (
               <div className="flex items-center justify-center py-16">
-                <Loader2 className="animate-spin text-muted-foreground" size={26} />
+                <LeafLoader className=" text-muted-foreground" size={26} />
               </div>
             ) : userListings.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
@@ -539,7 +540,7 @@ export default function UsersPage() {
                       disabled={deletingId === l.id || deletingAll}
                     >
                       {deletingId === l.id ? (
-                        <Loader2 size={14} className="animate-spin" />
+                        <LeafLoader size={14} className="" />
                       ) : (
                         <><Trash2 size={14} strokeWidth={1.5} className="mr-1" /> Delete</>
                       )}
@@ -561,7 +562,7 @@ export default function UsersPage() {
                 disabled={deletingAll || deletingId != null}
               >
                 {deletingAll ? (
-                  <><Loader2 size={14} className="mr-2 animate-spin" /> Deleting all...</>
+                  <><LeafLoader size={14} className="mr-2" /> Deleting all...</>
                 ) : (
                   <><Trash2 size={14} strokeWidth={1.5} className="mr-2" /> Delete all ({userListings.length})</>
                 )}

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
-import { Camera, Plus, X, Loader2 } from "lucide-react";
+import { Camera, Plus, X } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { useLang } from "@/lib/lang-context";
 
 const MAX_IMAGES = 5;
@@ -100,7 +101,7 @@ export default function ImageEditor({
           >
             {compressing ? (
               <>
-                <Loader2 size={20} className="animate-spin text-primary" />
+                <LeafLoader size={20} className=" text-primary" />
                 <span className="text-xs mt-1 text-primary">ಕುಗ್ಗಿಸಲಾಗುತ್ತಿದೆ</span>
               </>
             ) : total === 0 ? (

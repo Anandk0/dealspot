@@ -1,5 +1,6 @@
 "use client";
-import { Plus, Eye, Trash2, Loader2, MapPin, Pencil, ImageIcon, ClipboardList } from "lucide-react";
+import { Plus, Eye, Trash2, MapPin, Pencil, ImageIcon, ClipboardList } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
@@ -129,7 +130,7 @@ export default function MyListingsPage() {
                             aria-label="Delete listing"
                           >
                             {isDeleting
-                              ? <Loader2 size={16} className="animate-spin" />
+                              ? <LeafLoader size={16} className="" />
                               : <Trash2 size={16} />
                             }
                           </button>
@@ -173,7 +174,7 @@ export default function MyListingsPage() {
                           disabled={isDeleting}
                           className="px-3 py-1.5 text-xs rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors flex items-center gap-1.5 disabled:opacity-60"
                         >
-                          {isDeleting && <Loader2 size={12} className="animate-spin" />}
+                          {isDeleting && <LeafLoader size={12} className="" />}
                           ಅಳಿಸಿ (Delete)
                         </button>
                       </div>

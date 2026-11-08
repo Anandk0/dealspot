@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Loader2, Filter, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Filter, Calendar } from "lucide-react";
+import LeafLoader from "@/components/LeafLoader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -112,7 +113,7 @@ export default function AuditPage() {
   if (guardLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-muted-foreground" size={32} />
+        <LeafLoader className=" text-muted-foreground" size={32} />
       </div>
     );
   }
@@ -191,7 +192,7 @@ export default function AuditPage() {
       <div className="bg-card rounded-xl border border-border overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-muted-foreground" size={28} />
+            <LeafLoader className=" text-muted-foreground" size={28} />
           </div>
         ) : logs.length === 0 ? (
           <div className="flex items-center justify-center py-20 text-muted-foreground">
