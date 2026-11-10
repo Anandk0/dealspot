@@ -410,6 +410,11 @@ class ApiClient {
   }
 
   // ─── Search ─────────────────────────────────────────────
+  async searchSuggest(q: string, limit = 8) {
+    const params = new URLSearchParams({ q, limit: String(limit) });
+    return this.request<SearchSuggestResponse>(`/api/search/suggest?${params}`);
+  }
+
   async search(query: string, category?: string, page = 0, size = 20) {
     const params = new URLSearchParams({ q: query, page: String(page), size: String(size) });
     if (category) params.set("category", category);
@@ -780,6 +785,16 @@ class ApiClient {
 export const api = new ApiClient();
 
 // ─── Types ──────────────────────────────────────────────
+export type SearchSuggestion =
+  | { type: "category"; slug: string; text: string; textEn: string; parent: string | null }
+  | { type: "listing"; id: number; text: string; category: string }
+  | { type: "query"; text: string };
+
+export interface SearchSuggestResponse {
+  query: string;
+  didYouMean: string | null;
+  suggestions: SearchSuggestion[];
+}
 export interface AuthResponseData {
   token: string;
   refreshToken: string;
