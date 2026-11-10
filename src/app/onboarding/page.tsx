@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useLang } from "@/lib/lang-context";
 import { Loader2, CheckCircle2 } from "lucide-react";
+import { LocateFixed } from "lucide-react";
 
 /**
  * One-time onboarding after Google sign-in: collect the phone number (required)
@@ -20,6 +21,10 @@ export default function OnboardingPage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
+  // District found by "Use my current location"; saved with the profile.
+  const [district, setDistrict] = useState("");
+  const [detecting, setDetecting] = useState(false);
+  const autoTried = useRef(false);
   const [saving, setSaving] = useState(false);
 
   // Not logged in → send to login. Already has a phone → nothing to do here.
@@ -33,6 +38,69 @@ export default function OnboardingPage() {
     setLocation(user.location || "");
     if (user.phone) router.replace("/home");
   }, [user, isLoading, router]);
+
+  // Reads the device location and reverse-geocodes it (OpenStreetMap) into
+  // "area, district". `silent` is the automatic attempt: it never shows errors
+  // and never overwrites something the user already typed.
+  const detectLocation = (silent = false) => {
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
+      if (!silent) toast.error(t("ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಲೊಕೇಶನ್ ಲಭ್ಯವಿಲ್ಲ", "Location is not available in this browser"));
+      return;
+    }
+    setDetecting(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=12&addressdetails=1`,
+            { headers: { "Accept-Language": "en" } }
+          );
+          const data = await res.json();
+          const addr = data?.address || {};
+          const dist: string = (addr.state_district || addr.county || addr.city_district || addr.city || "")
+            .toString()
+            .replace(/\s*district$/i, "")
+            .trim();
+          const area: string = (addr.suburb || addr.village || addr.town || addr.city || addr.hamlet || "")
+            .toString()
+            .trim();
+          const text = [area, dist].filter((v, i, a) => v && a.indexOf(v) === i).join(", ");
+          if (!text) {
+            if (!silent) toast.error(t("ಸ್ಥಳ ಪತ್ತೆಯಾಗಲಿಲ್ಲ, ಕೈಯಾರೆ ನಮೂದಿಸಿ", "Couldn't find your place — please type it"));
+            return;
+          }
+          setLocation((prev) => (silent && prev.trim() ? prev : text));
+          if (dist) setDistrict(dist);
+        } catch {
+          if (!silent) toast.error(t("ಲೊಕೇಶನ್ ಪತ್ತೆ ವಿಫಲವಾಗಿದೆ", "Location detection failed"));
+        } finally {
+          setDetecting(false);
+        }
+      },
+      () => {
+        setDetecting(false);
+        if (!silent) toast.error(t("ಲೊಕೇಶನ್ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ", "Location permission denied"));
+      },
+      { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+    );
+  };
+
+  // If the browser already has location permission, fill it in automatically
+  // (once). Otherwise the user taps the button, which asks for permission.
+  useEffect(() => {
+    if (isLoading || !user || user.location || autoTried.current) return;
+    autoTried.current = true;
+    const perms = typeof navigator !== "undefined" ? navigator.permissions : undefined;
+    if (!perms?.query) return;
+    perms
+      .query({ name: "geolocation" as PermissionName })
+      .then((s) => {
+        if (s.state === "granted") detectLocation(true);
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, user]);
 
   const cleanPhone = () => {
     const d = phone.replace(/\D/g, "");
@@ -54,6 +122,7 @@ export default function OnboardingPage() {
         name: name.trim(),
         phone: `+91${cleanPhone()}`,
         location: location.trim(),
+        ...(district ? { district } : {}),
       });
       await refreshProfile();
       toast.success(t("ಸ್ವಾಗತ", "Welcome"));
@@ -92,7 +161,23 @@ export default function OnboardingPage() {
 
         <div>
           <label className="text-sm text-muted-foreground mb-1 block">{t("ಸ್ಥಳ", "Location")}</label>
-          <Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t("ಮಂಡ್ಯ", "e.g. Mandya")} className="h-11" />
+          <Input
+            value={location}
+            onChange={(e) => {
+              setLocation(e.target.value);
+              setDistrict(""); // typed by hand: don't keep a stale detected district
+            }}
+            className="h-11"
+          />
+          <button
+            type="button"
+            onClick={() => detectLocation(false)}
+            disabled={detecting}
+            className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline disabled:opacity-60"
+          >
+            {detecting ? <Loader2 size={16} className="animate-spin" /> : <LocateFixed size={16} strokeWidth={1.5} />}
+            {detecting ? t("ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...", "Detecting...") : t("ನನ್ನ ಪ್ರಸ್ತುತ ಸ್ಥಳ ಬಳಸಿ", "Use my current location")}
+          </button>
         </div>
 
         <Button onClick={save} disabled={saving} className="w-full h-11 bg-primary">
